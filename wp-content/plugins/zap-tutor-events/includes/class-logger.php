@@ -1,7 +1,9 @@
 <?php
+namespace ZapTutorEvents;
+
 if (!defined('ABSPATH')) exit;
 
-class ZAP_Events_Logger {
+class Logger {
 
     public static function log($event_key, $user_id, $context = []) {
 

@@ -18,6 +18,12 @@ class Plugin {
          * ===============================
          */
 
+        // Logger (responsável pelo registro de eventos)
+        $logger = ZAP_EVENTS_PATH . 'includes/class-logger.php';
+        if (file_exists($logger)) {
+            require_once $logger;
+        }
+
         // Dispatcher (responsável por emitir o evento global)
         $dispatcher = ZAP_EVENTS_PATH . 'includes/class-dispatcher.php';
         if (file_exists($dispatcher)) {
@@ -31,8 +37,8 @@ class Plugin {
         }
 
         // 🔥 GARANTIA ABSOLUTA DE INICIALIZAÇÃO
-        if (class_exists('\ZAP_Events')) {
-            \ZAP_Events::init();
+        if (class_exists(__NAMESPACE__ . '\\Events')) {
+            Events::init();
         }
 
         /*
