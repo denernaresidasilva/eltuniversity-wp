@@ -1,0 +1,41 @@
+<?php return array(
+    'root' => array(
+        'name' => 'jeweltheme/wp-adminify',
+        'pretty_version' => 'dev-develop',
+        'version' => 'dev-develop',
+        'reference' => '42409060af80e34e6c4c41032fead09431b406c9',
+        'type' => 'library',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'dev' => true,
+    ),
+    'versions' => array(
+        'enshrined/svg-sanitize' => array(
+            'pretty_version' => '0.10.0',
+            'version' => '0.10.0.0',
+            'reference' => '5344d8511e494adf160f71f4b34024d3a3c66c82',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../enshrined/svg-sanitize',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'freemius/wordpress-sdk' => array(
+            'pretty_version' => '2.12.0',
+            'version' => '2.12.0.0',
+            'reference' => 'db6f35a2b3d318a53330409dbeab49156ee76dd8',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../freemius/wordpress-sdk',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'jeweltheme/wp-adminify' => array(
+            'pretty_version' => 'dev-develop',
+            'version' => 'dev-develop',
+            'reference' => '42409060af80e34e6c4c41032fead09431b406c9',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+    ),
+);

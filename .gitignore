@@ -1,0 +1,21 @@
+# WordPress core
+/wp-admin/
+/wp-includes/
+
+# Uploads
+/wp-content/uploads/
+
+# Config
+wp-config.php
+
+# Cache / logs
+/wp-content/cache/
+/wp-content/wflogs/
+*.log
+
+# Env
+.env
+
+# OS
+.DS_Store
+Thumbs.db

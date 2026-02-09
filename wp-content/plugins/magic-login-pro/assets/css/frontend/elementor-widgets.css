@@ -1,0 +1,171 @@
+/**
+ * Magic Login Elementor Widgets Styling
+ * Based on assets/css/shared/registration-form.css
+ */
+
+/* Common form styling */
+.magic-login-elementor-widget,
+.magic-login-registration-elementor-widget {
+	max-width: 400px;
+	margin: 0 auto;
+	padding: 30px;
+	background: #ffffff;
+	border: 1px solid #e1e5e9;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Override registration form container - based on #magic_login_registration_form */
+.magic-login-registration-elementor-widget #magic_login_registration_form {
+	margin: 0;
+	padding: 0;
+	border: none;
+	background: transparent;
+	border-radius: 0;
+}
+
+/* Title styling */
+.magic-login-block-title,
+.magic-login-registration-title {
+	margin: 0 0 15px 0;
+	font-size: 24px;
+	font-weight: 600;
+	color: #23282d;
+	text-align: center;
+}
+
+/* Description styling */
+.magic-login-block-description,
+.magic-login-registration-description {
+	margin: 0 0 25px 0;
+	color: #666;
+	text-align: center;
+	line-height: 1.5;
+}
+
+/* Enhanced input fields - compatible with registration-form.css */
+.magic-login-elementor-widget input[type="text"],
+.magic-login-elementor-widget input[type="email"],
+.magic-login-registration-elementor-widget #magic_login_registration_form input[type="text"],
+.magic-login-registration-elementor-widget #magic_login_registration_form input[type="email"] {
+	width: 100% !important;
+	padding: 12px 16px !important;
+	border: 2px solid #ddd !important;
+	border-radius: 6px !important;
+	font-size: 16px !important;
+	transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+	background: #fff !important;
+	box-sizing: border-box !important;
+}
+
+.magic-login-elementor-widget input[type="text"]:focus,
+.magic-login-elementor-widget input[type="email"]:focus,
+.magic-login-registration-elementor-widget #magic_login_registration_form input[type="text"]:focus,
+.magic-login-registration-elementor-widget #magic_login_registration_form input[type="email"]:focus {
+	outline: none !important;
+	border-color: #0073aa !important;
+	box-shadow: 0 0 0 3px rgba(0, 115, 170, 0.1) !important;
+}
+
+/* Labels - compatible with registration-form.css */
+.magic-login-elementor-widget label,
+.magic-login-registration-elementor-widget #magic_login_registration_form label {
+	display: block !important;
+	margin-bottom: 8px !important;
+	font-weight: 500 !important;
+	color: #23282d !important;
+	font-size: 14px !important;
+}
+
+/* Form layout - enhanced from registration-form.css .form-group */
+.magic-login-elementor-widget .magicloginform-inner {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.magic-login-registration-elementor-widget #magic_login_registration_form .form-group {
+	display: flex !important;
+	gap: 15px !important;
+	margin-bottom: 20px !important;
+}
+
+.magic-login-registration-elementor-widget #magic_login_registration_form .form-group p {
+	flex: 1 !important;
+	margin-bottom: 0 !important;
+	margin-right: 0 !important;
+}
+
+/* Checkbox styling - enhanced from registration-form.css */
+.magic-login-registration-elementor-widget #magic_login_registration_form .checkbox-group {
+	display: flex !important;
+	align-items: flex-start !important;
+	gap: 10px !important;
+	margin-bottom: 20px !important;
+}
+
+.magic-login-registration-elementor-widget #magic_login_registration_form .checkbox-group input[type="checkbox"] {
+	margin: 2px 0 0 0 !important;
+	transform: scale(1.1) !important;
+}
+
+/* Button styling - enhanced from registration-form.css */
+.magic-login-submit,
+.magic-login-registration-elementor-widget #magic_login_registration_form input[type="submit"] {
+	width: 100% !important;
+	padding: 14px 20px !important;
+	background: #0073aa !important;
+	border: none !important;
+	border-radius: 6px !important;
+	color: #fff !important;
+	font-size: 16px !important;
+	font-weight: 500 !important;
+	cursor: pointer !important;
+	transition: background-color 0.3s ease, transform 0.1s ease !important;
+}
+
+.magic-login-submit:hover,
+.magic-login-registration-elementor-widget #magic_login_registration_form input[type="submit"]:hover {
+	background: #005a87 !important;
+	transform: translateY(-1px) !important;
+}
+
+/* Error/Success messages - based on registration-form.css */
+.magic_login_block_login_error,
+.magic-login-registration-elementor-widget .registration_result .error {
+	padding: 12px 16px !important;
+	background: #fef7f7 !important;
+	border-left: 4px solid #d63638 !important;
+	border-radius: 4px !important;
+	color: #d63638 !important;
+	margin-bottom: 20px !important;
+}
+
+.magic-login-form-header .message,
+.magic-login-registration-elementor-widget .registration_result .success {
+	padding: 12px 16px !important;
+	background: #f0f6fc !important;
+	border-left: 4px solid #00a32a !important;
+	border-radius: 4px !important;
+	color: #00a32a !important;
+	margin-bottom: 20px !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+	.magic-login-elementor-widget,
+	.magic-login-registration-elementor-widget {
+		margin: 0 15px;
+		padding: 20px;
+	}
+
+	.magic-login-registration-elementor-widget #magic_login_registration_form .form-group {
+		flex-direction: column !important;
+		gap: 15px !important;
+	}
+
+	.magic-login-block-title,
+	.magic-login-registration-title {
+		font-size: 20px;
+	}
+}

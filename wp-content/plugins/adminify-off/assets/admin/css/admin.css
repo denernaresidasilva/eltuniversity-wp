@@ -1,0 +1,1522 @@
+/*!***************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-3.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-3.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-3.use[3]!./dev/admin/frame/index.scss ***!
+  \***************************************************************************************************************************************************************************************************************************************/
+.adminify-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  display: block;
+  z-index: 9999;
+  width: 100%;
+  background-color: white;
+  border-radius: 2px;
+  background-clip: padding-box; /*margin: 0.5rem 0 1rem 0;*/
+  overflow: hidden;
+}
+.adminify-progress .adminify-indeterminate {
+  background-color: black;
+}
+.adminify-progress .adminify-indeterminate::before {
+  content: "";
+  position: absolute;
+  background-color: var(--adminify-primary);
+  top: 0;
+  left: 0;
+  bottom: 0;
+  will-change: left, right;
+  animation: adminify-indeterminate 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
+}
+.adminify-progress .adminify-indeterminate::after {
+  content: "";
+  position: absolute;
+  background-color: var(--adminify-primary);
+  top: 0;
+  left: 0;
+  bottom: 0;
+  will-change: left, right;
+  animation: adminify-indeterminate-short 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
+  animation-delay: 1.15s;
+}
+@keyframes adminify-indeterminate {
+  0% {
+    left: -35%;
+    right: 100%;
+  }
+  60% {
+    left: 100%;
+    right: -90%;
+  }
+  100% {
+    left: 100%;
+    right: -90%;
+  }
+}
+@keyframes adminify-indeterminate-short {
+  0% {
+    left: -200%;
+    right: 100%;
+  }
+  60% {
+    left: 107%;
+    right: -8%;
+  }
+  100% {
+    left: 107%;
+    right: -8%;
+  }
+}
+/* Reset CSS */
+html[frame-adminify-app=true] #adminmenumain,
+html[frame-adminify-app=true] #wpcontent,
+html[frame-adminify-app=true] #wpadminbar,
+html[frame-adminify-app=true] #wpfooter {
+  display: none !important;
+}
+
+/* App CSS */
+.frame-adminify-app,
+.frame-adminify-app * {
+  box-sizing: border-box;
+}
+
+.frame-adminify-app {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 999;
+}
+
+.frame-adminify-app--frame iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+#frame-adminify-app {
+  box-sizing: border-box;
+}
+#frame-adminify-app a {
+  -webkit-text-decoration: none;
+  text-decoration: none;
+}
+#frame-adminify-app a:focus {
+  border: none;
+  box-shadow: none;
+}
+#frame-adminify-app .adminify-frame-wrapper {
+  display: grid;
+  grid-template-columns: var(--adminify-menu-width) 1fr;
+  background: var(--adminify-menu-bg);
+  transition: all 0.3s;
+}
+#frame-adminify-app .adminify-frame-wrapper.adminify-horizontal-menu {
+  grid-template-columns: 1fr;
+}
+#frame-adminify-app .adminify-frame-wrapper.adminify-horizontal-menu .adminify-frame-content .adminify-toolbar {
+  padding-left: 0;
+}
+#frame-adminify-app .adminify-frame-wrapper.adminify-vertical-menu {
+  padding-right: 1rem;
+}
+#frame-adminify-app .adminify-frame-wrapper.adminify-folded {
+  grid-template-columns: 60px 1fr;
+}
+#frame-adminify-app .adminify-frame-wrapper .adminify-frame-content {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding-bottom: 16px;
+}
+#frame-adminify-app .adminify-frame-wrapper .adminify-frame-content #frame-adminify-app--iframe {
+  border-radius: 8px;
+  border: 1px solid var(--adminify-menu-border);
+}
+#frame-adminify-app .adminify-frame-wrapper.adminify-horizontal-menu {
+  padding: 0 16px;
+}
+
+.frame-adminify-search-icon {
+  background: none;
+  border: none;
+  box-shadow: none;
+  cursor: pointer;
+  display: flex;
+}
+.frame-adminify-search-icon > svg {
+  width: 14px;
+  height: 14px;
+}
+
+.frame-adminify-search-overlay {
+  animation: frame_adminify__fade-in-animation 0.2s ease-out 0s;
+  animation-fill-mode: forwards;
+  background-color: rgba(0, 0, 0, 0.3490196078);
+  bottom: 0;
+  display: flex;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 100000;
+}
+
+.frame-adminify-search-form {
+  position: absolute;
+  top: calc(20% + 64px);
+  left: calc(50% - 200px);
+  width: 400px;
+  transform: translateX(-50%) translateY(-50%);
+  animation: frame_adminify__appear-animation 0.1s ease-out;
+  animation-fill-mode: forwards;
+  background: #fff;
+  border: 1px solid #dedee7;
+  border-radius: 2px;
+  box-shadow: 0 0.7px 1px rgba(0, 0, 0, 0.1490196078), 0 2.7px 3.8px -0.2px rgba(0, 0, 0, 0.1490196078), 0 5.5px 7.8px -0.3px rgba(0, 0, 0, 0.1490196078), 0.1px 11.5px 16.4px -0.5px rgba(0, 0, 0, 0.1490196078);
+  padding: 16px;
+  z-index: 100001;
+}
+.frame-adminify-search-form .frame-adminify-search {
+  display: flex;
+  align-items: center;
+}
+.frame-adminify-search-form .frame-adminify-search > input[type=search] {
+  width: 100%;
+  border: none;
+  box-shadow: none;
+}
+.frame-adminify-search-form .frame-adminify-search > svg {
+  margin-right: 4px;
+}
+.frame-adminify-search-form .frame-adminify-search-list {
+  max-height: 260px;
+  overflow: auto;
+}
+.frame-adminify-search-form .frame-adminify-search-list > ul {
+  margin-top: 1rem;
+}
+.frame-adminify-search-form .frame-adminify-search-list > ul li.adminify-search-title {
+  background: var(--adminify-primary);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 2px;
+}
+.frame-adminify-search-form .frame-adminify-search-list > ul li:not(.adminify-search-title) {
+  margin-left: 12px;
+}
+
+@keyframes frame_adminify__fade-in-animation {
+  0% {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes frame_adminify__appear-animation {
+  0% {
+    transform: translateY(32px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.adminify-toolbar-wrapper {
+  display: grid;
+  grid-template-columns: var(--adminify-menu-width) 1fr;
+  transition: grid-template-columns 0.3s;
+  padding: 0 1rem;
+  background: var(--adminify-menu-bg);
+}
+.adminify-toolbar-wrapper .frame-adminify-logo {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px 0;
+  overflow: hidden;
+}
+.adminify-toolbar-wrapper .frame-adminify-logo a {
+  display: flex;
+  align-items: center;
+}
+.adminify-toolbar-wrapper .frame-adminify-logo a .adminify-mini-logo {
+  display: none;
+}
+.adminify-toolbar-wrapper .frame-adminify-logo a .adminify-logo-text {
+  width: -moz-max-content;
+  width: max-content;
+}
+.adminify-toolbar-wrapper .frame-adminify-logo:has(flex) {
+  display: none;
+}
+.adminify-toolbar-wrapper .adminify-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 8px 0 6px 0;
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 2px 0;
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu li.adminify-top-menu-item {
+  position: relative;
+  font-size: 14px;
+  margin: 0;
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu li.adminify-top-menu-item > a {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--adminify-menu-text-color);
+  background-color: transparent;
+  padding: 0;
+  font-style: normal;
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu li.adminify-top-menu-item > a .wp-ui-notification.wpforms-menu-notification-counter, .adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu li.adminify-top-menu-item > a .wp-ui-notification.aioseo-menu-notification-counter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50px;
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu li.adminify-top-menu-item > a span::before {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu li.adminify-top-menu-item button {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--adminify-menu-text-color);
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  width: 100%;
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu li.adminify-top-menu-item a,
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu li.adminify-top-menu-item button {
+  text-align: left;
+  padding: 0.5rem 0.2rem;
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu li.adminify-top-menu-item a span,
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu li.adminify-top-menu-item button span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu li.adminify-top-menu-item a .dashicons,
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu li.adminify-top-menu-item button .dashicons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu li.adminify-top-menu-item a:hover,
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu li.adminify-top-menu-item button:hover {
+  color: var(--adminify-primary);
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu li.adminify-top-menu-item.adminify-hambuger button svg {
+  width: 16px;
+  height: 16px;
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu li.adminify-top-menu-item.adminify-top-menu-new-content {
+  padding: 0;
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu li.adminify-top-menu-item.adminify-top-menu-new-content > a {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 2px;
+  line-height: 28px;
+  padding: 2px 10px !important;
+  background: var(--adminify-primary);
+  color: #fff;
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu li.adminify-top-menu-item.adminify-top-menu-new-content:hover button {
+  color: #fff;
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu .adminify-dropdown {
+  position: absolute;
+  top: 39px;
+  left: auto;
+  font-size: 0.875rem;
+  z-index: 9999;
+  min-width: 12rem;
+  padding: 0.6rem 0;
+  list-style: none;
+  border-radius: 0.5rem;
+  display: none;
+  background: var(--adminify-menu-bg);
+  border-radius: 2px;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--adminify-menu-border);
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu .adminify-dropdown .adminify-top-menu-item a {
+  padding: 0.3rem 0.7rem;
+  font-weight: 500;
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu .adminify-dropdown .adminify-top-menu-item a span {
+  gap: 0;
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu .adminify-dropdown.show {
+  display: block;
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu .adminify-dropdown.adminify-dropdown-submenu {
+  position: absolute;
+  left: 100%;
+  top: 0px;
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu .adminify-dropdown[data-dropdown-lavel="1"]::before {
+  content: "";
+  position: absolute;
+  height: 12px;
+  width: 12px;
+  border: 1px solid var(--adminify-menu-border);
+  border-width: 1px 0 0 1px;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  background-color: var(--adminify-menu-bg);
+  top: -7px;
+  left: 1rem;
+}
+.adminify-toolbar-wrapper .adminify-toolbar ul.adminify-top-menu .adminify-dropdown::after {
+  content: "";
+  position: absolute;
+  height: 10px;
+  width: 100%;
+  bottom: 100%;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .adminify-top-menu .adminify-top-menu-item .adminify-dropdown .adminify-top-menu-item button {
+  padding: 0.2rem 0.7rem;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary #adminify-color-mode-wrapper {
+  position: relative;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary #adminify-color-mode-wrapper .adminify-mode-icon {
+  padding: 4px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  position: relative;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary #adminify-color-mode-wrapper .adminify-mode-icon .darkIcon,
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary #adminify-color-mode-wrapper .adminify-mode-icon .lightIcon {
+  position: absolute;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary #adminify-color-mode-wrapper .adminify-mode-icon > svg.systemIcon path {
+  stroke-width: 1.5px;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary #adminify-color-mode-wrapper .light-dark-dropdown {
+  background: var(--adminify-menu-bg);
+  width: 110px;
+  border: 1px solid var(--adminify-menu-border);
+  border-radius: 10px;
+  padding: 5px 0 10px 10px;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 40px;
+  right: -39px;
+  z-index: 9999;
+  box-sizing: border-box;
+  visibility: hidden;
+  opacity: 0.0001;
+  transition: 0.3s cubic-bezier(0.2, 0, 0, 1.6);
+  transform: scale(0.6) translateY(-20%);
+  -webkit-transform: scale(0.6) translateY(-20%);
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary #adminify-color-mode-wrapper .light-dark-dropdown::before {
+  content: "";
+  position: absolute;
+  height: 12px;
+  width: 12px;
+  border: 1px solid var(--adminify-menu-border);
+  border-width: 1px 0 0 1px;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  background-color: var(--adminify-menu-bg);
+  top: -7px;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary #adminify-color-mode-wrapper .light-dark-dropdown > div {
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 14px;
+  color: var(--adminify-menu-text-color);
+  padding: 3px 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary #adminify-color-mode-wrapper .light-dark-dropdown > div > span {
+  font-size: 12px;
+  color: var(--adminify-menu-text-color);
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary #adminify-color-mode-wrapper .light-dark-dropdown > div > svg.lightIcon,
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary #adminify-color-mode-wrapper .light-dark-dropdown > div > svg.darkIcon {
+  width: 18px !important;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary #adminify-color-mode-wrapper .light-dark-dropdown > div > svg.systemIcon {
+  width: 14px;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary #adminify-color-mode-wrapper .light-dark-dropdown > div > svg.systemIcon path {
+  stroke-width: 1.5px;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary #wp-adminify-color-mode-wrapper .light-dark-dropdown {
+  background: var(--adminify-menu-bg);
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary #wp-adminify-color-mode-wrapper .light-dark-dropdown::before {
+  background-color: var(--adminify-menu-bg);
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary #wp-adminify-color-mode-wrapper .light-dark-dropdown > div {
+  color: var(--adminify-menu-text-color);
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary #wp-adminify-color-mode-wrapper .light-dark-dropdown > div > span {
+  color: var(--adminify-menu-text-color);
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .wp-adminify--preview {
+  padding: 0 8px 0 0;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .wp-adminify--preview .wp-adminify-preview-trigger {
+  color: var(--adminify-menu-text-color);
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .wp-adminify--user--account {
+  position: relative;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .wp-adminify--user--account .wp-adminify-user-avatar {
+  background: none;
+  border: none;
+  outline: none;
+  position: relative;
+  padding: 0;
+  cursor: pointer;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .wp-adminify--user--account .wp-adminify-user-avatar > img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .wp-adminify--user--account .wp-adminify-user-avatar .adminify-user-status {
+  position: absolute;
+  bottom: 4px;
+  right: 0px;
+  display: block;
+  width: 8px;
+  height: 8px;
+  background-color: #0cce6b;
+  border-radius: 50%;
+  border: 2px solid var(--adminify-menu-bg);
+  animation: status-shadow 3s infinite;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .wp-adminify--user--account .wp-adminify--user--wrapper {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #dedee7;
+  border-radius: 6px;
+  padding: 6px 0;
+  box-shadow: 0px 0px 54px 0px rgba(20, 20, 42, 0.07);
+  visibility: hidden;
+  opacity: 0;
+  transform: scale(0.6) translateY(-20%);
+  transition: 0.3s cubic-bezier(0.2, 0, 0, 1.6);
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .wp-adminify--user--account .wp-adminify--user--wrapper::before {
+  content: "";
+  position: absolute;
+  height: 12px;
+  width: 12px;
+  border: 1px solid #dedee7;
+  border-width: 1px 0 0 1px;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  background-color: #fff;
+  top: -7px;
+  right: 16px;
+  margin: auto;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .wp-adminify--user--account .wp-adminify--user--wrapper.active {
+  visibility: visible;
+  opacity: 0.9999;
+  transform: none;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .wp-adminify--user--account .wp-adminify--user--wrapper .wp-adminify-user-info .wp-adminify-user-name {
+  margin: 6px 16px 0 16px;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #182230;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .wp-adminify--user--account .wp-adminify--user--wrapper .wp-adminify-user-info > span {
+  margin: 6px 16px 0 16px;
+  font-size: 12px;
+  letter-spacing: 0.2px;
+  color: #5a5676;
+  white-space: nowrap;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .wp-adminify--user--account .wp-adminify--user--wrapper > ul {
+  margin-bottom: 0;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .wp-adminify--user--account .wp-adminify--user--wrapper > ul > hr {
+  margin: 4px;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .wp-adminify--user--account .wp-adminify--user--wrapper > ul > li {
+  margin: 0;
+  padding: 6px 16px;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .wp-adminify--user--account .wp-adminify--user--wrapper > ul > li a {
+  color: var(--adminify-primary);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .wp-adminify--user--account .wp-adminify--user--wrapper > ul > li a > svg {
+  margin-right: 4px;
+  width: 12px;
+  height: 12px;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .wp-adminify--user--account .wp-adminify--user--wrapper > ul > li a .wp-adminify-profile-icon {
+  width: 14px;
+  height: 14px;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .adminify-comment-trigger {
+  position: relative;
+  border: 0;
+  background-color: transparent;
+  display: flex;
+  cursor: pointer;
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .adminify-comment-trigger .topbar-icon svg path {
+  fill: var(--adminify-menu-text-color);
+}
+.adminify-toolbar-wrapper .adminify-toolbar .adminify-admin-bar-top-secondary .adminify-comment-trigger .comment-counter {
+  position: absolute;
+  top: -8px;
+  color: #fff;
+  left: 19px;
+  width: 16px;
+  height: 16px;
+  background-color: var(--adminify-primary);
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.adminify-toolbar-wrapper.adminify-toolbar-collapse {
+  grid-template-columns: 60px 1fr;
+}
+.adminify-toolbar-wrapper.adminify-toolbar-collapse .frame-adminify-logo a .adminify-mini-logo {
+  display: block;
+}
+.adminify-toolbar-wrapper.adminify-toolbar-collapse .frame-adminify-logo a .adminify-logo {
+  display: none;
+}
+.adminify-toolbar-wrapper.adminify-horizontal-toolbar {
+  display: flex;
+  gap: 16px;
+}
+.adminify-toolbar-wrapper.adminify-horizontal-toolbar .frame-adminify-logo {
+  align-items: flex-start;
+  padding: 12px 0;
+  overflow: visible;
+}
+.adminify-toolbar-wrapper.adminify-horizontal-toolbar .adminify-toolbar .adminify-top-menu {
+  gap: 8px;
+}
+.adminify-toolbar-wrapper.adminify-horizontal-toolbar .adminify-toolbar .adminify-top-menu a {
+  font-size: 12px !important;
+}
+
+@media screen and (max-width: 992px) {
+  .adminify-toolbar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .adminify-toolbar-wrapper .frame-adminify-logo {
+    overflow: visible;
+  }
+  .adminify-toolbar-wrapper .frame-adminify-logo a .adminify-logo-text {
+    display: none !important;
+  }
+  .adminify-toolbar-wrapper .frame-adminify-logo .adminify-mini-logo {
+    display: block !important;
+  }
+  .adminify-toolbar-wrapper .frame-adminify-logo .adminify-logo {
+    display: none;
+  }
+  .adminify-toolbar-wrapper .adminify-toolbar .adminify-top-menu .adminify-top-menu-item:not(.adminify-top-menu-item.adminify-hambuger) {
+    display: none;
+  }
+  .adminify-horizontal-menu {
+    height: 100% !important;
+    padding-bottom: 40px !important;
+    padding: 0 !important;
+  }
+}
+@keyframes status-shadow {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(12, 206, 107, 0.8);
+  }
+  50% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(12, 206, 107, 0);
+  }
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap {
+  width: var(--adminify-menu-width);
+  background: var(--adminify-menu-bg);
+  transition: all 0.3s;
+  padding-right: 3px;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap ul {
+  margin: 0;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap ul li {
+  list-style: none;
+  margin: 0;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper {
+  position: relative;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu {
+  width: var(--adminify-menu-width);
+  height: calc(100vh - 78px);
+  transition: width 0.3s;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu {
+  padding: var(--adminify-menu-wrapper-padding-top) var(--adminify-menu-wrapper-padding-right) var(--adminify-menu-wrapper-padding-bottom) var(--adminify-menu-wrapper-padding-left);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item {
+  display: block;
+  margin-top: var(--adminify-menu-vertical-padding);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 14px;
+  border-radius: 2px;
+  font-size: var(--adminify-menu-font-size);
+  line-height: var(--adminify-menu-line-height);
+  letter-spacing: var(--adminify-menu-letter-spacing);
+  color: var(--adminify-menu-text-color);
+  font-weight: 500;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  cursor: pointer;
+  transition: width 0.5s;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a .frame-adminify-menu-image[style] {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  -webkit-mask-position: center;
+          mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-size: 20px auto;
+          mask-size: 20px auto;
+  background-color: var(--adminify-menu-text-color);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-image > img {
+  width: 18px;
+  height: 18px;
+  filter: contrast(0.2);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-icon > svg {
+  width: 16px;
+  height: 16px;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-icon > svg > path {
+  fill: var(--adminify-menu-text-color);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-icon::before {
+  font-size: 18px;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-icon-symbol {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 18px;
+  height: 18px;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-item-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: -moz-max-content;
+  width: max-content;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-item-name :last-child {
+  background: var(--adminify-notif-bg-color);
+  color: var(--adminify-notif-color);
+  font-size: 12px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-item-name :last-child.count-0 {
+  display: none;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a .dashicons-arrow-right-alt2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a .dashicons {
+  transition: none;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a:hover {
+  background: var(--adminify-menu-hover-bg);
+  color: var(--adminify-menu-text-hover-color);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a:hover .frame-adminify-menu-item-wrap .frame-adminify-menu-icon > svg > path {
+  fill: var(--adminify-menu-text-hover-color);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a:hover .frame-adminify-menu-item-wrap .frame-adminify-menu-item-name :last-child {
+  background: var(--adminify-menu-text-hover-color);
+  color: var(--adminify-menu-hover-bg);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a:hover .frame-adminify-menu-item-wrap .frame-adminify-menu-image[style] {
+  background-color: var(--adminify-menu-active-color) !important;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a:focus {
+  box-shadow: none;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-admin-menu-top {
+  padding: 16px 0 24px 0;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-admin-menu-top .frame-adminify-user-avatar {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-admin-menu-top.adminify-text .frame-adminify-user-details a {
+  display: block;
+  text-align: center;
+  word-wrap: break-word;
+  padding: 0 1rem;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-admin-menu-top.adminify-text .frame-adminify-user-details .frame-adminify-user-name {
+  margin-top: 8px;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-admin-menu-top.adminify-text .frame-adminify-user-details .frame-adminify-user-name a {
+  font-size: 17px;
+  line-height: 20px;
+  color: var(--adminify-menu-text-color);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-admin-menu-top.adminify-text .frame-adminify-user-details .frame-adminify-user-name .frame-adminify-user-logout {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-admin-menu-top.adminify-text .frame-adminify-user-details .frame-adminify-user-name .frame-adminify-user-logout a svg {
+  display: flex;
+  width: 14px;
+  height: 14px;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-admin-menu-top.adminify-text .frame-adminify-user-details .frame-adminify-user-name .frame-adminify-user-logout a svg path {
+  fill: var(--adminify-menu-text-color);
+  opacity: 0.7;
+  transition: all 0.1s;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-admin-menu-top.adminify-text .frame-adminify-user-details .frame-adminify-user-name .frame-adminify-user-logout a:hover svg path {
+  opacity: 1;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-admin-menu-top.adminify-text .frame-adminify-user-details .frame-adminify-user-email {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 25px;
+  color: var(--adminify-menu-text-color);
+  display: block;
+  text-align: center;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-admin-menu-top.adminify-rounded .frame-adminify-user-avatar img {
+  border-radius: 50%;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-admin-menu-top.adminify-icon .frame-adminify-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 12px;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-admin-menu-top.adminify-icon .frame-adminify-icon a {
+  padding: 0 5px;
+  cursor: pointer;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-admin-menu-top.adminify-icon .frame-adminify-icon a svg {
+  width: 14px;
+  height: 14px;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-admin-menu-top.adminify-icon .frame-adminify-icon a svg path {
+  stroke: var(--adminify-primary);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-submenu-wrapper .frame-adminify-submenu {
+  padding: var(--adminify-submenu-wrapper-padding-top) var(--adminify-submenu-wrapper-padding-right) var(--adminify-submenu-wrapper-padding-bottom) var(--adminify-submenu-wrapper-padding-left);
+  background: var(--adminify-submenu-wrapper-bg);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-submenu-wrapper .frame-adminify-submenu .frame-adminify-submenu-item {
+  margin-top: var(--adminify-submenu-vertical-padding);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-submenu-wrapper .frame-adminify-submenu .frame-adminify-submenu-item:first-child {
+  margin-top: 8px;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-submenu-wrapper .frame-adminify-submenu .frame-adminify-submenu-item > a {
+  display: block;
+  width: -moz-max-content;
+  width: max-content;
+  padding: 4px 10px;
+  font-size: var(--adminify-menu-font-size);
+  line-height: var(--adminify-menu-line-height);
+  letter-spacing: var(--adminify-menu-letter-spacing);
+  color: var(--adminify-submenu-text-color);
+  font-weight: 500;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-submenu-wrapper .frame-adminify-submenu .frame-adminify-submenu-item > a:hover {
+  color: var(--adminify-submenu-text-hover-color);
+  background: var(--adminify-submenu-hover-bg);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-submenu-wrapper .frame-adminify-submenu .frame-adminify-submenu-item > a .update-plugins {
+  background: var(--adminify-notif-bg-color);
+  color: var(--adminify-notif-color);
+  font-size: 12px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-submenu-wrapper .frame-adminify-submenu .frame-adminify-submenu-item > a .adminify-addons-text {
+  color: #ffa500;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-submenu-wrapper .frame-adminify-submenu .frame-adminify-submenu-item.frame-adminify--submenu-active > a {
+  color: var(--adminify-submenu-active-color);
+  background: var(--adminify-submenu-active-bg);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item.frame-adminify--menu-active > a {
+  color: var(--adminify-menu-active-color);
+  background: var(--adminify-menu-active-bg);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item.frame-adminify--menu-active > a .frame-adminify-menu-item-wrap .frame-adminify-menu-icon > svg > path {
+  fill: var(--adminify-menu-active-color);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item.frame-adminify--menu-active > a .frame-adminify-menu-item-wrap .frame-adminify-menu-image[style] {
+  background-color: var(--adminify-menu-active-color) !important;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item.frame-adminify--menu-active > a .frame-adminify-menu-item-wrap .frame-adminify-menu-item-name span:last-child {
+  background-color: #fff;
+  color: var(--adminify-menu-hover-bg);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item.frame-adminify-has-submenu > a .dashicons-arrow-right-alt2::before {
+  transition: transform 0.4s;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item.frame-adminify-has-submenu.frame-adminify--menu-show > a .dashicons-arrow-right-alt2::before {
+  transform: rotate(-90deg);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item:first-child {
+  margin-top: 0;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item:has(hr.frame-adminify-menu-separator):last-child {
+  display: none;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper::-webkit-scrollbar {
+  width: 3px;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper::-webkit-scrollbar-thumb {
+  background-color: #a8a9ac;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap hr.frame-adminify-menu-separator {
+  margin: 0;
+  margin-top: var(--adminify-menu-vertical-padding);
+  border: 0;
+  height: 1px;
+  background-color: var(--adminify-menu-border);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step] .frame-adminify-admin-menu {
+  transition: transform 0.3s;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step] .frame-adminify-admin-menu .frame-adminify-menu-item .frame-adminify-submenu-wrapper {
+  position: absolute;
+  content: "";
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 78px);
+  transform: translateX(100%);
+  margin: 0;
+  padding: 16px;
+  padding-top: 8px;
+  visibility: hidden;
+  transition: all 0.3s;
+  background: var(--adminify-menu-bg);
+  z-index: 9999;
+  overflow-y: scroll;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step] .frame-adminify-admin-menu .frame-adminify-menu-item .frame-adminify-submenu-wrapper .frame-adminify-submenu {
+  height: 100%;
+  padding-left: 8px !important;
+  padding-top: 0 !important;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step] .frame-adminify-admin-menu .frame-adminify-menu-item .frame-adminify-submenu-wrapper .frame-adminify-submenu .frame-adminify-two-step {
+  margin-bottom: 12px;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step] .frame-adminify-admin-menu .frame-adminify-menu-item .frame-adminify-submenu-wrapper .frame-adminify-submenu .frame-adminify-two-step .frame-adminify-two-step-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+  cursor: pointer;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step] .frame-adminify-admin-menu .frame-adminify-menu-item .frame-adminify-submenu-wrapper .frame-adminify-submenu .frame-adminify-two-step .frame-adminify-two-step-title .frame-adminify-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--adminify-menu-text-color);
+  padding: 4px;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step] .frame-adminify-admin-menu .frame-adminify-menu-item .frame-adminify-submenu-wrapper .frame-adminify-submenu .frame-adminify-two-step .frame-adminify-two-step-title .frame-adminify-arrow::before {
+  font-size: 18px;
+  font-weight: 600;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step] .frame-adminify-admin-menu .frame-adminify-menu-item .frame-adminify-submenu-wrapper .frame-adminify-submenu .frame-adminify-two-step .frame-adminify-two-step-title h2 {
+  line-height: 1.4;
+  margin: 0px;
+  text-wrap: pretty;
+  color: var(--adminify-menu-text-color);
+  font-size: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  word-wrap: break-word;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step] .frame-adminify-admin-menu .frame-adminify-menu-item .frame-adminify-submenu-wrapper .frame-adminify-submenu .frame-adminify-two-step .frame-adminify-two-step-title h2 .update-plugins {
+  background: var(--adminify-notif-bg-color);
+  color: var(--adminify-notif-color);
+  font-size: 12px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step] .frame-adminify-admin-menu .frame-adminify-menu-item .frame-adminify-submenu-wrapper .frame-adminify-submenu .frame-adminify-submenu-item {
+  margin-left: 20px;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step] .frame-adminify-admin-menu .frame-adminify-menu-item .frame-adminify-submenu-wrapper .frame-adminify-submenu .frame-adminify-submenu-item:first-child {
+  margin-left: 0;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step] .frame-adminify-admin-menu .frame-adminify-menu-item .frame-adminify-submenu-wrapper::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step] .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-show .frame-adminify-submenu-wrapper {
+  visibility: visible !important;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step] .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-show > a .dashicons-arrow-right-alt2::before {
+  transform: rotate(0deg) !important;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step] .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify-has-submenu > a .dashicons-arrow-right-alt2::before {
+  transition: transform 0s !important;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step]:has(.frame-adminify--menu-show):not(.adminify-sidebar-folded) .frame-adminify-admin-menu-wrapper {
+  height: 100%;
+  overflow-y: hidden;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step]:has(.frame-adminify--menu-show):not(.adminify-sidebar-folded) .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu {
+  height: auto !important;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step]:has(.frame-adminify--menu-show):not(.adminify-sidebar-folded) .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu .frame-adminify-admin-menu {
+  transform: translateX(-100%);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step].adminify-sidebar-folded:has(.frame-adminify--menu-show) .frame-adminify-admin-menu-wrapper:hover {
+  overflow-y: hidden;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step].adminify-sidebar-folded:has(.frame-adminify--menu-show) .frame-adminify-admin-menu-wrapper:hover .frame-adminify-admin-main-menu {
+  height: 100% !important;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step].adminify-sidebar-folded:has(.frame-adminify--menu-show) .frame-adminify-admin-menu-wrapper:hover .frame-adminify-admin-main-menu .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-show .frame-adminify-submenu-wrapper {
+  height: 100%;
+  transform: translateX(0%);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=accordion] .frame-adminify-admin-menu, #frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=toggle] .frame-adminify-admin-menu {
+  overflow: hidden;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=accordion] .frame-adminify-admin-menu .frame-adminify-has-submenu .frame-adminify-submenu-wrapper, #frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=toggle] .frame-adminify-admin-menu .frame-adminify-has-submenu .frame-adminify-submenu-wrapper {
+  height: 0;
+  visibility: hidden;
+  transition: height 0.3s;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=accordion] .frame-adminify-admin-menu .frame-adminify-has-submenu.frame-adminify--menu-show .frame-adminify-submenu-wrapper, #frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=toggle] .frame-adminify-admin-menu .frame-adminify-has-submenu.frame-adminify--menu-show .frame-adminify-submenu-wrapper {
+  overflow: hidden;
+  visibility: visible !important;
+  transition: height 0.3s;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded {
+  position: relative;
+  width: 60px;
+  z-index: 999;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu {
+  width: 60px;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a .frame-adminify-menu-item-name {
+  opacity: 0;
+  transition: opacity 0.2s cubic-bezier(1, 0.46, 0.23, -0.08);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a .dashicons-arrow-right-alt2 {
+  opacity: 0;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-submenu-wrapper {
+  display: none;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded.frame-adminify-menu-mode-rounded .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-active > a::after, #frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded.frame-adminify-menu-mode-rounded .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-active > a::before, #frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded.frame-adminify-menu-mode-rounded .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-show > a::after, #frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded.frame-adminify-menu-mode-rounded .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-show > a::before {
+  visibility: hidden !important;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded .frame-adminify-admin-menu-wrapper:hover .frame-adminify-admin-main-menu {
+  width: var(--adminify-menu-width);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded .frame-adminify-admin-menu-wrapper:hover .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a .frame-adminify-menu-item-name {
+  opacity: 1;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded .frame-adminify-admin-menu-wrapper:hover .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item > a .dashicons-arrow-right-alt2 {
+  opacity: 1;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded .frame-adminify-admin-menu-wrapper:hover .frame-adminify-admin-main-menu ul.frame-adminify-admin-menu li.frame-adminify-menu-item .frame-adminify-submenu-wrapper {
+  display: block;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded:has(.frame-adminify-admin-menu-wrapper:hover) {
+  width: var(--adminify-menu-width);
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded:has(.frame-adminify-admin-menu-wrapper:hover).frame-adminify-menu-mode-rounded:not(#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded:has(.frame-adminify-admin-menu-wrapper:hover)[data-menu-mode=two_step]) .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-active > a::after, #frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded:has(.frame-adminify-admin-menu-wrapper:hover).frame-adminify-menu-mode-rounded:not(#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded:has(.frame-adminify-admin-menu-wrapper:hover)[data-menu-mode=two_step]) .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-active > a::before, #frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded:has(.frame-adminify-admin-menu-wrapper:hover).frame-adminify-menu-mode-rounded:not(#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded:has(.frame-adminify-admin-menu-wrapper:hover)[data-menu-mode=two_step]) .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-show > a::after, #frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded:has(.frame-adminify-admin-menu-wrapper:hover).frame-adminify-menu-mode-rounded:not(#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded:has(.frame-adminify-admin-menu-wrapper:hover)[data-menu-mode=two_step]) .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-show > a::before {
+  visibility: visible !important;
+  transition: visibility 0.1s;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-folded.adminify-icon-style-rounded .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu .frame-adminify-admin-menu .frame-adminify-menu-item a {
+  border-radius: 10px;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.frame-adminify-menu-mode-rounded:not(#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step]) .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item > a {
+  position: relative;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.frame-adminify-menu-mode-rounded:not(#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step]) .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item > a .frame-adminify-menu-item-wrap {
+  position: relative;
+  z-index: 99999;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.frame-adminify-menu-mode-rounded:not(#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step]) .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-active > a, #frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.frame-adminify-menu-mode-rounded:not(#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step]) .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-show > a {
+  border-radius: 3rem 0 0 3rem;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.frame-adminify-menu-mode-rounded:not(#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step]) .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-active > a .dashicons-arrow-right-alt2, #frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.frame-adminify-menu-mode-rounded:not(#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step]) .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-show > a .dashicons-arrow-right-alt2 {
+  display: none;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.frame-adminify-menu-mode-rounded:not(#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step]) .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-active > a::after, #frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.frame-adminify-menu-mode-rounded:not(#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step]) .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-show > a::after {
+  position: absolute;
+  content: "";
+  top: -35px;
+  right: 0;
+  visibility: visible;
+  width: 35px;
+  height: 35px;
+  border: 0;
+  margin-top: 0;
+  z-index: 1;
+  border-bottom-right-radius: 18px;
+  border-top-right-radius: 6px;
+  box-shadow: 0 20px 0 0 var(--adminify-menu-active-bg);
+  background-color: transparent;
+  z-index: 9999;
+  transition: all 0.2s;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.frame-adminify-menu-mode-rounded:not(#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step]) .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-active > a::before, #frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.frame-adminify-menu-mode-rounded:not(#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step]) .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-show > a::before {
+  position: absolute;
+  top: auto;
+  bottom: -35px;
+  right: 0;
+  content: "";
+  visibility: visible;
+  width: 35px;
+  height: 35px;
+  margin-top: 0;
+  transform: rotate(0deg);
+  border-top-right-radius: 18px;
+  border-bottom-right-radius: 6px;
+  box-shadow: 0 -20px 0 0 var(--adminify-menu-active-bg);
+  background-color: transparent;
+  z-index: 9999;
+  transition: all 0.2s;
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.frame-adminify-menu-mode-rounded:not(#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step]) .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-show > a {
+  color: var(--adminify-menu-active-color);
+  background: var(--adminify-menu-active-bg);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.frame-adminify-menu-mode-rounded:not(#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step]) .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-show > a .frame-adminify-menu-item-wrap .frame-adminify-menu-icon > svg > path {
+  fill: var(--adminify-menu-active-color);
+}
+#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.frame-adminify-menu-mode-rounded:not(#frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap[data-menu-mode=two_step]) .frame-adminify-admin-menu-wrapper .frame-adminify-admin-menu .frame-adminify-menu-item.frame-adminify--menu-show > a .frame-adminify-menu-item-wrap .frame-adminify-menu-image[style] {
+  background-color: var(--adminify-menu-active-color) !important;
+}
+
+@media screen and (max-width: 992px) {
+  #frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    width: 260px !important;
+    transform: translateX(-100%);
+    transition: transform 0.4s;
+    z-index: 9999;
+  }
+  #frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper {
+    height: 100vh;
+  }
+  #frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap .frame-adminify-admin-menu-wrapper .frame-adminify-admin-main-menu {
+    width: 260px !important;
+  }
+  #frame-adminify-app .adminify-frame-wrapper .frame-adminify-sidebar-wrap.adminify-sidebar-collapse {
+    transform: translateX(0) !important;
+  }
+  #frame-adminify-app .adminify-frame-wrapper.adminify-vertical-menu {
+    padding: 0 !important;
+  }
+  #frame-adminify-app .adminify-frame-wrapper:has(.adminify-sidebar-collapse)::before {
+    position: fixed;
+    content: "";
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3490196078);
+    z-index: 999;
+  }
+}
+.adminify-horizontal-menu-wrapper {
+  border-top: 1px solid var(--adminify-menu-border);
+}
+.adminify-horizontal-menu-wrapper > ul {
+  display: flex;
+  align-items: center;
+  -moz-column-gap: 16px;
+       column-gap: 16px;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item {
+  position: relative;
+  margin: 0;
+  padding: 8px 0;
+  cursor: pointer;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item > a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--adminify-menu-text-color);
+  background-color: transparent;
+  padding: 0;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-icon {
+  display: flex;
+  align-items: center;
+  width: 14px;
+  height: 14px;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-icon > svg {
+  width: 14px;
+  height: 14px;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-icon > svg > path {
+  fill: var(--adminify-menu-text-color);
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-icon::before {
+  font-size: 16px !important;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-image {
+  width: 16px;
+  height: 16px;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-image > img {
+  width: 16px;
+  height: 16px;
+  filter: contrast(0.2);
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-image[style] {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 16px auto;
+  mask-size: 16px auto;
+  background-color: var(--adminify-menu-text-color);
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-item-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-item-name :last-child {
+  background: var(--adminify-notif-bg-color);
+  color: var(--adminify-notif-color);
+  font-size: 11px;
+  font-weight: 600;
+  width: 16px;
+  height: 16px;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item > a .frame-adminify-menu-item-wrap .frame-adminify-menu-item-name :last-child.count-0 {
+  display: none;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item > a .frame-adminify-submenu-arrow {
+  transform: rotate(0);
+  transition: transform 0.4s;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item > a .frame-adminify-submenu-arrow svg {
+  width: 14px;
+  height: 12px;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item > a .frame-adminify-submenu-arrow svg path {
+  fill: var(--adminify-menu-text-color);
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item .frame-adminify-submenu-wrapper {
+  display: none;
+  position: absolute;
+  top: 40px;
+  margin-top: -12px;
+  z-index: 999;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item .frame-adminify-submenu-wrapper ul.frame-adminify-submenu {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 0;
+  background: var(--adminify-menu-bg);
+  border-radius: 2px;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--adminify-menu-border);
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item .frame-adminify-submenu-wrapper ul.frame-adminify-submenu li.frame-adminify-submenu-item {
+  margin: 0;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item .frame-adminify-submenu-wrapper ul.frame-adminify-submenu li.frame-adminify-submenu-item a {
+  color: var(--adminify-menu-text-color);
+  padding: 2px 1rem;
+  font-size: 13px;
+  line-height: 28px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 160px;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item .frame-adminify-submenu-wrapper ul.frame-adminify-submenu li.frame-adminify-submenu-item:hover a {
+  color: var(--adminify-primary);
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item .frame-adminify-submenu-wrapper ul.frame-adminify-submenu li.frame-adminify-submenu-item .adminify-addons-text {
+  color: #ffa500;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item .frame-adminify-submenu-wrapper::before {
+  content: "";
+  position: absolute;
+  height: 12px;
+  width: 12px;
+  border: 1px solid var(--adminify-menu-border);
+  border-width: 1px 0 0 1px;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  background-color: var(--adminify-menu-bg);
+  top: 6px;
+  left: 32px;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item:hover a {
+  color: var(--adminify-primary);
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item:hover a .frame-adminify-menu-item-wrap .frame-adminify-menu-icon > svg > path {
+  fill: var(--adminify-primary);
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item:hover a .frame-adminify-submenu-arrow {
+  transform: rotate(180deg);
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item:hover a .frame-adminify-submenu-arrow svg path {
+  fill: var(--adminify-primary) !important;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item:hover .frame-adminify-submenu-wrapper {
+  display: block;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item.frame-adminify--menu-active > a {
+  color: var(--adminify-primary);
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item.frame-adminify--menu-active > a .frame-adminify-menu-item-wrap .frame-adminify-menu-icon > svg > path {
+  fill: var(--adminify-primary);
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item.frame-adminify--menu-active > a .frame-adminify-submenu-arrow svg path {
+  fill: var(--adminify-primary) !important;
+}
+.adminify-horizontal-menu-wrapper > ul li.frame-adminify-menu-item.frame-adminify--menu-active .frame-adminify-submenu .frame-adminify-submenu-active > a {
+  color: var(--adminify-primary) !important;
+}
+.adminify-horizontal-menu-wrapper.adminify-horizontal-menu-icons-only ul .frame-adminify-menu-item:hover .frame-adminify-submenu-wrapper::before {
+  left: 5px !important;
+}
+.adminify-horizontal-menu-wrapper.adminify-horizontal-menu-bubble ul .frame-adminify-menu-item .frame-adminify-menu-item-name span:last-child {
+  display: none !important;
+}
+
+@media screen and (max-width: 992px) {
+  .frame-adminify-app .adminify-horizontal-menu .adminify-horizontal-menu-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100%;
+    padding: 12px 0;
+    padding-right: 4px;
+    background-color: var(--adminify-menu-bg);
+    border: 0;
+    z-index: 999;
+    transform: translateX(-100%);
+    transition: transform 0.4s;
+  }
+  .frame-adminify-app .adminify-horizontal-menu .adminify-horizontal-menu-wrapper > ul {
+    flex-direction: column;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    margin: 0;
+    padding: 0 16px;
+    padding-right: 12px;
+    height: calc(100vh - 24px);
+    overflow-y: scroll;
+  }
+  .frame-adminify-app .adminify-horizontal-menu .adminify-horizontal-menu-wrapper > ul .frame-adminify-menu-item {
+    width: 100%;
+  }
+  .frame-adminify-app .adminify-horizontal-menu .adminify-horizontal-menu-wrapper > ul .frame-adminify-menu-item .frame-adminify-submenu-wrapper {
+    position: relative;
+    top: 0;
+    height: 0;
+  }
+  .frame-adminify-app .adminify-horizontal-menu .adminify-horizontal-menu-wrapper > ul .frame-adminify-menu-item .frame-adminify-submenu-wrapper ul.frame-adminify-submenu {
+    box-shadow: none;
+    border: 0;
+    padding-top: 8px;
+  }
+  .frame-adminify-app .adminify-horizontal-menu .adminify-horizontal-menu-wrapper > ul .frame-adminify-menu-item .frame-adminify-submenu-wrapper::before {
+    display: none;
+  }
+  .frame-adminify-app .adminify-horizontal-menu .adminify-horizontal-menu-wrapper > ul .frame-adminify-menu-item.frame-adminify-has-submenu.frame-adminify--menu-active .frame-adminify-submenu-wrapper {
+    height: auto;
+  }
+  .frame-adminify-app .adminify-horizontal-menu .adminify-horizontal-menu-wrapper.adminify-horizontal-sidebar-collapse {
+    transform: translateX(0) !important;
+  }
+  .frame-adminify-app .adminify-horizontal-menu .adminify-horizontal-menu-wrapper.adminify-horizontal-menu-bubble ul .frame-adminify-menu-item .frame-adminify-menu-item-name span:last-child {
+    display: flex !important;
+  }
+  .frame-adminify-app:has(.adminify-horizontal-sidebar-collapse)::before {
+    position: absolute;
+    content: "";
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3490196078);
+    z-index: 999;
+  }
+}
+@media screen and (max-width: 992px) {
+  #frame-adminify-app .adminify-frame-wrapper {
+    grid-template-columns: 1fr !important;
+  }
+  #frame-adminify-app .adminify-frame-wrapper .adminify-frame-content {
+    padding: 0;
+  }
+  #frame-adminify-app .adminify-frame-wrapper .adminify-frame-content #frame-adminify-app--iframe {
+    border-radius: 0;
+    padding: 0;
+    padding-left: 0;
+    padding-right: 0;
+    border: 0;
+    border-top: 1px solid #dedee7;
+  }
+}

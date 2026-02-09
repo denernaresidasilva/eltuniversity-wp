@@ -1,0 +1,67 @@
+<?php
+
+namespace MagicLogin\Dependencies\Twilio\Rest;
+
+use MagicLogin\Dependencies\Twilio\Rest\Wireless\V1;
+
+class Wireless extends WirelessBase {
+
+    /**
+     * @deprecated Use v1->usageRecords instead.
+     */
+    protected function getUsageRecords(): \MagicLogin\Dependencies\Twilio\Rest\Wireless\V1\UsageRecordList {
+        echo "usageRecords is deprecated. Use v1->usageRecords instead.";
+        return $this->v1->usageRecords;
+    }
+
+    /**
+     * @deprecated Use v1->commands instead.
+     */
+    protected function getCommands(): \MagicLogin\Dependencies\Twilio\Rest\Wireless\V1\CommandList {
+        echo "commands is deprecated. Use v1->commands instead.";
+        return $this->v1->commands;
+    }
+
+    /**
+     * @deprecated Use v1->commands(\$sid) instead.
+     * @param string $sid The SID that identifies the resource to fetch
+     */
+    protected function contextCommands(string $sid): \MagicLogin\Dependencies\Twilio\Rest\Wireless\V1\CommandContext {
+        echo "commands(\$sid) is deprecated. Use v1->commands(\$sid) instead.";
+        return $this->v1->commands($sid);
+    }
+
+    /**
+     * @deprecated  Use v1->ratePlans instead.
+     */
+    protected function getRatePlans(): \MagicLogin\Dependencies\Twilio\Rest\Wireless\V1\RatePlanList {
+        echo "ratePlans is deprecated. Use v1->ratePlans instead.";
+        return $this->v1->ratePlans;
+    }
+
+    /**
+     * @deprecated Use v1->ratePlans(\$sid) instead.
+     * @param string $sid The SID that identifies the resource to fetch
+     */
+    protected function contextRatePlans(string $sid): \MagicLogin\Dependencies\Twilio\Rest\Wireless\V1\RatePlanContext {
+        echo "ratePlans(\$sid) is deprecated. Use v1->ratePlans(\$sid) instead.";
+        return $this->v1->ratePlans($sid);
+    }
+
+    /**
+     * @deprecated Use v1->sims instead.
+     */
+    protected function getSims(): \MagicLogin\Dependencies\Twilio\Rest\Wireless\V1\SimList {
+        echo "sims is deprecated. Use v1->sims instead.";
+        return $this->v1->sims;
+    }
+
+    /**
+     * @deprecated Use v1->sims(\$sid) instead.
+     * @param string $sid The SID of the Sim resource to fetch
+     */
+    protected function contextSims(string $sid): \MagicLogin\Dependencies\Twilio\Rest\Wireless\V1\SimContext {
+        echo "sims(\$sid) is deprecated. Use v1->sims(\$sid) instead.";
+        return $this->v1->sims($sid);
+    }
+}

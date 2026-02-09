@@ -1,0 +1,79 @@
+/**
+ * Estilos para o painel administrativo do Custom Scrollbar Styler
+ */
+
+/* Estilos gerais da página */
+.scrollbar-preview-container {
+    margin: 20px 0;
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Container da visualização */
+.scrollbar-preview {
+    width: 100%;
+    max-width: 600px;
+    height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    margin: 15px 0;
+    padding: 0;
+    background: #f7f7f7;
+}
+
+/* Conteúdo dentro da visualização */
+.preview-content {
+    padding: 10px 20px;
+}
+
+/* Estilos para o formulário */
+.form-table th {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.form-table td {
+    vertical-align: middle;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+/* Estilos para color picker */
+.wp-picker-container {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.color-preview {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    margin-left: 10px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    vertical-align: middle;
+}
+
+/* Estilo do botão submit */
+.wp-core-ui .button-primary {
+    margin-top: 20px;
+}
+
+/* Responsividade */
+@media screen and (max-width: 782px) {
+    .form-table td {
+        padding: 10px 0;
+    }
+    
+    .color-preview {
+        margin-top: 5px;
+        margin-left: 0;
+    }
+}
+
+/* Mensagem de sucesso */
+.settings-updated {
+    margin-top: 15px !important;
+}

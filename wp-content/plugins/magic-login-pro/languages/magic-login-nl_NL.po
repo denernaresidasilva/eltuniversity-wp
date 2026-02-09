@@ -1,0 +1,492 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Plugins - Magic Login &#8211; Passwordless Authentication for WordPress - Development (trunk)\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2023-11-07T10:34:05+00:00\n"
+"PO-Revision-Date: 2023-11-06 12:24:04+0000\n"
+"Language: nl\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.0-alpha.11\n"
+
+#: includes/settings.php:680
+msgid "It allows to send links without refreshing the current page."
+msgstr "Hiermee kun je links verzenden zonder de huidige pagina te vernieuwen."
+
+#: includes/settings.php:679
+msgid "Enable AJAX for requesting magic login links."
+msgstr "Schakel AJAX in voor het aanvragen van magische login links."
+
+#: includes/settings.php:665
+msgid "It will ajaxify the login requests on pages that use shortcode or block."
+msgstr "Het zal de login aanvragen ajaxificeren op pagina's die shortcode of blok gebruiken."
+
+#: includes/settings.php:664
+msgid "Enable AJAX"
+msgstr "AJAX inschakelen"
+
+#: includes/login.php:759
+msgid "Invalid request"
+msgstr "Ongeldige aanvraag"
+
+#: includes/settings.php:538
+msgid "Supported placeholders: {{SITEURL}}, {{USERNAME}}, {{SITENAME}}, {{EXPIRES}}, {{MAGIC_LINK}}, {{EXPIRES_WITH_INTERVAL}}, {{TOKEN_VALIDITY_COUNT}}"
+msgstr "Ondersteunde plaatshouders: {{SITEURL}}, {{USERNAME}}, {{SITENAME}}, {{EXPIRES}}, {{MAGIC_LINK}}, {{EXPIRES_WITH_INTERVAL}}, {{TOKEN_VALIDITY_COUNT}}."
+
+#: includes/settings.php:237
+msgid "Specify how many times a token can be used."
+msgstr "Geef op hoe vaak een token kan worden gebruikt."
+
+#: includes/settings.php:235
+msgid "Token Validity"
+msgstr "Tokengeldigheid"
+
+#: includes/settings.php:347
+msgid "Block the IP address for %1$s minutes when it fails to login %2$s times in %3$s minutes."
+msgstr "Blokkeer het IP-adres voor %1$s minuten wanneer het inloggen %2$s keer in %3$s minuten niet lukt."
+
+#: includes/login.php:520
+msgid "or"
+msgstr "of"
+
+#: includes/login.php:421
+msgid "Log In"
+msgstr "Login"
+
+#: includes/settings.php:278
+msgid "This could be useful when there is an action waiting for the user. (eg: reply comment, complete shopping etc...)"
+msgstr "Dit kan handig zijn als er een actie op de gebruiker wacht. (bijv.: reactie beantwoorden, winkelen voltooien enz...)"
+
+#: includes/settings.php:276
+msgid "Add magic login links to outgoing emails"
+msgstr "Voeg magic login links toe aan uitgaande e-mails."
+
+#: includes/settings.php:262
+msgid "If the recipient exists, automatically adds the login link to outgoing emails sent from WordPress. "
+msgstr "Als de ontvanger bestaat, wordt de login link automatisch toegevoegd aan uitgaande e-mails die vanuit WordPress worden verzonden. "
+
+#: includes/settings.php:261
+msgid "Auto Login Links"
+msgstr "Auto login links"
+
+#: includes/login.php:719
+msgid "[%s] Email Change Request"
+msgstr "[%s] wijzigingsverzoek voor e-mail"
+
+#: includes/login.php:718
+msgid "[%s] Password Changed"
+msgstr "[%s] wachtwoord gewijzigd"
+
+#: includes/login.php:717
+msgid "[%s] Password Reset"
+msgstr "[%s] wachtwoord opnieuw instellen"
+
+#: includes/login.php:716
+msgid "[%s] Login Details"
+msgstr "[%s] login details"
+
+#: includes/login.php:715
+msgid "[%s] Notice of Network Admin Email Change"
+msgstr ""
+
+#: includes/login.php:714
+msgid "[%s] Admin Email Changed"
+msgstr "[%s] Beheerder-e-mailadres gewijzigd"
+
+#: includes/login.php:713
+msgid "[%s] Network Admin Email Change Request"
+msgstr "[%s] Wijzigingsverzoek e-mailadres netwerkbeheerder"
+
+#: includes/login.php:712
+msgid "[%s] New Admin Email Address"
+msgstr "[%s] Nieuw beheerder e-mailadres"
+
+#. translators: 1: TTL value (number) 2: Unit (minute(s), hour(s), days(s))
+#: includes/login.php:661
+msgid "Login link will expire in %1$s %2$s."
+msgstr "De login link verloopt over %1$s %2$s."
+
+#. translators: %s: The magic login link
+#: includes/login.php:654
+msgid "Auto Login: %s"
+msgstr "Auto login: %s"
+
+#. translators: %s: The magic login link
+#: includes/login.php:650
+msgid "<a href=\"%s\" target=\"_blank\" rel=\"noopener\">Click here to login</a>."
+msgstr "<a href=\"%s\" target=\"_blank\" rel=\"noopener\">Klik hier om in te loggen</a>."
+
+#: includes/utils.php:123
+msgid "Log in to {{SITENAME}}"
+msgstr "Login op {{SITENAME}}"
+
+#: includes/settings.php:496
+msgid "Email Subject"
+msgstr "E-mail onderwerp"
+
+#: includes/login.php:205
+#: includes/shortcode.php:97
+msgid "Username"
+msgstr "Gebruikersnaam"
+
+#: includes/login.php:71
+msgid "There is no account with that username."
+msgstr "Er is geen account met die gebruikersnaam."
+
+#: includes/settings.php:192
+msgid "Add magic login button to standard login form"
+msgstr "Voeg een Magic login knop toe aan het standaard loginformulier"
+
+#: includes/settings.php:178
+msgid "Adds magic login button to WordPress login form."
+msgstr "Voegt een Magic login knop toe aan het WordPress loginformulier."
+
+#: includes/settings.php:177
+msgid "Show on Login Form"
+msgstr ""
+
+#: includes/login.php:426
+msgid "Send me the login link"
+msgstr "Stuur mij de login link"
+
+#: includes/utils.php:278
+msgid "Day(s)"
+msgstr "Dag(en)"
+
+#: includes/utils.php:277
+msgid "Hour(s)"
+msgstr "Uur(en)"
+
+#: includes/utils.php:276
+msgid "Minute(s)"
+msgstr "Minuut(en)"
+
+#: includes/settings.php:205
+msgid "The TTL (time to live) of the login link. WP-Cron removes expired tokens."
+msgstr "De TTL (time to live) van de login link. WP-Cron verwijdert verlopen tokens."
+
+#: includes/settings.php:162
+#: includes/settings.php:206
+#: includes/settings.php:238
+msgid "Learn More."
+msgstr "Leer meer."
+
+#. translators: 1: Magic Login shortcode 2: Documentation URL 3: 'Learn More'
+#. text
+#: includes/settings.php:159
+msgid "In order to add a login form to any page, you can use shortcode <code>%1$s</code> or block. <a href=\"%2$s\" target=\"_blank\" rel=\"noopener\">%3$s</a>"
+msgstr "Om een ​​loginformulier aan een pagina toe te voegen, kun je shortcode <code>%1$s</code> gebruiken of een blok toevoegen. <a href=\"%2$s\" target=\"_blank\" rel=\"noopener\">%3$s</a>"
+
+#: includes/login.php:73
+msgid "There is no account with that username or email address."
+msgstr "Er is geen account met die gebruikersnaam of e-mailadres."
+
+#: includes/block.php:67
+#: assets/js/admin/login-block.js:32
+msgid "Login with Email"
+msgstr "Inloggen met e-mail"
+
+#. translators: Do not translate USERNAME, SITENAME,EXPIRES, MAGIC_LINK,
+#. SITENAME, SITEUR, EXPIRES_WITH_INTERVAL: those are placeholders.
+#: includes/utils.php:146
+msgid ""
+"Hi {{USERNAME}},\n"
+"\n"
+"Click and confirm that you want to log in to {{SITENAME}}. This link will expire in {{EXPIRES_WITH_INTERVAL}} and can only be used once:\n"
+"\n"
+"<a href=\"{{MAGIC_LINK}}\" target=\"_blank\" rel=\"noreferrer noopener\">Log In</a>\n"
+"\n"
+"Need the link? {{MAGIC_LINK}}\n"
+"\n"
+"\n"
+"You can safely ignore and delete this email if you do not want to log in.\n"
+"\n"
+"Regards,\n"
+"All at {{SITENAME}}\n"
+"{{SITEURL}}"
+msgstr ""
+"Hallo {{USERNAME}},\n"
+"\n"
+"Klik en bevestig om in te loggen op {{SITENAME}}. Deze link vervalt in {{EXPIRES_WITH_INTERVAL}} en is maar eenmalig te gebruiken:\n"
+"\n"
+"<a href=\"{{MAGIC_LINK}}\" target=\"_blank\" rel=\"noreferrer noopener\">Inloggen</a>\n"
+"\n"
+"Link nodig? {{MAGIC_LINK}}\n"
+"\n"
+"Je kan deze mail negeren als je niet wil inloggen.\n"
+"\n"
+"Vriendelijke groet,\n"
+"\n"
+"{{SITENAME}}\n"
+"{{SITEURL}}"
+
+#: includes/settings.php:822
+msgid "Settings saved."
+msgstr "Instellingen opgeslagen."
+
+#: includes/settings.php:780
+msgid "Tokens could not be removed."
+msgstr "Tokens konden niet worden verwijderd."
+
+#: includes/settings.php:778
+msgid "Tokens has been removed."
+msgstr "Tokens zijn verwijderd."
+
+#: includes/settings.php:743
+msgid "Docs"
+msgstr "Documenten"
+
+#: includes/settings.php:742
+msgid "Support"
+msgstr "Ondersteuning"
+
+#: includes/settings.php:741
+msgid "Blog"
+msgstr "Blog"
+
+#: includes/settings.php:740
+msgid "FAQ"
+msgstr "FAQ"
+
+#. translators: %s: HandyPlugins URL
+#: includes/settings.php:730
+msgid "Made with <i class=\"sui-icon-heart\"></i> by <a href=\"%s\" rel=\"noopener\" target=\"_blank\">HandyPlugins</a>"
+msgstr "Gemaakt met <i class=\"sui-icon-heart\"></i> door <a href=\"%s\" rel=\"noopener\" target=\"_blank\">HandyPlugins</a>"
+
+#: includes/settings.php:112
+#: includes/settings.php:714
+msgid "Update settings"
+msgstr "Update instellingen"
+
+#: includes/settings.php:703
+msgid "Try Magic Login Pro Today"
+msgstr "Probeer Magic Login Pro vandaag"
+
+#: includes/settings.php:702
+msgid "With our pro version of magic login, you will unlock the advanced configurations of the plugin and get access to the WP-CLI command along with our premium support."
+msgstr ""
+
+#: includes/settings.php:694
+msgid "Reset"
+msgstr "Reset"
+
+#: includes/settings.php:690
+msgid "If you want to clean all tokens at once click to reset button."
+msgstr "Als je alle tokens in één keer wil wissen, klik dan op de resetknop."
+
+#: includes/settings.php:689
+msgid "Reset Tokens"
+msgstr "Reset tokens"
+
+#: includes/settings.php:626
+msgid "Target URL"
+msgstr "Doel URL"
+
+#: includes/settings.php:625
+msgid "Role"
+msgstr "Rol"
+
+#: includes/settings.php:614
+msgid "Leave it blank to use default redirection rule."
+msgstr ""
+
+#: includes/settings.php:613
+msgid "Enable role-based redirection."
+msgstr "Schakel omleiding op basis van rol in."
+
+#: includes/settings.php:598
+msgid "Apply redirection to normal WordPress login too."
+msgstr "Pas ook omleiding toe op normale WordPress login."
+
+#: includes/settings.php:583
+msgid "By default it redirects to admin dashboard"
+msgstr "Standaard wordt het omgeleid naar het beheerdersdashboard"
+
+#: includes/settings.php:573
+msgid "Target URL:"
+msgstr "Doel URL:"
+
+#: includes/settings.php:567
+msgid "Enable custom login redirection"
+msgstr "Aangepaste login omleiding inschakelen"
+
+#: includes/settings.php:551
+msgid "Redirect users to custom URL after login."
+msgstr "Gebruikers omleiden naar aangepaste URL na inloggen."
+
+#: includes/settings.php:548
+msgid "Login Redirect"
+msgstr "Login omleiden"
+
+#: includes/settings.php:521
+msgid "Email Content"
+msgstr "E-mail inhoud"
+
+#: includes/settings.php:484
+msgid "Enter allowed domains line by line."
+msgstr "Voer toegestane domeinen regel voor regel in."
+
+#: includes/settings.php:469
+msgid "Enable domain restriction"
+msgstr "Domeinbeperking inschakelen"
+
+#: includes/settings.php:454
+msgid "Allow only listed domains to login via magic links."
+msgstr "Alleen toegestane domeinen toestaan om in te loggen via magische links."
+
+#: includes/settings.php:451
+msgid "Domain Restriction"
+msgstr "Domeinbeperking"
+
+#: includes/settings.php:441
+msgid "Enable IP address check"
+msgstr "IP-adres controle inschakelen"
+
+#: includes/settings.php:425
+msgid "The user should log in from the same IP that makes a login request. (except for the login links generated via CLI)"
+msgstr "De gebruiker moet inloggen vanaf hetzelfde IP-adres dat een login aanvraag maakt. (behalve voor de login links gegenereerd via CLI)"
+
+#: includes/settings.php:421
+msgid "IP Check"
+msgstr "IP controle"
+
+#: includes/settings.php:399
+msgid "login links from the same IP within"
+msgstr "login links vanaf hetzelfde IP-adres binnen"
+
+#: includes/settings.php:389
+msgid "Allow to create maximum"
+msgstr "Toestaan om maximum te creëren"
+
+#: includes/settings.php:382
+msgid "Enable throttling"
+msgstr "Beperking inschakelen"
+
+#: includes/settings.php:367
+msgid "Limit login URL generation for the given time span."
+msgstr "Beperk het genereren van de login URL voor de opgegeven tijdsperiode."
+
+#: includes/settings.php:364
+msgid "Login Request Throttling"
+msgstr "Login aanvraag beperking"
+
+#: includes/settings.php:409
+msgid "minutes."
+msgstr "minuten."
+
+#: includes/settings.php:306
+msgid "Enable brute force protection"
+msgstr "Schakel brute force bescherming in"
+
+#: includes/settings.php:292
+msgid "Enable additional security mechanisms to limit login requests."
+msgstr "Schakel extra beveiligingsmechanismen in om het aantal login aanvragen te beperken."
+
+#: includes/settings.php:290
+#: includes/settings.php:365
+#: includes/settings.php:422
+#: includes/settings.php:452
+#: includes/settings.php:497
+#: includes/settings.php:522
+#: includes/settings.php:549
+msgid "Pro"
+msgstr "Pro"
+
+#: includes/settings.php:289
+msgid "Brute Force Protection"
+msgstr "Brute force bescherming"
+
+#: includes/settings.php:203
+msgid "Token Lifespan"
+msgstr "Token levensduur"
+
+#. translators: 1: Login URL with Magic Login flavour
+#: includes/settings.php:144
+msgid "Magic login form is accessible <a href=\"%1$s\">%1$s</a>"
+msgstr "Het magische login formulier is toegankelijk <a href=\"%1$s\">%1$s</a>"
+
+#: includes/settings.php:137
+msgid "Use magic login by default"
+msgstr "Gebruik standaard magisch inloggen"
+
+#: includes/settings.php:123
+msgid "Change default login behaviour and use magic login as default login method."
+msgstr "Verander standaard login gedrag en gebruik magisch inloggen als standaard loginmethode."
+
+#: includes/settings.php:122
+msgid "Force Magic Login"
+msgstr "Forceer Magic Login"
+
+#: includes/settings.php:107
+msgid "Settings"
+msgstr "Instellingen"
+
+#: includes/settings.php:93
+msgid "Documentation"
+msgstr "Documentatie"
+
+#. translators: %s: Login URL
+#: includes/login.php:291
+msgid "Invalid magic login token. <a href=\"%s\">Try signing in instead</a>?"
+msgstr "Ongeldig login token. <a href=\"%s\">Wil je in plaats daarvan proberen in te loggen</a>?"
+
+#. translators: 1: User login 2: Dashboard URL
+#: includes/login.php:288
+msgid "Invalid magic login token, but you are logged in as '%1$s'. <a href=\"%2$s\">Go to the dashboard instead</a>?"
+msgstr "Ongeldig login token, maar je bent al ingelogd als '%1$s'. <a href=\"%2$s\">Wil je naar het dashboard</a>?"
+
+#: includes/block.php:79
+#: includes/login.php:222
+#: includes/shortcode.php:112
+#: assets/js/admin/login-block.js:47
+msgid "Send me the link"
+msgstr "Stuur me de link"
+
+#: includes/block.php:75
+#: includes/login.php:207
+#: includes/shortcode.php:99
+#: assets/js/admin/login-block.js:43
+msgid "Username or Email Address"
+msgstr "Gebruikersnaam of e-mailadres"
+
+#: includes/login.php:105
+msgid "Log in"
+msgstr "Login"
+
+#: includes/login.php:86
+msgid "Please check your inbox for the login link. If you did not receive a login email, check your spam folder too."
+msgstr "Controleer je inbox voor de login link. Als je geen login e-mail hebt ontvangen, controleer dan ook je spammap."
+
+#: includes/block.php:71
+#: includes/login.php:47
+#: assets/js/admin/login-block.js:36
+msgid "Please enter your username or email address. You will receive an email message to log in."
+msgstr "Voer je gebruikersnaam of e-mailadres in. Je ontvangt een e-mailbericht om in te loggen."
+
+#. Author URI of the plugin
+msgid "https://handyplugins.co/"
+msgstr "https://handyplugins.co/"
+
+#. Author of the plugin
+msgid "HandyPlugins"
+msgstr "HandyPlugins"
+
+#. Description of the plugin
+msgid "Passwordless login for WordPress."
+msgstr "Wachtwoordloze login voor WordPress."
+
+#. Plugin URI of the plugin
+msgid "https://handyplugins.co/magic-login-pro/"
+msgstr "https://handyplugins.co/magic-login-pro/"
+
+#. Plugin Name of the plugin
+#: includes/settings.php:65
+#: includes/settings.php:66
+#: includes/settings.php:86
+#: assets/js/admin/login-block.js:11
+msgid "Magic Login"
+msgstr "Magic Login"

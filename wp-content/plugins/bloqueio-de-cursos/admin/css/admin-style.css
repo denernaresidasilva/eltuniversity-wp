@@ -1,0 +1,68 @@
+/* Estilos personalizados para a página de administração (Agencycoders) */
+.course-row.highlight {
+    background-color: #e0ffe0; /* Cor de destaque para linhas com redirecionamento ativado (Agencycoders) */
+}
+
+/* Centraliza o conteúdo da coluna de switches (Agencycoders) */
+th.text-center, td.text-center {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Estilo para o crédito da Agencycoders (Agencycoders) */
+.agencycoders-credit {
+    margin-top: 20px;
+    font-size: 14px;
+    text-align: left;
+}
+
+.agencycoders-credit a {
+    color: #0073aa;
+    text-decoration: none;
+}
+
+.agencycoders-credit a:hover {
+    text-decoration: underline;
+}
+
+/* Estilos para campos de redirecionamento */
+.redirect-url-input {
+    width: 100%;
+    padding: 5px;
+}
+
+.redirect-type-select {
+    width: 100%;
+    min-width: 120px;
+}
+
+.page-select-container, .url-input-container {
+    width: 100%;
+}
+
+/* Estilo para o metabox */
+.redirect-type-selector {
+    margin-bottom: 10px;
+}
+
+.redirect-type-selector label {
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Ajusta a largura das colunas na tabela de configuração */
+.wp-list-table th:nth-child(1) {
+    width: 20%;
+}
+
+.wp-list-table th:nth-child(2) {
+    width: 15%;
+}
+
+.wp-list-table th:nth-child(3) {
+    width: 55%;
+}
+
+.wp-list-table th:nth-child(4) {
+    width: 10%;
+}

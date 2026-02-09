@@ -1,0 +1,127 @@
+.custom-carousel-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.custom-carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 10px 0;
+    scroll-behavior: smooth;
+}
+
+.custom-carousel .carousel-item {
+    flex: 0 0 calc(15% - 10px); /* Default: 4 banners por linha */
+    margin-right: 10px;
+    text-align: center;
+    border-radius: 10px;
+    overflow: hidden;
+    scroll-snap-align: center;
+    position: relative;
+}
+
+.custom-carousel .carousel-item img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s, filter 0.3s;
+}
+
+.custom-carousel .carousel-item:hover img {
+    filter: brightness(0.8);
+    transform: scale(1.05);
+}
+
+.custom-carousel .carousel-item.grayscale img {
+    filter: grayscale(100%);
+}
+
+.custom-carousel-wrapper .arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 1;
+    border-radius: 8px; /* Bordas arredondadas */
+    width: 40px; /* Define a largura */
+    height: 40px; /* Define a altura */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.custom-carousel-wrapper .arrow.left {
+    left: -20px; /* Metade da largura do botão */
+}
+
+.custom-carousel-wrapper .arrow.right {
+    right: -10px; /* Metade da largura do botão */
+}
+
+.custom-carousel-wrapper .arrow i {
+    font-size: 20px; /* Ajusta o tamanho do ícone */
+}
+
+.custom-carousel-wrapper .arrow:hover {
+    background-color: rgba(255, 255, 255, 0.295); /* Fundo branco ao passar o mouse */
+    color: black; /* Cor do ícone ao passar o mouse */
+}
+
+.custom-carousel::-webkit-scrollbar {
+    display: none;
+}
+
+.custom-carousel .lock-icon,
+.custom-carousel .hourglass-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 18px;
+}
+.hide-comments {
+    display: none !important;
+}
+
+
+.custom-carousel .lock-icon {
+    color: #4a4a4a; /* Cor cinza escuro para o ícone de cadeado */
+    background-color: rgba(0, 0, 0, 0.5); /* Fundo redondo */
+    border-radius: 50%; /* Fundo redondo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; /* Tamanho do fundo */
+    height: 40px; /* Tamanho do fundo */
+}
+
+.custom-carousel .hourglass-icon {
+    color: #4a4a4a; /* Cor cinza escuro para o ícone de ampulheta */
+    background-color: rgba(0, 0, 0, 0.5); /* Fundo redondo */
+    border-radius: 50%; /* Fundo redondo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; /* Tamanho do fundo */
+    height: 40px; /* Tamanho do fundo */
+}
+
+/* Media query para mobile: 2 banners por linha */
+@media (max-width: 768px) {
+    .custom-carousel .carousel-item {
+        flex: 0 0 calc(50% - 10px); /* 2 banners por linha */
+    }
+
+    .custom-carousel-wrapper .arrow.left {
+        left: -15px; /* Ajustar a posição para mobile */
+    }
+
+    .custom-carousel-wrapper .arrow.right {
+        right: -5px; /* Ajustar a posição para mobile */
+    }
+}

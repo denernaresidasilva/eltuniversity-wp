@@ -1,0 +1,91 @@
+/* Importar a fonte Sora */
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap');
+
+/* Esconder o footer em telas maiores que 768px (desktop e tablets grandes) */
+.sticky-footer {
+    display: none !important; /* Ocultar por padrão */
+}
+
+/* Exibir o footer apenas em telas menores que 768px (dispositivos móveis) */
+@media (max-width: 768px) {
+    .sticky-footer {
+        display: flex !important; /* Mostrar em mobile */
+    }
+}
+
+/* Estilo para o Sticky Footer */
+.sticky-footer {
+    font-family: 'Sora', sans-serif;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #2E3748 !important;
+    color: #fff !important;
+    text-align: center;
+    padding: 10px 0;
+    z-index: 9999;
+    justify-content: space-around;
+    align-items: center;
+    overflow: hidden;
+}
+
+.sticky-footer ul.footer-menu {
+    list-style: none !important;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.sticky-footer ul.footer-menu li {
+    display: inline-block;
+    flex: 1;
+    text-align: center;
+}
+
+.sticky-footer ul.footer-menu li a {
+    color: #ffffff !important;
+    font-size: 14px !important;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 8px;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.sticky-footer ul.footer-menu li a ion-icon {
+    font-size: 20px !important; /* Ajustar o tamanho dos ícones aqui */
+    margin-bottom: 5px;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* Efeito ao passar o mouse sobre o ícone e o link */
+.sticky-footer ul.footer-menu li a:hover ion-icon {
+    color: #FFCC02 !important;
+    transform: scale(1.05);
+}
+
+/* Efeito para o link ativo (na página atual) */
+.sticky-footer ul.footer-menu li.active a ion-icon {
+    color: #FFCC02 !important;
+    transform: scale(1.05);
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+    .sticky-footer ul.footer-menu li a {
+        font-size: 14px !important;
+    }
+
+    .sticky-footer ul.footer-menu li a ion-icon {
+        font-size: 16px !important; /* Ajustar o tamanho dos ícones para telas menores */
+    }
+}
+
+/* Garantir que o conteúdo da página não seja coberto pelo footer */
+body {
+    padding-bottom: 70px; /* Espaço reservado para o footer */
+}

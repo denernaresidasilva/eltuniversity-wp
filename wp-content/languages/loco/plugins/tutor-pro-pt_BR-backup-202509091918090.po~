@@ -1,0 +1,145 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Tutor LMS Pro\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-08-22 09:31+0000\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:"
+"1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;"
+"esc_html_x:1,2c\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2025-09-03 23:33+0000\n"
+"Last-Translator: Raul Cruz\n"
+"Language-Team: Português do Brasil\n"
+"Language: pt_BR\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.8.0; wp-6.8.2; php-8.4.11"
+
+msgid "%d Course selected"
+msgstr "%d Curso Selecionado"
+
+msgid "%d Courses selected"
+msgstr "%d Cursos Selecionados"
+
+msgid "%d Students selected"
+msgstr "%d Alunos Selecionados"
+
+msgid "1 Student selected"
+msgstr "1 Alunos Selecionado"
+
+msgid "Add Students"
+msgstr "Adicionar Alunos"
+
+msgid "Add students"
+msgstr "Adicionar Alunos"
+
+msgid "Course"
+msgid_plural "Courses"
+msgstr[0] "Curso"
+msgstr[1] "Cursos"
+
+msgid "Courses"
+msgstr "Cursos"
+
+msgid "Date"
+msgstr "Data"
+
+msgid "Enroll Now"
+msgstr "Matricular Agora"
+
+msgid "Enroll Students"
+msgstr "Matricular Alunos"
+
+msgid "Enrolled Courses"
+msgstr "Cursos Matriculados"
+
+msgid "Enrollment"
+msgstr "Matricular Alunos"
+
+msgid "Enrollment Completed"
+msgstr "Aluno Matriculado"
+
+msgid "Enrollment Completed Illustrations."
+msgstr "Matrícula Concluída Ilustrações."
+
+msgid "Enrollment has been completed successfully."
+msgstr "A inscrição foi concluída com sucesso."
+
+msgid "LMS Reports"
+msgstr "Métricas"
+
+msgid "Manually Added"
+msgstr "Adicionado Manualmente"
+
+msgid "Name"
+msgstr "Nome"
+
+msgid "New Course"
+msgstr "Novo Curso"
+
+msgid "No data found!"
+msgstr "Nenhum dado encontrado!"
+
+msgid "Okay"
+msgstr "OK"
+
+msgid "Overview"
+msgstr "Visão Geral"
+
+msgid "Quiz Complete: "
+msgstr "QuestionárioCompleto: "
+
+msgid "Quiz: "
+msgstr "Questionário:"
+
+msgid "Remove"
+msgstr "Remover"
+
+msgid "Reviews"
+msgstr "Avaliações"
+
+msgid "Sales"
+msgstr "Vendas"
+
+msgid "Search"
+msgstr "Procurar"
+
+msgid "Search..."
+msgstr "Procurar..."
+
+msgid "Select"
+msgstr "Selecionar"
+
+msgid "Select Course"
+msgstr "Selecionar Curso"
+
+msgid "Select a course to enroll students"
+msgstr "Selecione o Curso"
+
+msgid "Select course"
+msgstr "Selecionar Curso"
+
+msgid "Selected"
+msgstr "Selecionado"
+
+msgid "Student"
+msgstr "Aluno"
+
+msgid "Students"
+msgstr "Alunos"
+
+msgid "Successfully Enrolled"
+msgstr "Inscrito com sucesso"
+
+msgid "This %1$s will be available for you from %2$s"
+msgstr "A Aula %1$s estará disponível para você a partir de %2$s"
+
+msgctxt "notification-panel"
+msgid "Stay tuned! Information about your activity will show up here."
+msgstr "Fique ligado! Informações sobre sua atividade serão exibidas aqui."

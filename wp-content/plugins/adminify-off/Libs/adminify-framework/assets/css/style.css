@@ -1,0 +1,4571 @@
+/*!***************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-3.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-3.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-3.use[3]!./dev/scss/adminify-framework/style.scss ***!
+  \***************************************************************************************************************************************************************************************************************************************************/
+/**
+ *
+ * ---------------------------------------------------------
+ * ADMINIFY FRAMEWORK CSS MAP
+ * ---------------------------------------------------------
+ *
+ * 01. Base
+ *     01. 01. Header
+ *     01. 02. Sticky
+ *     01. 03. Header Buttons
+ *     01. 04. Navigation
+ *     01. 05. Wrapper
+ *     01. 06. Content
+ *     01. 07. Section
+ *     01. 08. Footer
+ *     01. 09. Copyright
+ *     01. 10. Show All Settings
+ *     01. 11. Search Input
+ *     01. 12. Metabox
+ *     01. 13. Comment Metabox
+ *     01. 14. Help Tooltip
+ * 02. Themes
+ *     02. 01. Theme Dark
+ *     02. 02. Theme Light
+ * 03. Fields
+ *     03. 01. Field
+ *     03. 02. Field: accordion
+ *     03. 03. Field: background
+ *     03. 04. Field: backup
+ *     03. 05. Field: border, spacing, dimensions
+ *     03. 06. Field: button_set
+ *     03. 07. Field: checkbox, radio
+ *     03. 08. Field: code_editor
+ *     03. 09. Field: color
+ *     03. 10. Field: color_group
+ *     03. 11. Field: fieldset
+ *     03. 12. Field: date
+ *     03. 13. Field: datetime
+ *     03. 14. Field: gallery
+ *     03. 15. Field: group
+ *     03. 16. Field: icon
+ *     03. 17. Field: image_select
+ *     03. 18. Field: link_color
+ *     03. 19. Field: map
+ *     03. 20. Field: media
+ *     03. 21. Field: palette
+ *     03. 22. Field: repeater
+ *     03. 23. Field: select
+ *     03. 24. Field: slider
+ *     03. 25. Field: sortable
+ *     03. 26. Field: sorter
+ *     03. 27. Field: spinner
+ *     03. 28. Field: switcher
+ *     03. 29. Field: tabbed
+ *     03. 30. Field: text
+ *     03. 31. Field: textarea
+ *     03. 32. Field: typography
+ *     03. 33. Field: upload
+ *     03. 34. Field: wp_editor
+ *     03. 35. Field: heading
+ *     03. 36. Field: subheading
+ *     03. 37. Field: submessage
+ *     03. 38. Field: notice
+ *     03. 39. Field: number
+ *     03. 40. Field: link
+ *     03. 41. Field: others
+ * 04. Widget
+ * 05. Customizer
+ * 06. Taxonomy
+ * 07. Profile
+ * 08. Nav Menu
+ * 09. Modal
+ *     09. 01. Shortcode Modal
+ *     09. 02. Gutenberg Modal
+ *     09. 03. Icon Modal
+ * 10. Helper
+ * 11. Welcome Page
+ * 12. Responsive
+ * 13. Others
+ *
+ * ---------------------------------------------------------
+ *
+ */
+/*
+* Useable Mixin
+*/
+/**
+ * 01. Base
+ */
+.adminify-light-mode .adminify-header-left img.adminify-settings-light-logo {
+  display: inline-block;
+}
+.adminify-light-mode .adminify-header-left img.adminify-settings-dark-logo {
+  display: none;
+}
+
+.adminify-dark-mode .adminify-header-left img.adminify-settings-light-logo {
+  display: none;
+}
+.adminify-dark-mode .adminify-header-left img.adminify-settings-dark-logo {
+  display: inline-block;
+}
+
+/**
+ * Settings
+ */
+.wp-adminify-settings {
+  margin-top: 16px;
+  background: #fff;
+  border: 1px solid #dedee7;
+  border-radius: 2px;
+  width: 80%;
+  margin: 60px auto;
+  /**
+  * Header
+  */
+  /**
+  * Body
+  */
+  /**
+  * Footer
+  */
+}
+.wp-adminify-settings .clear {
+  display: none;
+}
+.wp-adminify-settings input[type=submit]:not(.adminify-btn),
+.wp-adminify-settings .button-primary:not(.adminify-btn),
+.wp-adminify-settings a.page-title-action:not(.adminify-btn) {
+  color: #fff;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid var(--adminify-primary);
+  background: var(--adminify-primary);
+}
+.wp-adminify-settings input[type=submit]:not(.adminify-btn):hover,
+.wp-adminify-settings .button-primary:not(.adminify-btn):hover,
+.wp-adminify-settings a.page-title-action:not(.adminify-btn):hover {
+  color: var(--adminify-primary);
+  background: transparent;
+  border-color: var(--adminify-primary);
+}
+.wp-adminify-settings .adminify-reset-section {
+  background: #48455f !important;
+  border-color: #48455f !important;
+}
+.wp-adminify-settings .adminify-reset-section:hover {
+  background: transparent !important;
+  color: #48455f !important;
+}
+.wp-adminify-settings .adminify-warning-primary {
+  color: #fff;
+  background: #f04438 !important;
+  border-color: #f04438 !important;
+}
+.wp-adminify-settings .adminify-warning-primary:hover {
+  background: transparent !important;
+  color: #f04438 !important;
+}
+.wp-adminify-settings .adminify-header {
+  border-bottom: 1px solid #dedee7;
+}
+.wp-adminify-settings .adminify-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  transition: box-shadow 0.3s ease;
+}
+.wp-adminify-settings .adminify-header-inner .adminify-header-left h1 {
+  margin: 0;
+}
+.wp-adminify-settings .adminify-header-inner .adminify-header-left img.wp-adminify-settings-logo {
+  width: 128px;
+}
+.wp-adminify-settings .adminify-header-inner .adminify-header-left small {
+  margin-left: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.wp-adminify-settings .adminify-header-inner .adminify-header-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.wp-adminify-settings .adminify-wrapper {
+  /**
+  * Nav Menu
+  * Horizontal Menu
+  */
+  /**
+  * Content
+  */
+}
+.wp-adminify-settings .adminify-wrapper .adminify-nav > ul {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 0;
+  padding: 8px 1rem;
+}
+.wp-adminify-settings .adminify-wrapper .adminify-nav > ul > li {
+  margin-bottom: 0;
+}
+.wp-adminify-settings .adminify-wrapper .adminify-nav > ul > li a {
+  color: #322f41;
+  font-size: 14px;
+  line-height: 24px;
+  position: relative;
+  padding: 8px 10px;
+  border-radius: 2px;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.wp-adminify-settings .adminify-wrapper .adminify-nav > ul > li a:focus {
+  outline: none;
+  box-shadow: none;
+}
+.wp-adminify-settings .adminify-wrapper .adminify-nav > ul > li a.adminify-active {
+  color: #fff;
+  background: var(--adminify-primary);
+}
+.wp-adminify-settings .adminify-wrapper .adminify-nav > ul > li a.adminify-arrow:after {
+  content: "\f107";
+  display: inline-block;
+  font-family: "Font Awesome 5 Pro", "Font Awesome 5 Free", "FontAwesome";
+  font-weight: 900;
+  font-size: 9px;
+  line-height: 1;
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  margin-top: -4px;
+}
+.wp-adminify-settings .adminify-wrapper .adminify-nav > ul > li ul {
+  position: absolute;
+  display: none;
+  transition: all 0.1s;
+  border: 1px solid #dedee7;
+  border-radius: 2px;
+  z-index: 9999;
+  background-color: #fff;
+}
+.wp-adminify-settings .adminify-wrapper .adminify-nav > ul > li ul li {
+  width: 100%;
+  margin-bottom: 8px;
+}
+.wp-adminify-settings .adminify-wrapper .adminify-nav > ul > li ul li a {
+  color: #322f41;
+  font-size: 14px;
+  line-height: 24px;
+  position: relative;
+  padding: 4px 12px;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 2px;
+}
+.wp-adminify-settings .adminify-wrapper .adminify-nav > ul > li ul li a:hover {
+  color: #fff;
+  background-color: var(--adminify-primary);
+}
+.wp-adminify-settings .adminify-wrapper .adminify-nav > ul > li ul li:last-child {
+  margin-bottom: 0;
+}
+.wp-adminify-settings .adminify-wrapper .adminify-nav > ul > li:hover > ul {
+  display: block;
+}
+.wp-adminify-settings .adminify-wrapper .adminify-nav > ul > li:hover a.adminify-arrow {
+  color: var(--adminify-primary);
+}
+.wp-adminify-settings .adminify-wrapper .adminify-nav > ul > li:hover a.adminify-arrow:after {
+  transition: all 0.1s;
+  transform: rotate(180deg);
+}
+.wp-adminify-settings .adminify-wrapper .adminify-nav .adminify-tab-icon {
+  width: 20px;
+  font-size: 14px;
+  text-align: center;
+}
+.wp-adminify-settings .adminify-wrapper .adminify-nav .adminify-label-error {
+  margin-left: 4px;
+  vertical-align: top;
+}
+.wp-adminify-settings .adminify-footer {
+  padding: 16px 24px;
+  display: flex;
+  justify-content: end;
+  gap: 8px;
+  border-top: 1px solid #dedee7;
+}
+.wp-adminify-settings .adminify-header .adminify-buttons,
+.wp-adminify-settings .adminify-footer .adminify-buttons {
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  gap: 8px;
+}
+.wp-adminify-settings .adminify-fieldset ul li:has(.adminify-pro-notice) label {
+  display: flex;
+  align-items: center;
+}
+.wp-adminify-settings .adminify-fieldset ul li:has(.adminify-pro-notice) label span.adminify--text {
+  display: flex;
+  gap: 8px;
+}
+.wp-adminify-settings .adminify-pro-notice {
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  box-shadow: none;
+  background-color: transparent;
+  gap: 6px;
+}
+.wp-adminify-settings .adminify-pro-notice img {
+  border-radius: 2px;
+}
+.wp-adminify-settings .adminify-pro-notice svg {
+  width: 13px;
+  height: 13px;
+}
+.wp-adminify-settings .wp-adminify--menu--editor--settings:has(.adminify-pro-notice) .adminify-add-new-menu-editor-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.wp-adminify-settings .adminify-fieldset .adminify--background-attributes .adminify-field {
+  display: block;
+  flex: inherit !important;
+  margin-bottom: 8px;
+  margin-right: 8px;
+}
+.wp-adminify-settings .adminify-fieldset .adminify--background-attributes .adminify-field select {
+  min-width: -moz-max-content;
+  min-width: max-content;
+}
+
+/**
+ * 01. 02. Sticky
+ */
+/**
+ * 01. 03. Header Buttons
+ */
+/**
+ * 01. 04. Navigation
+ */
+/**
+ * 01. 05. Wrapper
+ */
+/**
+ * 01. 06. Content
+ */
+/**
+ * 01. 07. Section
+ */
+.adminify-section .adminify-field.adminify-agency-plan .adminify-pro-badge {
+  font-size: 17px;
+  padding: 10px 20px;
+}
+.adminify-section .adminify-field .adminify-pro-badge {
+  background: #cdcdfd;
+  color: #3a3ae9;
+  padding: 3px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 13px;
+  margin-left: 4px;
+}
+.adminify-section .adminify-field.adminify-pro-feature, .adminify-section .adminify-field.adminify-pro-fieldset .adminify-fieldset {
+  opacity: 0.75;
+  filter: grayscale(1);
+}
+.adminify-section .adminify-field .adminify--image {
+  position: relative;
+}
+.adminify-section .adminify-field .adminify--image .adminify-pro-tag {
+  position: absolute;
+  top: 15px;
+  right: 2px;
+  background: #f50a7f;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.1;
+}
+.adminify-section .adminify-field.adminify-field-color_group.adminify-pro-fieldset > .adminify-fieldset .wp-picker-container, .adminify-section .adminify-field.adminify-pro-pointer .adminify-fieldset, .adminify-section .adminify-field.adminify-pro-pointer .adminify-checkbox {
+  pointer-events: none;
+}
+.adminify-section .adminify-field .adminify-fieldset ul > li > label:has(.adminify-pro-checkbox) {
+  opacity: 0.75;
+  filter: grayscale(1);
+}
+.adminify-section .adminify-field .adminify-fieldset ul > li .adminify-pro-checkbox {
+  display: flex;
+  gap: 2px;
+}
+
+.adminify-section-title {
+  padding: 5px 20px;
+  background-color: var(--adminify-preset-background);
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+}
+
+/**
+ * 01. 09. Copyright
+ */
+.adminify-copyright {
+  float: left;
+  margin-top: 5px;
+}
+
+/**
+ * 01. 10. Show All Settings
+ */
+.adminify-search-all .adminify-nav-background,
+.adminify-search-all .adminify-nav,
+.adminify-show-all .adminify-nav-background,
+.adminify-show-all .adminify-nav {
+  display: none;
+}
+.adminify-search-all .adminify-content,
+.adminify-show-all .adminify-content {
+  margin-left: 0;
+}
+.adminify-search-all .adminify-section-title,
+.adminify-search-all .adminify-section,
+.adminify-show-all .adminify-section-title,
+.adminify-show-all .adminify-section {
+  display: block !important;
+}
+
+.adminify-search-all .adminify-section-title {
+  display: none !important;
+}
+
+.adminify-expand-all {
+  float: left;
+  padding: 0 8px;
+  margin-right: 4px;
+  z-index: 1;
+  font-size: 13px;
+  line-height: 30px;
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+.adminify-expand-all span {
+  font-size: 11px;
+  vertical-align: middle;
+}
+
+/**
+ * 01. 11. Search Input
+ */
+.adminify-search {
+  float: left;
+}
+.adminify-search input {
+  margin: 0 2px 0 0;
+  border: none;
+  font-size: 12px;
+  line-height: 30px;
+  min-height: 30px;
+  text-align: inherit;
+  padding: 0 10px;
+  border-radius: 2px;
+  box-shadow: none;
+}
+.adminify-search input:focus {
+  box-shadow: none;
+}
+
+.adminify-saving .adminify-buttons,
+.adminify-saving .adminify-content {
+  cursor: default;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/**
+ * 01. 12. Metabox
+ */
+.adminify-metabox {
+  margin: -6px -12px -12px -12px;
+}
+.adminify-metabox .adminify-field {
+  padding: 20px;
+}
+.adminify-metabox .adminify-section-title {
+  padding: 20px;
+}
+
+.block-editor-page .adminify-metabox {
+  margin: -6px -14px -14px -14px;
+}
+
+.block-editor-editor-skeleton__content .adminify-metabox {
+  border-left: 1px solid #e2e4e7;
+  border-right: 1px solid #e2e4e7;
+}
+
+.adminify-sections-reset {
+  float: left;
+  width: 100%;
+  text-align: right;
+  border-top: 1px solid #eee;
+}
+.adminify-sections-reset .adminify-button-cancel,
+.adminify-sections-reset input {
+  display: none;
+}
+.adminify-sections-reset label {
+  padding: 10px;
+}
+.adminify-sections-reset span {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+       user-select: none;
+}
+.adminify-sections-reset input:checked ~ .adminify-button-reset {
+  display: none;
+}
+.adminify-sections-reset input:checked ~ .adminify-button-cancel {
+  display: inline-block;
+}
+
+#side-sortables .adminify-section-title {
+  padding: 12px;
+}
+#side-sortables .adminify-field {
+  padding: 10px 15px;
+}
+#side-sortables .adminify-field .adminify-title {
+  float: none;
+  width: 100%;
+  margin-bottom: 6px;
+}
+#side-sortables .adminify-field .adminify-fieldset {
+  float: none;
+  width: 100%;
+}
+#side-sortables .adminify-field-text input {
+  width: 100%;
+}
+#side-sortables .adminify-notice {
+  padding: 10px 15px;
+}
+
+/**
+ * 01. 13. Comment Metabox
+ */
+.adminify-comment-metabox {
+  margin: -6px -12px -12px -12px;
+}
+.adminify-comment-metabox .adminify-field {
+  padding: 20px;
+}
+.adminify-comment-metabox .adminify-section-title {
+  padding: 20px;
+}
+
+/**
+ * 01. 14. Help Tooltip
+ */
+.adminify-tooltip {
+  position: absolute;
+  z-index: 5000001;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  padding: 6px 12px;
+  max-width: 200px;
+  color: #fff;
+  background-color: #000;
+  background-color: rgba(0, 0, 0, 0.85);
+  border-radius: 4px;
+}
+
+@media screen and (max-width: 1440px) {
+  .wp-adminify .wp-adminify-settings {
+    width: 95%;
+  }
+}
+@media screen and (max-width: 992px) {
+  .wp-adminify .wp-adminify-settings {
+    width: 100% !important;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-section {
+    padding: 30px 12px 60px 12px;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-section .adminify-field.adminify-field-subheading {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-section .adminify-field.adminify-field-subheading .adminify-helps {
+    justify-content: center;
+  }
+}
+@media screen and (max-width: 425px) {
+  .wp-adminify .wp-adminify-settings .adminify-field {
+    padding: 16px 0;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-field .adminify--input select {
+    width: 150px;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-section {
+    padding: 30px 16px 60px 16px;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-header-inner,
+  .wp-adminify .wp-adminify-settings .adminify-footer {
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-header-inner .adminify-header-right,
+  .wp-adminify .wp-adminify-settings .adminify-footer .adminify-header-right {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-header-inner .adminify-buttons,
+  .wp-adminify .wp-adminify-settings .adminify-footer .adminify-buttons {
+    flex-wrap: wrap;
+    flex-direction: row;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-field-switcher {
+    grid-template-columns: 100%;
+    gap: 12px;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-field-fieldset {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-field-fieldset.adminify-field {
+    padding: 12px 0 !important;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-field-fieldset.adminify-nopadding:has(.adminify--switcher.adminify--active) .adminify-field {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-field-fieldset.adminify-nopadding:has(.adminify--switcher.adminify--active) .adminify-field .adminify-title {
+    margin-bottom: 12px;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-field-fieldset .adminify-fieldset .adminify-fieldset-content .adminify-field.adminify-field-button_set {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 12px 0;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-sections .adminify-field-image_select,
+  .wp-adminify .wp-adminify-settings .adminify-sections .adminify-field-color_group {
+    display: flex;
+    flex-direction: column;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-sections .adminify-field-image_select .adminify-title,
+  .wp-adminify .wp-adminify-settings .adminify-sections .adminify-field-color_group .adminify-title {
+    margin-bottom: 16px;
+  }
+  .wp-adminify .wp-adminify-settings .adminify--blocks {
+    flex-direction: column;
+  }
+  .wp-adminify .wp-adminify-settings .adminify--blocks .adminify--input-wrap .adminify--input {
+    min-width: auto;
+    width: 100%;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-field.adminify-field-typography, .wp-adminify .wp-adminify-settings .adminify-field.adminify-field-media, .wp-adminify .wp-adminify-settings .adminify-field.adminify-field-dimensions,
+  .wp-adminify .wp-adminify-settings .adminify-field .adminify-field-text {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 12px 0 !important;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-field.adminify-field-typography .adminify-fieldset .adminify--block, .wp-adminify .wp-adminify-settings .adminify-field.adminify-field-media .adminify-fieldset .adminify--block, .wp-adminify .wp-adminify-settings .adminify-field.adminify-field-dimensions .adminify-fieldset .adminify--block,
+  .wp-adminify .wp-adminify-settings .adminify-field .adminify-field-text .adminify-fieldset .adminify--block {
+    padding-right: 0;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-field.adminify-field-typography .adminify-fieldset .adminify--block .adminify--font-family, .wp-adminify .wp-adminify-settings .adminify-field.adminify-field-media .adminify-fieldset .adminify--block .adminify--font-family, .wp-adminify .wp-adminify-settings .adminify-field.adminify-field-dimensions .adminify-fieldset .adminify--block .adminify--font-family,
+  .wp-adminify .wp-adminify-settings .adminify-field .adminify-field-text .adminify-fieldset .adminify--block .adminify--font-family {
+    min-width: auto;
+    max-width: none;
+    width: 100%;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-field-callback.adminify-field {
+    padding: 0 !important;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-field-callback.adminify-field .wrap {
+    margin: 0 !important;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-field-callback.adminify-field .wrap .wp-adminify--menu--editor--container {
+    max-width: 100% !important;
+    margin: 0 0 !important;
+    margin-bottom: 16px !important;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-field-callback.adminify-field .wrap .wp-adminify--menu--editor--container .tab-content .tab-pane {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-field-callback.adminify-field .wrap .wp-adminify--menu--editor--container .tab-content .tab-pane .columns {
+    flex-direction: column;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-field-callback.adminify-field.adminify-one-col {
+    grid-template-columns: 100%;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-tabbed-content .adminify-field.adminify-field-button_set, .wp-adminify .wp-adminify-settings .adminify-tabbed-content .adminify-field.adminify-field-spacing, .wp-adminify .wp-adminify-settings .adminify-tabbed-content .adminify-field.adminify-field-slider {
+    grid-template-columns: 100%;
+    gap: 12px;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-tabbed-content .adminify-field.adminify-field-button_set .adminify-siblings.adminify--button-group, .wp-adminify .wp-adminify-settings .adminify-tabbed-content .adminify-field.adminify-field-spacing .adminify-siblings.adminify--button-group, .wp-adminify .wp-adminify-settings .adminify-tabbed-content .adminify-field.adminify-field-slider .adminify-siblings.adminify--button-group {
+    flex-wrap: wrap;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-tabbed-content .adminify-field-fieldset {
+    padding: 16px !important;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-tabbed-content .adminify-field-fieldset .adminify-field-switcher {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-tabbed-content .adminify-field-fieldset .adminify-field-switcher.adminify-field {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .wp-adminify .wp-adminify-settings .adminify-sections .adminify-field.adminify-field-checkbox, .wp-adminify .wp-adminify-settings .adminify-sections .adminify-field.adminify-field-radio, .wp-adminify .wp-adminify-settings .adminify-sections .adminify-field.adminify-field-code_editor, .wp-adminify .wp-adminify-settings .adminify-sections .adminify-field.adminify-field-wp_editor, .wp-adminify .wp-adminify-settings .adminify-sections .adminify-field.adminify-field-textarea {
+    grid-template-columns: 100%;
+    gap: 12px;
+  }
+}
+/*
+* Useable Mixin
+*/
+.adminify-section {
+  padding: 30px 40px 60px 40px;
+  /**
+  * 03. Fields
+  */
+  /**
+  * 03. 02. Field: accordion
+  */
+  /**
+  * 03. 03. Field: background
+  */
+  /**
+  * 03. 04. Field: backup
+  */
+  /**
+  * 03. 05. Field: border, spacing, dimensions
+  */
+  /**
+  * 03. 06. Field: button_set
+  */
+  /**
+  * 03. 07. Field: checkbox, radio
+  */
+  /**
+  * 03. 08. Field: code_editor
+  */
+  /**
+  * 03. 09. Field: color
+  */
+  /**
+  * 03. 10. Field: color_group
+  */
+  /**
+  * 03. 11. Field: fieldset
+  */
+  /**
+  * 03. 12. Field: date
+  */
+  /**
+  * 03. 13. Field: datetime
+  */
+  /**
+  * 03. 14. Field: gallery
+  */
+  /**
+  * 03. 15. Field: group
+  */
+  /**
+  * 03. 16. Field: icon
+  */
+  /**
+  * 03. 17. Field: image_select
+  */
+  /**
+  * 03. 18. Field: link_color
+  */
+  /**
+  * 03. 19. Field: map
+  */
+  /**
+  * 03. 20. Field: media
+  */
+  /**
+  * 03. 21. Field: palette
+  */
+  /**
+  * 03. 22. Field: repeater
+  */
+  /**
+  * 03. 23. Field: select
+  */
+  /**
+  * 03. 24. Field: slider
+  */
+  /**
+  * 03. 25. Field: sortable
+  */
+  /**
+  * 03. 26. Field: sorter
+  */
+  /**
+  * 03. 27. Field: spinner
+  */
+  /**
+  * 03. 28. Field: switcher
+  */
+  /**
+  * 03. 29. Field: tabbed
+  */
+  /**
+  * 03. 30. Field: text
+  */
+  /**
+  * 03. 31. Field: textarea
+  */
+  /**
+  * 03. 32. Field: typography
+  */
+  /**
+  * 03. 33. Field: upload
+  */
+  /**
+  * 03. 34. Field: wp_editor
+  */
+  /**
+  * 03. 35. Field: heading
+  */
+  /**
+  * 03. 36. Field: subheading
+  */
+  /**
+  * 03. 37. Field: submessage
+  */
+  /**
+  * 03. 38. Field: notice
+  */
+  /**
+  * 03. 39. Field: number
+  */
+  /**
+  * 03. 40. Field: link
+  */
+  /**
+  * 03. 41 Field: Color Picker
+  */
+  /**
+  * 03. 42. Helps
+  */
+  /**
+  * 03. 43. Callback
+  */
+  /**
+  * 03. 44. others
+  */
+}
+.adminify-section .adminify-field {
+  display: grid;
+  grid-template-columns: 25% 1fr;
+  grid-column-gap: 32px;
+  -moz-column-gap: 32px;
+       column-gap: 32px;
+  padding: 16px;
+}
+.adminify-section .adminify-field.adminify-field-subheading {
+  grid-template-columns: 1fr 1fr;
+}
+.adminify-section .adminify-field.adminify-small-subheading {
+  font-size: 15px;
+  line-height: 1;
+  padding-top: 30px;
+  padding-bottom: 5px;
+  border: none;
+}
+.adminify-section .adminify-field.adminify-one-col {
+  grid-template-columns: 1fr;
+}
+.adminify-section .adminify-field p:first-child {
+  margin-top: 0;
+}
+.adminify-section .adminify-field p:last-child {
+  margin-bottom: 0;
+}
+.adminify-section .adminify-field h4 {
+  margin-top: 0;
+}
+.adminify-section .adminify-field .adminify-title h4 {
+  font-size: 14px;
+  letter-spacing: 0.1px;
+  margin: 0;
+  color: #48455f;
+}
+.adminify-section input,
+.adminify-section textarea {
+  color: #667085;
+  background: #fff;
+  border: 1px solid #dedee7;
+  padding: 6px 8px;
+  line-height: 1.3;
+}
+.adminify-section input:focus,
+.adminify-section textarea:focus {
+  box-shadow: none;
+  border-color: var(--adminify-primary);
+}
+.adminify-section a {
+  -webkit-text-decoration: none;
+  text-decoration: none;
+}
+.adminify-section .adminify-pseudo-field {
+  padding: 0 5px 0 0 !important;
+  display: inline-block;
+}
+.adminify-section .adminify-pseudo-field + .adminify-pseudo-field {
+  border: 0;
+}
+.adminify-section .adminify-pseudo-field pre {
+  display: none;
+}
+.adminify-section .adminify-field-accordion .adminify-accordion-item {
+  position: relative;
+  margin-bottom: 5px;
+}
+.adminify-section .adminify-field-accordion .adminify-accordion-item:last-child {
+  margin-bottom: 0;
+}
+.adminify-section .adminify-field-accordion .adminify-accordion-item h4 {
+  font-size: 1em;
+}
+.adminify-section .adminify-field-accordion .adminify-accordion-title {
+  display: block;
+  cursor: pointer;
+  position: relative;
+  margin: 0;
+  padding: 15px;
+  min-height: 0;
+  font-size: 100%;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  border: 1px solid #dedee7;
+  background-color: #fafafa;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s;
+}
+.adminify-section .adminify-field-accordion .adminify-accordion-title:active, .adminify-section .adminify-field-accordion .adminify-accordion-title:hover, .adminify-section .adminify-field-accordion .adminify-accordion-title:focus {
+  outline: none;
+  border-color: #999;
+}
+.adminify-section .adminify-field-accordion .adminify-accordion-title .adminify--icon {
+  width: 20px;
+  text-align: center;
+  margin-right: 2px;
+}
+.adminify-section .adminify-field-accordion .adminify-accordion-icon {
+  width: 16px;
+  text-align: center;
+}
+.adminify-section .adminify-field-accordion .adminify-accordion-content {
+  display: none;
+  padding: 0;
+  border: 1px solid #dedee7;
+  border-top: none;
+  background-color: #fff;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+.adminify-section .adminify-field-accordion .adminify-accordion-content > .adminify-field {
+  padding: 15px;
+}
+.adminify-section .adminify-field-accordion .adminify-accordion-open {
+  display: block;
+}
+.adminify-section .adminify-field-background .adminify-field {
+  border: 0 !important;
+  padding: 0;
+  margin-bottom: 6px;
+  margin-right: 6px;
+}
+.adminify-section .adminify-field-background .adminify--title {
+  color: #48455f;
+  font-size: 12px;
+}
+.adminify-section .adminify-field-background .adminify--background-colors {
+  display: flex;
+  flex-wrap: wrap;
+}
+.adminify-section .adminify-field-background .adminify--background-attributes {
+  display: flex;
+  flex-wrap: wrap;
+}
+.adminify-section .adminify-field-background .adminify--background-attributes select {
+  min-width: 100%;
+  margin: 0;
+}
+.adminify-section .adminify-field-background .adminify--background-attributes .adminify-field {
+  flex: 1;
+}
+.adminify-section .adminify-field-background .adminify--attributes-hidden {
+  display: none;
+}
+.adminify-section .adminify-field-backup textarea {
+  width: 100%;
+  min-height: 200px;
+  margin-bottom: 5px;
+}
+.adminify-section .adminify-field-backup small {
+  display: inline-block;
+  margin: 5px;
+}
+.adminify-section .adminify-field-backup hr {
+  margin: 20px 0;
+  border: none;
+  border-bottom: 1px solid #dedee7;
+}
+.adminify-section .adminify-field-backup .adminify-export {
+  display: inline-block;
+}
+.adminify-section .adminify-field-border .adminify--inputs,
+.adminify-section .adminify-field-spacing .adminify--inputs,
+.adminify-section .adminify-field-dimensions .adminify--inputs {
+  float: left;
+  display: flex;
+  flex-wrap: wrap;
+}
+.adminify-section .adminify-field-border .adminify--input,
+.adminify-section .adminify-field-spacing .adminify--input,
+.adminify-section .adminify-field-dimensions .adminify--input {
+  display: flex;
+  padding-right: 6px;
+  padding-bottom: 4px;
+  box-sizing: border-box;
+}
+.adminify-section .adminify-field-border .adminify--input select,
+.adminify-section .adminify-field-spacing .adminify--input select,
+.adminify-section .adminify-field-dimensions .adminify--input select {
+  margin: 0;
+}
+.adminify-section .adminify-field-border .adminify--input input,
+.adminify-section .adminify-field-spacing .adminify--input input,
+.adminify-section .adminify-field-dimensions .adminify--input input {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  width: 65px;
+  max-width: 100%;
+  text-align: center;
+}
+.adminify-section .adminify-field-border .adminify--color,
+.adminify-section .adminify-field-spacing .adminify--color,
+.adminify-section .adminify-field-dimensions .adminify--color {
+  float: left;
+}
+.adminify-section .adminify-field-border .adminify--label,
+.adminify-section .adminify-field-spacing .adminify--label,
+.adminify-section .adminify-field-dimensions .adminify--label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  min-width: 20px;
+  max-width: 100%;
+  padding: 0 4px;
+  font-size: 12px;
+  text-align: center;
+  color: #555;
+  border: 1px solid #dedee7;
+  background-color: #f5f5f5;
+}
+.adminify-section .adminify-field-border .adminify--icon,
+.adminify-section .adminify-field-spacing .adminify--icon,
+.adminify-section .adminify-field-dimensions .adminify--icon {
+  border-right: 0;
+  border-radius: 4px 0 0 4px;
+}
+.adminify-section .adminify-field-border .adminify--icon + input,
+.adminify-section .adminify-field-spacing .adminify--icon + input,
+.adminify-section .adminify-field-dimensions .adminify--icon + input {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+.adminify-section .adminify-field-border .adminify--unit,
+.adminify-section .adminify-field-spacing .adminify--unit,
+.adminify-section .adminify-field-dimensions .adminify--unit {
+  border-left: 0;
+  border-radius: 0 4px 4px 0;
+}
+.adminify-section .adminify-field-border .adminify--is-unit,
+.adminify-section .adminify-field-spacing .adminify--is-unit,
+.adminify-section .adminify-field-dimensions .adminify--is-unit {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+.adminify-section .adminify-field-button_set .adminify--buttons {
+  display: inline-block;
+}
+.adminify-section .adminify-field-button_set .adminify--button-group {
+  display: inline-flex;
+  border: 1px solid #dedee7;
+  padding: 4px;
+  border-radius: 2px;
+  gap: 2px;
+}
+.adminify-section .adminify-field-button_set .adminify--button-group .adminify--button {
+  display: inline-block;
+  color: #736e91;
+  padding: 4px 24px;
+  border-radius: 2px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+  cursor: pointer;
+}
+.adminify-section .adminify-field-button_set .adminify--button-group .adminify--button.adminify--active {
+  color: #fff;
+  background: var(--adminify-primary);
+}
+.adminify-section .adminify-field-button_set input {
+  display: none;
+}
+.adminify-section .adminify-field-checkbox ul,
+.adminify-section .adminify-field-radio ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+.adminify-section .adminify-field-checkbox ul li,
+.adminify-section .adminify-field-radio ul li {
+  margin-bottom: 6px;
+}
+.adminify-section .adminify-field-checkbox ul li label,
+.adminify-section .adminify-field-radio ul li label {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+.adminify-section .adminify-field-checkbox ul ul,
+.adminify-section .adminify-field-radio ul ul {
+  max-height: none;
+}
+.adminify-section .adminify-field-checkbox ul ul li,
+.adminify-section .adminify-field-radio ul ul li {
+  margin-left: 8px;
+}
+.adminify-section .adminify-field-checkbox ul ul li:first-child,
+.adminify-section .adminify-field-radio ul ul li:first-child {
+  margin-left: 0;
+}
+.adminify-section .adminify-field-checkbox input,
+.adminify-section .adminify-field-radio input {
+  margin: 0 1px;
+}
+.adminify-section .adminify-field-checkbox .adminify--inline-list li,
+.adminify-section .adminify-field-radio .adminify--inline-list li {
+  display: inline-block;
+  margin-right: 15px;
+}
+.adminify-section .adminify-field-checkbox .adminify--text,
+.adminify-section .adminify-field-radio .adminify--text {
+  margin-left: 5px;
+  vertical-align: middle;
+}
+.adminify-section .adminify-field-checkbox .adminify-checker,
+.adminify-section .adminify-field-radio .adminify-checker {
+  cursor: pointer;
+}
+.adminify-section .adminify-field-code_editor .CodeMirror {
+  width: 100%;
+  height: 400px;
+}
+.adminify-section .adminify-field-code_editor .cm-s-default {
+  border: 1px solid #dedee7;
+}
+.adminify-section .adminify-field-code_editor textarea {
+  width: 100%;
+  height: 400px;
+}
+.adminify-section .adminify-field-color > input {
+  opacity: 0.75;
+  width: 115px;
+  max-width: 100%;
+}
+.adminify-section .adminify-field-color_group .adminify--left {
+  float: left;
+  margin-right: 10px;
+  margin-bottom: 5px;
+}
+.adminify-section .adminify-field-color_group .adminify--title {
+  color: #48455f;
+  margin-bottom: 5px;
+}
+.adminify-section .adminify-field-fieldset .adminify-fieldset-content {
+  background-color: #fff;
+}
+.adminify-section .adminify-field-fieldset .adminify-fieldset-content > .adminify-field {
+  padding: 12px;
+  border-radius: 2px;
+}
+.adminify-section .adminify-field-fieldset .adminify-field-subheading {
+  font-size: 18px;
+  letter-spacing: 0.1px;
+  border-bottom: 1px solid #dedee7;
+  line-height: 1.5em;
+}
+.adminify-section .adminify-field-date input {
+  margin: 0;
+}
+.adminify-section .adminify-field-date .adminify--to {
+  margin-left: 7px;
+}
+.adminify-section .adminify-datepicker-wrapper {
+  margin-top: 5px;
+  width: auto;
+  background-color: #fff;
+  z-index: 9999999 !important;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.15);
+}
+.adminify-section .adminify-datepicker-wrapper * {
+  float: none;
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+  font-weight: normal;
+  font-style: normal;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.adminify-section .adminify-datepicker-wrapper .ui-widget-header,
+.adminify-section .adminify-datepicker-wrapper .ui-datepicker-header {
+  color: #fff;
+  background: #00a0d2;
+}
+.adminify-section .adminify-datepicker-wrapper .ui-datepicker-header .ui-state-hover {
+  cursor: pointer;
+}
+.adminify-section .adminify-datepicker-wrapper .ui-datepicker-title {
+  font-size: 14px;
+  line-height: 40px;
+  text-align: center;
+}
+.adminify-section .adminify-datepicker-wrapper .ui-datepicker-prev,
+.adminify-section .adminify-datepicker-wrapper .ui-datepicker-next {
+  position: static;
+  top: auto;
+  left: auto;
+  right: auto;
+  font-family: "Font Awesome 5 Pro", "Font Awesome 5 Free", "FontAwesome";
+  font-weight: 900;
+  font-size: 12px;
+  text-align: center;
+  width: 41px;
+  height: 40px;
+  line-height: 40px;
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.1);
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.adminify-section .adminify-datepicker-wrapper .ui-datepicker-next span,
+.adminify-section .adminify-datepicker-wrapper .ui-datepicker-prev span {
+  display: none;
+}
+.adminify-section .adminify-datepicker-wrapper .ui-datepicker-prev {
+  float: left;
+}
+.adminify-section .adminify-datepicker-wrapper .ui-datepicker-next {
+  float: right;
+}
+.adminify-section .adminify-datepicker-wrapper .ui-datepicker-prev:before {
+  content: "\f053";
+}
+.adminify-section .adminify-datepicker-wrapper .ui-datepicker-next:before {
+  content: "\f054";
+}
+.adminify-section .adminify-datepicker-wrapper .ui-datepicker-prev-hover,
+.adminify-section .adminify-datepicker-wrapper .ui-datepicker-next-hover {
+  opacity: 0.75;
+}
+.adminify-section .adminify-datepicker-wrapper tbody .ui-datepicker-week-col {
+  background-color: #f7f7f7;
+}
+.adminify-section .adminify-datepicker-wrapper .ui-datepicker-buttonpane {
+  padding: 10px;
+  text-align: center;
+  background-color: #f7f7f7;
+}
+.adminify-section .adminify-datepicker-wrapper .ui-datepicker-buttonpane button {
+  cursor: pointer;
+  margin: 0 5px;
+  padding: 7px 14px;
+  border: 1px solid #dedee7;
+  background-color: #fff;
+}
+.adminify-section .adminify-datepicker-wrapper select {
+  margin: 0 4px;
+}
+.adminify-section .adminify-datepicker-wrapper select option {
+  color: #555;
+}
+.adminify-section .adminify-datepicker-wrapper table {
+  font-size: 13px;
+  border-collapse: collapse;
+  width: 100%;
+}
+.adminify-section .adminify-datepicker-wrapper thead {
+  color: #fff;
+  background: #32373c;
+}
+.adminify-section .adminify-datepicker-wrapper th {
+  text-align: center;
+  padding: 7px;
+  border: 1px solid #444;
+}
+.adminify-section .adminify-datepicker-wrapper td {
+  text-align: center;
+  border: 1px solid #dedee7;
+}
+.adminify-section .adminify-datepicker-wrapper td.ui-datepicker-other-month {
+  border: transparent;
+}
+.adminify-section .adminify-datepicker-wrapper td .ui-state-default {
+  color: #555;
+  width: auto;
+  display: block;
+  padding: 6px 12px;
+}
+.adminify-section .adminify-datepicker-wrapper td .ui-state-active,
+.adminify-section .adminify-datepicker-wrapper td .ui-state-hover {
+  color: #fff;
+  background-color: #0073aa;
+}
+.adminify-section .adminify-datepicker-wrapper td.ui-state-disabled .ui-state-default {
+  opacity: 0.5;
+}
+.adminify-section .adminify-field-datetime input {
+  margin: 0;
+}
+.adminify-section .adminify-field-datetime .adminify--to {
+  margin-left: 7px;
+}
+.adminify-section .adminify-flatpickr select,
+.adminify-section .adminify-flatpickr input {
+  min-height: auto;
+}
+.adminify-section .adminify-flatpickr select:focus,
+.adminify-section .adminify-flatpickr input:focus {
+  box-shadow: none;
+}
+.adminify-section .adminify-flatpickr.open {
+  z-index: 9999999 !important;
+}
+.adminify-section .adminify-field-gallery ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+.adminify-section .adminify-field-gallery ul li {
+  display: inline-block;
+  position: relative;
+  padding: 4px;
+  margin: 0 5px 10px 0;
+  border: 1px solid #dedee7;
+  background-color: #f9f9f9;
+  border-radius: 2px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+.adminify-section .adminify-field-gallery ul li img {
+  max-height: 60px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.adminify-section .adminify-field-gallery .button {
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+.adminify-section .adminify-field-group {
+  display: block;
+}
+.adminify-section .adminify-field-group .adminify-cloneable-hidden {
+  display: none !important;
+}
+.adminify-section .adminify-field-group .adminify-cloneable-wrapper {
+  position: relative;
+}
+.adminify-section .adminify-field-group .adminify-cloneable-item {
+  display: none;
+  position: relative;
+  margin-bottom: 16px;
+}
+.adminify-section .adminify-field-group .adminify-cloneable-item .adminify-cloneable-title {
+  font-size: 1em;
+  color: #48455f;
+  border: 1px solid #dedee7;
+  background: #fff;
+}
+.adminify-section .adminify-field-group .adminify-cloneable-item .adminify-cloneable-title .adminify-cloneable-header-icon {
+  margin-right: 4px;
+}
+.adminify-section .adminify-field-group .adminify-cloneable-item .adminify-cloneable-title:hover {
+  border-color: #dedee7;
+}
+.adminify-section .adminify-field-group .ui-accordion .adminify-cloneable-item {
+  display: block;
+}
+.adminify-section .adminify-field-group .adminify-cloneable-content {
+  border: 1px solid #dedee7;
+  background-color: #fff;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+.adminify-section .adminify-field-group .adminify-cloneable-content > .adminify-field {
+  padding: 15px;
+}
+.adminify-section .adminify-field-group .adminify-cloneable-title {
+  display: block;
+  cursor: pointer;
+  position: relative;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  margin: 0;
+  padding: 15px 65px 15px 10px;
+  min-height: 0;
+  font-size: 100%;
+  border: 1px solid #dedee7;
+  background-color: #fafafa;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s;
+}
+.adminify-section .adminify-field-group .adminify-cloneable-title:active, .adminify-section .adminify-field-group .adminify-cloneable-title:hover, .adminify-section .adminify-field-group .adminify-cloneable-title:focus {
+  border-color: #999;
+  outline: none;
+}
+.adminify-section .adminify-field-group .adminify-cloneable-helper {
+  position: absolute;
+  top: 12px;
+  right: 10px;
+  z-index: 1;
+  font-size: 14px;
+  line-height: 1em;
+}
+.adminify-section .adminify-field-group .adminify-cloneable-helper i {
+  display: inline-block;
+  cursor: pointer;
+  padding: 5px;
+  color: #999;
+}
+.adminify-section .adminify-field-group .adminify-cloneable-helper i:hover {
+  color: #555;
+}
+.adminify-section .adminify-field-group .adminify-cloneable-content {
+  padding: 0;
+  border-top: 0;
+}
+.adminify-section .adminify-field-group .adminify-cloneable-title-prefix,
+.adminify-section .adminify-field-group .adminify-cloneable-title-number {
+  margin-right: 5px;
+}
+.adminify-section .adminify-field-group .adminify-cloneable-alert {
+  display: none;
+  margin-bottom: 5px;
+  padding: 10px 20px;
+  color: #a94442;
+  border: 1px solid #dedee7;
+  background-color: #f2dede;
+}
+.adminify-section .adminify-field-group .widget-placeholder {
+  margin-bottom: 10px;
+  border: 1px dashed #f1c40f;
+  background-color: #fffae4;
+}
+.adminify-section .adminify-field-group .adminify-cloneable-header-icon {
+  display: inline-block;
+  text-align: center;
+  font-size: 14px;
+  width: 17px;
+  text-indent: 0;
+  vertical-align: text-top;
+}
+.adminify-section .adminify-field-group .adminify-cloneable-placeholder {
+  background-color: #ddd;
+  margin-top: 4px;
+  width: 100px;
+  height: 10px;
+  font-size: 10px;
+  line-height: 10px;
+  display: inline-block;
+  vertical-align: top;
+  border-radius: 2px;
+}
+.adminify-section .adminify-field-group .adminify-cloneable-add {
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  font-weight: 500;
+}
+.adminify-section .adminify-field-icon .adminify-icon-select {
+  display: flex;
+  gap: 8px;
+}
+.adminify-section .adminify-field-icon .adminify-icon-preview:not(.hidden) {
+  display: flex;
+}
+.adminify-section .adminify-field-icon .adminify-icon-preview i {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 100%;
+  font-size: 16px;
+  text-align: center;
+  vertical-align: top;
+  color: #48455f;
+  border: 1px solid #dedee7;
+  background-color: #e9e9f6;
+  border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+.adminify-section .adminify-field-image_select .adminify--image {
+  display: inline-block;
+  margin: 0 16px 16px 0;
+  border: 1px solid #dedee7;
+}
+.adminify-section .adminify-field-image_select .adminify--inline-list .adminify--image {
+  display: block;
+}
+.adminify-section .adminify-field-image_select figure {
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  margin: 0;
+  vertical-align: bottom;
+  border: 2px solid transparent;
+  background-color: #fff;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  transition: all 0.2s;
+}
+.adminify-section .adminify-field-image_select figure:before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  text-align: center;
+  font-size: 10px;
+  font-family: "Font Awesome 5 Pro", "Font Awesome 5 Free", "FontAwesome";
+  font-weight: 900;
+  content: "\f00c";
+  width: 16px;
+  height: 16px;
+  line-height: 14px;
+  opacity: 0;
+  color: #fff;
+  background-color: var(--adminify-primary);
+  transition: opacity 0.2s;
+}
+.adminify-section .adminify-field-image_select .adminify--active figure {
+  border-width: 2px;
+  border-color: var(--adminify-primary);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+.adminify-section .adminify-field-image_select .adminify--active figure:before {
+  opacity: 1;
+}
+.adminify-section .adminify-field-image_select img {
+  max-width: 100%;
+  height: auto;
+  vertical-align: top;
+}
+.adminify-section .adminify-field-image_select input {
+  display: none;
+}
+.adminify-section .adminify-field-link_color .adminify--left {
+  float: left;
+  margin-right: 10px;
+  margin-bottom: 5px;
+}
+.adminify-section .adminify-field-link_color .adminify--title {
+  color: #777;
+  margin-bottom: 5px;
+}
+.adminify-section .adminify-field-map input {
+  width: 100%;
+}
+.adminify-section .adminify-field-map input[type=text].ui-autocomplete-loading {
+  background-position-x: calc(100% - 5px);
+}
+.adminify-section .adminify-field-map .adminify--map-search + .adminify--map-osm-wrap {
+  margin-top: 10px;
+}
+.adminify-section .adminify-field-map .adminify--map-osm-wrap {
+  position: relative;
+  padding: 5px;
+  border: 1px solid #dedee7;
+  background-color: #fff;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+.adminify-section .adminify-field-map .adminify--map-osm {
+  position: relative;
+  z-index: 1;
+  min-height: 250px;
+}
+.adminify-section .adminify-field-map .adminify--map-inputs {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+.adminify-section .adminify-field-map .adminify--map-input {
+  flex: 1;
+}
+.adminify-section .adminify-field-map .adminify--map-input:last-child {
+  padding-left: 10px;
+}
+.adminify-section .adminify-field-map label {
+  display: block;
+  color: #777;
+  font-size: 12px;
+  margin: 0 0 2px 0;
+}
+.adminify-section .adminify-map-ui-autocomplate {
+  z-index: 999999;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.adminify-section .adminify-field-media .adminify--placeholder {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+.adminify-section .adminify-field-media .adminify--placeholder input {
+  width: 100%;
+  margin: 0;
+}
+.adminify-section .adminify-field-media .adminify--placeholder .adminify--button {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.adminify-section .adminify-field-media .button {
+  margin-left: 5px;
+}
+.adminify-section .adminify-field-media .hidden + .button {
+  margin-left: 0;
+}
+.adminify-section .adminify-field-media .adminify--preview {
+  position: relative;
+}
+.adminify-section .adminify-field-palette .adminify--palette {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  border: 2px solid #ddd;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  -moz-user-select: none;
+       user-select: none;
+  -webkit-user-select: none;
+  transition: all 0.2s;
+}
+.adminify-section .adminify-field-palette .adminify--palette span {
+  vertical-align: middle;
+  display: inline-block;
+  width: 22px;
+  height: 60px;
+  line-height: 60px;
+  overflow: hidden;
+  text-indent: -999px;
+}
+.adminify-section .adminify-field-palette .adminify--palette:before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  text-align: center;
+  font-size: 10px;
+  font-family: "Font Awesome 5 Pro", "Font Awesome 5 Free", "FontAwesome";
+  font-weight: 900;
+  content: "\f00c";
+  width: 16px;
+  height: 16px;
+  line-height: 14px;
+  opacity: 0;
+  color: #fff;
+  background-color: #222;
+  transition: opacity 0.2s;
+}
+.adminify-section .adminify-field-palette .adminify--active {
+  border-color: #222;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+.adminify-section .adminify-field-palette .adminify--active:before {
+  opacity: 1;
+}
+.adminify-section .adminify-field-palette input {
+  display: none;
+}
+.adminify-section .adminify-field-repeater .adminify-field-text input {
+  width: 100%;
+}
+.adminify-section .adminify-field-repeater .adminify-repeater-hidden {
+  display: none !important;
+}
+.adminify-section .adminify-field-repeater .adminify-repeater-wrapper .adminify-repeater-item {
+  display: table;
+  width: 100%;
+  margin-bottom: 5px;
+  border: 1px solid #dedee7;
+}
+.adminify-section .adminify-field-repeater .adminify-repeater-wrapper .adminify-repeater-item h4 {
+  font-size: 1em;
+}
+.adminify-section .adminify-field-repeater .adminify-repeater-content {
+  width: 100%;
+  display: table-cell;
+  vertical-align: middle;
+  background-color: #fff;
+}
+.adminify-section .adminify-field-repeater .adminify-repeater-content > .adminify-field {
+  padding: 15px;
+}
+.adminify-section .adminify-field-repeater .adminify-repeater-helper {
+  width: 100%;
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1em;
+  border-left: 1px solid #eee;
+  background-color: #f7f7f7;
+}
+.adminify-section .adminify-field-repeater .adminify-repeater-helper i {
+  display: inline-block;
+  cursor: pointer;
+  color: #999;
+  padding: 5px;
+}
+.adminify-section .adminify-field-repeater .adminify-repeater-helper i:hover {
+  color: #555;
+}
+.adminify-section .adminify-field-repeater .adminify-repeater-helper-inner {
+  width: 75px;
+}
+.adminify-section .adminify-field-repeater .adminify-repeater-alert {
+  display: none;
+  margin-bottom: 5px;
+  padding: 10px 20px;
+  color: #a94442;
+  border: 1px solid #dedee7;
+  background-color: #f2dede;
+}
+.adminify-section .adminify-field-repeater .widget-placeholder {
+  height: 50px;
+  margin-bottom: 3px;
+  border: 1px dashed #f1c40f;
+  background-color: #fffae4;
+}
+.adminify-section .adminify-field-repeater .ui-sortable-helper {
+  height: 50px !important;
+  overflow: hidden !important;
+  border-color: #ccc !important;
+  background-color: #eee !important;
+  opacity: 0.5;
+}
+.adminify-section .adminify-field-repeater .ui-sortable-helper .adminify-repeater-helper,
+.adminify-section .adminify-field-repeater .ui-sortable-helper .adminify-repeater-content {
+  display: none;
+}
+.adminify-section .adminify-repeater-add {
+  margin-top: 8px;
+  display: inline-block;
+}
+.adminify-section .adminify-field-select .adminify-fieldset {
+  min-height: 30px;
+}
+.adminify-section .adminify-field-select .adminify-chosen {
+  display: none;
+}
+.adminify-section .adminify-field-select select {
+  max-width: 100%;
+  margin: 0;
+}
+.adminify-section .adminify-field-select .adminify-hide-select {
+  display: none !important;
+}
+.adminify-section .adminify-field-slider .adminify--wrap {
+  display: flex;
+  align-items: center;
+}
+.adminify-section .adminify-field-slider .adminify--input {
+  display: flex;
+  position: relative;
+}
+.adminify-section .adminify-field-slider .adminify--unit {
+  position: absolute;
+  z-index: 1;
+  right: 4px;
+  top: 4px;
+  bottom: 4px;
+  padding: 2px 6px;
+  color: #736e91;
+  font-size: 11px;
+  line-height: 1;
+  border-radius: 2px;
+  background: #e9e9f6;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+.adminify-section .adminify-field-slider .adminify-slider-ui {
+  margin-right: 15px;
+}
+.adminify-section .adminify-field-slider input[type=number] {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  width: 70px;
+  text-align: center;
+  padding-right: 26px;
+}
+.adminify-section .adminify-field-slider .adminify--is-unit {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+.adminify-section .adminify-field-slider .ui-slider {
+  position: relative;
+  width: 100%;
+  height: 3px;
+  border: none;
+  background: #dedee7;
+  border-radius: 2px;
+}
+.adminify-section .adminify-field-slider .ui-slider-range {
+  height: 3px;
+  border: none;
+  background: var(--adminify-primary);
+  border-radius: 2px;
+}
+.adminify-section .adminify-field-slider .ui-slider-handle {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: -7px;
+  margin-left: -8px;
+  border: none;
+  background: var(--adminify-primary);
+  border-radius: 50%;
+}
+.adminify-section .adminify-field-slider .ui-state-active,
+.adminify-section .adminify-field-slider .ui-slider-handle:hover {
+  cursor: pointer;
+  background: var(--adminify-primary);
+}
+.adminify-section .adminify-field-sortable .adminify-field-text input {
+  width: 100%;
+  max-width: 100%;
+}
+.adminify-section .adminify-field-sortable .adminify-sortable .adminify-sortable-item {
+  display: table;
+  width: 100%;
+  margin-bottom: 5px;
+  border: 1px solid border;
+}
+.adminify-section .adminify-field-sortable .adminify-sortable .adminify-sortable-item h4 {
+  font-size: 1em;
+}
+.adminify-section .adminify-field-sortable .adminify-sortable-content {
+  width: 100%;
+  display: table-cell;
+  vertical-align: middle;
+  background-color: #fff;
+}
+.adminify-section .adminify-field-sortable .adminify-sortable-content > .adminify-field {
+  padding: 15px;
+}
+.adminify-section .adminify-field-sortable .adminify-sortable-helper {
+  width: 100%;
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1em;
+  border-left: 1px solid #dedee7;
+  background-color: #f7f7f7;
+}
+.adminify-section .adminify-field-sortable .adminify-sortable-helper i {
+  display: inline-block;
+  cursor: pointer;
+  width: 50px;
+  color: #555;
+}
+.adminify-section .adminify-field-sortable .adminify-sortable-helper i:hover {
+  opacity: 0.5;
+}
+.adminify-section .adminify-field-sortable .widget-placeholder {
+  height: 50px;
+  margin-bottom: 3px;
+  border: 1px dashed #f1c40f;
+  background-color: #fffae4;
+}
+.adminify-section .adminify-field-sortable .ui-sortable-helper {
+  height: 50px !important;
+  overflow: hidden !important;
+  border-color: #dedee7 !important;
+  background-color: #eee !important;
+  opacity: 0.5;
+}
+.adminify-section .adminify-field-sortable .ui-sortable-helper .adminify-sortable-helper,
+.adminify-section .adminify-field-sortable .ui-sortable-helper .adminify-sortable-content {
+  display: none;
+}
+.adminify-section .adminify-field-sorter .ui-sortable-placeholder {
+  height: 20px;
+  border: 1px dashed #f1c40f;
+  background-color: #fffae4;
+}
+.adminify-section .adminify-field-sorter .adminify-modules {
+  float: left;
+  width: 50%;
+  box-sizing: border-box;
+}
+.adminify-section .adminify-field-sorter .adminify-modules:first-child {
+  padding-right: 15px;
+}
+.adminify-section .adminify-field-sorter .adminify-modules:last-child {
+  padding-left: 15px;
+}
+.adminify-section .adminify-field-sorter .adminify-disabled,
+.adminify-section .adminify-field-sorter .adminify-enabled {
+  padding: 5px 15px;
+  border: 1px dashed #ddd;
+  background-color: #fff;
+}
+.adminify-section .adminify-field-sorter .adminify-disabled li {
+  opacity: 0.5;
+  transition: opacity 0.15s;
+}
+.adminify-section .adminify-field-sorter .adminify-disabled .ui-sortable-helper {
+  opacity: 1;
+}
+.adminify-section .adminify-field-sorter .adminify-sorter-title {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px;
+  text-align: center;
+  border: 1px dashed #ddd;
+  border-bottom: none;
+  background-color: #f8f8f8;
+  text-transform: uppercase;
+}
+.adminify-section .adminify-field-sorter ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  min-height: 62px;
+}
+.adminify-section .adminify-field-sorter ul li {
+  margin: 10px 0;
+  padding: 10px 15px;
+  cursor: move;
+  font-weight: bold;
+  text-align: center;
+  border: 1px solid #dedee7;
+  background-color: #fafafa;
+  transition: border-color 0.15s;
+}
+.adminify-section .adminify-field-sorter ul li:hover {
+  border-color: #bbb;
+}
+.adminify-section .adminify-field-spinner .adminify--spin {
+  display: flex;
+}
+.adminify-section .adminify-field-spinner .ui-widget {
+  font-family: inherit;
+}
+.adminify-section .adminify-field-spinner .ui-spinner {
+  display: flex;
+  align-items: stretch;
+  overflow: visible;
+  overflow: initial;
+  border: none;
+  background: none;
+  border-radius: 0;
+}
+.adminify-section .adminify-field-spinner .ui-spinner .ui-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  min-width: 20px;
+  padding: 0 4px;
+  margin: 0;
+  color: #555;
+  background-color: #f5f5f5;
+  border: 1px solid #7e8993;
+}
+.adminify-section .adminify-field-spinner .ui-spinner .ui-spinner-button {
+  position: relative;
+  cursor: pointer;
+  height: auto;
+}
+.adminify-section .adminify-field-spinner .ui-spinner .ui-spinner-button:hover {
+  background-color: #e7e7e7;
+}
+.adminify-section .adminify-field-spinner .ui-spinner .ui-spinner-button:active {
+  background-color: #ddd;
+}
+.adminify-section .adminify-field-spinner .ui-spinner .ui-spinner-button:before {
+  font-family: "Font Awesome 5 Pro", "Font Awesome 5 Free", "FontAwesome";
+  font-weight: 900;
+  font-size: 14px;
+  line-height: 14px;
+}
+.adminify-section .adminify-field-spinner .ui-spinner .ui-spinner-down {
+  border-right: 0;
+  border-radius: 4px 0 0 4px;
+}
+.adminify-section .adminify-field-spinner .ui-spinner .ui-spinner-down:before {
+  content: "\f0d9";
+}
+.adminify-section .adminify-field-spinner .ui-spinner .ui-spinner-up {
+  border-left: 0;
+  border-radius: 0 4px 4px 0;
+}
+.adminify-section .adminify-field-spinner .ui-spinner .ui-spinner-up:before {
+  content: "\f0da";
+}
+.adminify-section .adminify-field-spinner .ui-spinner .adminify--unit {
+  border-left: 0;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+.adminify-section .adminify-field-spinner .ui-spinner .ui-button-text,
+.adminify-section .adminify-field-spinner .ui-spinner .ui-button-icon,
+.adminify-section .adminify-field-spinner .ui-spinner .ui-button-icon-space {
+  display: none;
+}
+.adminify-section .adminify-field-spinner .ui-spinner input {
+  font-family: inherit;
+  font-size: inherit;
+  position: relative;
+  z-index: 1;
+  width: 50px;
+  text-align: center;
+  margin: 0;
+  padding: 0 8px;
+  border-radius: 0;
+}
+.adminify-section .adminify-field-spinner .ui-spinner-down {
+  order: 1;
+}
+.adminify-section .adminify-field-spinner .ui-spinner-input {
+  order: 2;
+}
+.adminify-section .adminify-field-spinner .adminify--unit {
+  order: 3;
+}
+.adminify-section .adminify-field-spinner .ui-spinner-up {
+  order: 4;
+}
+.adminify-section .adminify-field-switcher .adminify--switcher {
+  float: left;
+  cursor: pointer;
+  position: relative;
+  width: 60px;
+  height: 26px;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 4px;
+  background-color: #ed6f6f;
+  -moz-user-select: none;
+       user-select: none;
+  -webkit-user-select: none;
+}
+.adminify-section .adminify-field-switcher .adminify--ball {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 24px;
+  height: 18px;
+  background-color: #fff;
+  border-radius: 4px;
+  transition: all 0.1s;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15);
+}
+.adminify-section .adminify-field-switcher .adminify--on,
+.adminify-section .adminify-field-switcher .adminify--off {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  font-size: 11px;
+  line-height: 26px;
+  font-weight: 500;
+  font-style: normal;
+  text-align: center;
+  text-transform: uppercase;
+  color: #fff;
+  padding-right: 28px;
+  opacity: 0;
+  transition: all 0.1s;
+}
+.adminify-section .adminify-field-switcher .adminify--off {
+  padding-right: 0;
+  padding-left: 28px;
+  opacity: 1;
+}
+.adminify-section .adminify-field-switcher .adminify--active {
+  background: #4fb845;
+}
+.adminify-section .adminify-field-switcher .adminify--active .adminify--on {
+  opacity: 1;
+}
+.adminify-section .adminify-field-switcher .adminify--active .adminify--off {
+  opacity: 0;
+}
+.adminify-section .adminify-field-switcher .adminify--active .adminify--ball {
+  left: 100%;
+  margin-left: -28px;
+}
+.adminify-section .adminify-field-switcher .adminify--label {
+  float: left;
+  margin-top: 4px;
+  margin-left: 8px;
+  font-weight: 400;
+  color: #8c89a9;
+}
+.adminify-section .adminify-field-tabbed {
+  display: block;
+}
+.adminify-section .adminify-field-tabbed .adminify-tabbed-content {
+  border: 1px solid #dedee7;
+  background-color: #fff;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+.adminify-section .adminify-field-tabbed .adminify-tabbed-content > .adminify-field {
+  padding: 15px;
+}
+.adminify-section .adminify-field-tabbed .adminify-tabbed-content > .adminify-tabbed-content-fieldset {
+  display: block;
+}
+.adminify-section .adminify-field-tabbed .adminify-tabbed-nav .adminify--icon {
+  padding-right: 5px;
+}
+.adminify-section .adminify-field-tabbed .adminify-tabbed-nav a {
+  display: inline-block;
+  padding: 12px 15px;
+  margin-top: 1px;
+  margin-right: 5px;
+  margin-bottom: -1px;
+  position: relative;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  color: #444;
+  font-weight: 600;
+  border: 1px solid #dedee7;
+  background-color: #f3f3f3;
+  transition: all 0.2s;
+}
+.adminify-section .adminify-field-tabbed .adminify-tabbed-nav a:hover {
+  background-color: #f9f9f9;
+}
+.adminify-section .adminify-field-tabbed .adminify-tabbed-nav a.adminify-tabbed-active {
+  background-color: #fff;
+  border-bottom-color: #fff;
+}
+.adminify-section .adminify-field-tabbed .adminify-tabbed-nav a:focus {
+  outline: none;
+  box-shadow: none;
+}
+.adminify-section .adminify-tabs-content .adminify-tabbed-contents .adminify-tabbed-content {
+  padding: 40px 20px;
+}
+.adminify-section .adminify-field-text input {
+  width: 50%;
+  max-width: 100%;
+  margin: 0;
+}
+.adminify-section .adminify-field-textarea textarea {
+  width: 100%;
+  max-width: 100%;
+  min-height: 125px;
+}
+.adminify-section .adminify-field-textarea .adminify-shortcode-button {
+  margin-bottom: 10px;
+  margin-right: 5px;
+}
+.adminify-section .adminify-field-typography textarea,
+.adminify-section .adminify-field-typography select {
+  margin: 0;
+  min-width: 100%;
+  max-width: 100%;
+}
+.adminify-section .adminify-field-typography .adminify--title {
+  color: #48455f;
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+}
+.adminify-section .adminify-field-typography .adminify--title small {
+  vertical-align: top;
+}
+.adminify-section .adminify-field-typography .adminify--blocks {
+  display: flex;
+  flex-wrap: wrap;
+}
+.adminify-section .adminify-field-typography .adminify--block {
+  flex: 1;
+  max-width: 100%;
+  padding-right: 16px;
+  padding-bottom: 16px;
+}
+.adminify-section .adminify-field-typography .adminify--input {
+  margin: 0;
+  min-width: 100%;
+}
+.adminify-section .adminify-field-typography .adminify--input-wrap {
+  position: relative;
+}
+.adminify-section .adminify-field-typography .adminify--unit {
+  position: absolute;
+  z-index: 1;
+  right: 4px;
+  top: 4px;
+  bottom: 4px;
+  padding: 2px 6px;
+  color: #736e91;
+  font-size: 11px;
+  line-height: 1;
+  border-radius: 2px;
+  background: #e9e9f6;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+.adminify-section .adminify-field-typography .adminify--preview {
+  font-size: 16px;
+  line-height: 20px;
+  padding: 20px;
+  color: #222;
+  border: 1px solid #dedee7;
+  background-color: #fff;
+  border-radius: 2.5px;
+  -moz-user-select: none;
+       user-select: none;
+  -webkit-user-select: none;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.adminify-section .adminify-field-typography .adminify--block-preview {
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  margin-top: 10px;
+  max-width: 100%;
+}
+.adminify-section .adminify-field-typography .adminify--black-background {
+  border-color: #000;
+  background-color: #000;
+}
+.adminify-section .adminify-field-typography .adminify--toggle {
+  position: absolute;
+  top: 5px;
+  right: 24px;
+  color: #999;
+}
+.adminify-section .adminify-field-typography .adminify--block-extra-styles {
+  margin-top: 5px;
+}
+.adminify-section .adminify-field-upload input {
+  width: 100%;
+  margin: 0;
+}
+.adminify-section .adminify-field-upload .adminify--wrap {
+  display: flex;
+  align-items: flex-start;
+}
+.adminify-section .adminify-field-upload .button {
+  margin-left: 5px;
+}
+.adminify-section .adminify-field-upload .adminify--preview {
+  position: relative;
+}
+.adminify-section .adminify-field-wp_editor .adminify-wp-editor {
+  float: left;
+  width: 100%;
+}
+.adminify-section .adminify-field-wp_editor .mce-toolbar-grp {
+  border: none;
+}
+.adminify-section .adminify-field-wp_editor .mce-btn.mce-active button,
+.adminify-section .adminify-field-wp_editor .mce-btn.mce-active:hover button,
+.adminify-section .adminify-field-wp_editor .mce-btn.mce-active i,
+.adminify-section .adminify-field-wp_editor .mce-btn.mce-active:hover i {
+  color: #23282d;
+}
+.adminify-section .adminify-field-wp_editor .wp-media-buttons {
+  position: relative;
+  z-index: 2;
+}
+.adminify-section .adminify-field-wp_editor .wp-editor-tabs {
+  position: relative;
+  z-index: 1;
+}
+.adminify-section .adminify-field-wp_editor .adminify-no-tinymce {
+  border: 1px solid #dedee7;
+}
+.adminify-section .adminify-field-wp_editor .adminify-no-quicktags .wp-media-buttons {
+  float: none;
+  display: block;
+}
+.adminify-section .adminify-field-wp_editor .adminify-no-quicktags .mce-tinymce {
+  box-shadow: none;
+  border: 1px solid #dedee7;
+}
+.adminify-section .adminify-field-wp_editor textarea {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  box-shadow: none;
+}
+.adminify-section .adminify-field-heading {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #23282d;
+  background-color: #f5f5f5;
+}
+.adminify-section .adminify-field-subheading {
+  font-size: 17px;
+  line-height: 1.5rem;
+  font-weight: bold;
+  padding-bottom: 16px;
+  color: #23282d;
+  background-color: #fff;
+}
+.adminify-section .adminify-field-submessage {
+  padding: 0 !important;
+  border: 0 !important;
+}
+.adminify-section .adminify-field-submessage + .adminify-field {
+  border-top: 0 !important;
+}
+.adminify-section .adminify-field-submessage .adminify-submessage {
+  font-size: 12px;
+  padding: 17px 30px;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+}
+.adminify-section .adminify-field-submessage .adminify-submessage-success {
+  color: #3c763d;
+  border-color: #d6e9c6;
+  background-color: #dff0d8;
+}
+.adminify-section .adminify-field-submessage .adminify-submessage-info {
+  color: #31708f;
+  border-color: #bce8f1;
+  background-color: #d9edf7;
+}
+.adminify-section .adminify-field-submessage .adminify-submessage-warning {
+  color: #8a6d3b;
+  border-color: #faebcc;
+  background-color: #fcf8e3;
+}
+.adminify-section .adminify-field-submessage .adminify-submessage-danger {
+  color: #a94442;
+  border-color: #ebccd1;
+  background-color: #f2dede;
+}
+.adminify-section .adminify-field-submessage .adminify-submessage-normal {
+  color: #23282d;
+  border-color: #eee;
+  background-color: #f7f7f7;
+}
+.adminify-section .adminify-field-notice {
+  background-color: #f7f7f7;
+}
+.adminify-section .adminify-field-notice .adminify-notice-success {
+  border-color: #46b450;
+}
+.adminify-section .adminify-field-notice .adminify-notice-info {
+  border-color: #339fd4;
+}
+.adminify-section .adminify-field-notice .adminify-notice-warning {
+  border-color: #ffbc00;
+}
+.adminify-section .adminify-field-notice .adminify-notice-danger {
+  border-color: #dc3232;
+}
+.adminify-section .adminify-field-notice .adminify-notice-normal {
+  border-color: #222;
+}
+.adminify-section .adminify-field-number input {
+  width: 100%;
+  margin: 0;
+}
+.adminify-section .adminify-field-number .adminify--wrap {
+  position: relative;
+  float: left;
+  width: 100px;
+}
+.adminify-section .adminify-field-number .adminify--unit {
+  position: absolute;
+  z-index: 1;
+  right: 4px;
+  top: 4px;
+  bottom: 4px;
+  padding: 2px 6px;
+  color: #666;
+  font-size: 11px;
+  line-height: 1;
+  border-radius: 2px;
+  background: #eee;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+.adminify-section .adminify-field-link .adminify--result {
+  display: inline-block;
+  font-size: 12px;
+  line-height: 16px;
+  padding: 7px 10px;
+  margin-bottom: 7px;
+  color: #777;
+  border: 1px solid #dedee7;
+  background-color: #f5f5f5;
+  border-radius: 2px;
+  word-break: break-word;
+}
+.adminify-section .adminify-field-link .adminify--wrap {
+  position: relative;
+  float: left;
+  width: 100px;
+}
+.adminify-section .adminify-field-link .adminify--unit {
+  position: absolute;
+  z-index: 1;
+  right: 4px;
+  top: 4px;
+  bottom: 4px;
+  padding: 2px 6px;
+  color: #666;
+  font-size: 11px;
+  line-height: 1;
+  border-radius: 2px;
+  background: #eee;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+.adminify-section .adminify-field-link .adminify-btn {
+  margin: 4px 6px 0 0;
+  display: inline-block;
+}
+.adminify-section .adminify-field-link .hidden.adminify-btn {
+  display: none;
+}
+.adminify-section .adminify-fieldset .wp-picker-container .button {
+  border-radius: 4px !important;
+  border: 1px solid #dedee7 !important;
+}
+.adminify-section .adminify-fieldset .wp-picker-container .button:focus {
+  border: 1px solid var(--adminify-primary);
+  box-shadow: none;
+}
+.adminify-section .adminify-fieldset .wp-picker-container .button.wp-color-result {
+  padding-left: 32px;
+  min-height: 32px;
+}
+.adminify-section .adminify-fieldset .wp-picker-container .button .wp-color-result-text {
+  color: #736e91;
+  background: #fff;
+  font-size: 12px;
+  padding: 9px;
+  line-height: 1;
+  border-left: 1px solid #dedee7;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+.adminify-section .adminify-fieldset .wp-picker-container .wp-picker-input-wrap .wp-color-picker {
+  color: #736e91;
+}
+.adminify-section .adminify-fieldset .wp-picker-container .wp-picker-input-wrap .wp-color-picker:focus {
+  border: 1px solid var(--adminify-primary);
+  box-shadow: none;
+}
+.adminify-section .adminify-fieldset .wp-picker-container .wp-picker-input-wrap .wp-picker-default {
+  background: none;
+  font-size: 0;
+  width: 24px;
+  height: 30px;
+  background-image: url("data:image/svg+xml,%3Csvg width='14' height='13' viewBox='0 0 17 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8.995 7.62609e-06C4.83623 -0.00568472 1.36667 3.17599 1.01302 7.3197C0.659364 11.4634 3.53958 15.187 7.63917 15.8862C11.7388 16.5853 15.6903 14.0267 16.73 10H14.649C13.6318 12.8771 10.617 14.5324 7.64347 13.8465C4.66992 13.1605 2.68491 10.3519 3.03082 7.3199C3.37673 4.28792 5.94335 1.99856 8.995 2.00001C10.5846 2.00234 12.1064 2.64379 13.218 3.78002L10 7.00001H17V7.62609e-06L14.649 2.35002C13.1527 0.844637 11.1175 -0.0012743 8.995 7.62609e-06Z' fill='%232E3A59'/%3E%3C/svg%3E%0A");
+  background-repeat: no-repeat;
+  background-position: left;
+  border: none;
+  overflow: hidden;
+  text-indent: -99em;
+}
+.adminify-section .adminify-fieldset .wp-picker-container .wp-picker-input-wrap .wp-picker-default:after {
+  content: "\f531";
+}
+.adminify-section .adminify-fieldset .wp-picker-container .wp-picker-input-wrap .wp-picker-clear {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+  padding: 8px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+  padding: 4px 8px;
+  border: 2px solid #f04438;
+  background: #f04438;
+}
+.adminify-section .adminify-helps {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: end;
+  gap: 8px;
+}
+.adminify-section .adminify-field-callback h2,
+.adminify-section .adminify-field-callback .wrap h1,
+.adminify-section .adminify-field-callback .wp-list-table thead th {
+  color: #48455f;
+}
+.adminify-section .adminify-field-callback h2 a,
+.adminify-section .adminify-field-callback .wrap h1 a,
+.adminify-section .adminify-field-callback .wp-list-table thead th a {
+  color: var(--adminify-primary);
+}
+.adminify-section .adminify-field-callback p,
+.adminify-section .adminify-field-callback .wp-list-table tbody tr td {
+  color: #736e91;
+}
+.adminify-section .adminify-field-callback p a,
+.adminify-section .adminify-field-callback .wp-list-table tbody tr td a {
+  color: var(--adminify-primary);
+}
+.adminify-section .adminify-field-callback .wp-list-table,
+.adminify-section .adminify-field-callback table,
+.adminify-section .adminify-field-callback .widefat thead th,
+.adminify-section .adminify-field-callback .widefat thead td {
+  border-color: #dedee7;
+}
+.adminify-section .adminify-field-callback .wp-list-table thead th {
+  font-weight: 600;
+}
+.adminify-section .adminify-field-callback .adminify-info-text-area {
+  height: 70vh;
+}
+.adminify-section .adminify-help {
+  cursor: help;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px;
+  font-size: 13px;
+  color: #aaa;
+}
+.adminify-section .adminify-help .adminify-help-text {
+  display: none;
+}
+.adminify-section .adminify--preview {
+  max-width: 100%;
+}
+.adminify-section .adminify-image-preview {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: relative;
+  padding: 6px;
+  max-width: 120px;
+  max-height: 120px;
+  min-width: 40px;
+  min-height: 40px;
+  margin-bottom: 10px;
+  text-align: center;
+  border-radius: 2px;
+  border: 1px solid #dedee7;
+  background-color: #f9f9f9;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+.adminify-section .adminify-image-preview i {
+  cursor: pointer;
+  position: absolute;
+  z-index: 1;
+  right: 4px;
+  top: 4px;
+  font-size: 14px;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  text-align: center;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  color: #fff;
+  background-color: #dd3333;
+  opacity: 0.75;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+.adminify-section .adminify-image-preview i:hover {
+  opacity: 1;
+}
+.adminify-section .adminify-image-preview i:focus {
+  box-shadow: none;
+}
+.adminify-section .adminify-image-preview span {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+.adminify-section .adminify-image-preview img {
+  max-width: 100%;
+  height: auto;
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+.adminify-section .adminify-field-custom .adminify-field {
+  padding: 0;
+}
+.adminify-section .adminify-field .wp-picker-container {
+  display: inline-block;
+}
+.adminify-section .adminify-field .wp-picker-container .wp-color-result.button {
+  margin-bottom: 0;
+}
+.adminify-section .adminify-field .adminify--transparent-wrap {
+  display: none;
+  position: relative;
+  top: -1px;
+  width: 235px;
+  padding: 9px 10px;
+  border: 1px solid #dedee7;
+  border-top: none;
+  background-color: #fff;
+}
+.adminify-section .adminify-field .wp-picker-active .adminify--transparent-wrap {
+  display: block;
+}
+.adminify-section .adminify-field .adminify--transparent-slider {
+  position: absolute;
+  width: 190px;
+  margin-left: 2px;
+  height: 18px;
+}
+.adminify-section .adminify-field .adminify--transparent-slider .ui-slider-handle {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  z-index: 5;
+  border-color: #aaa;
+  border-style: solid;
+  border-width: 4px 3px;
+  width: 10px;
+  height: 16px;
+  margin: 0 -5px;
+  background: none;
+  cursor: ew-resize;
+  opacity: 0.9;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+.adminify-section .adminify-field .adminify--transparent-slider .ui-slider-handle:before {
+  content: " ";
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  top: -3px;
+  bottom: -3px;
+  border: 2px solid #fff;
+  border-radius: 3px;
+}
+.adminify-section .adminify-field .adminify--transparent-offset {
+  height: 18px;
+  width: 200px;
+  background: url(../images/checkerboard.png) repeat-y center left scroll #fff;
+  border-radius: 2px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.4);
+}
+.adminify-section .adminify-field .adminify--transparent-text {
+  position: absolute;
+  top: 12px;
+  right: 10px;
+  width: 30px;
+  font-size: 12px;
+  line-height: 12px;
+  text-align: center;
+  color: #999;
+}
+.adminify-section .adminify-field .adminify--transparent-button {
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  margin-top: 10px;
+  font-size: 11px;
+  text-align: center;
+  border-radius: 2px;
+  padding: 3px 7px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.2px;
+  color: #777;
+  border: 1px solid #dedee7;
+  background-color: #f7f7f7;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+.adminify-section .adminify-field .adminify--transparent-active .wp-color-result {
+  background-image: url(../images/checkerboard.png);
+  background-size: 135px;
+  background-position: center left;
+  background-color: transparent !important;
+}
+.adminify-section .adminify-field .adminify--transparent-active .adminify--transparent-button {
+  color: #fff;
+  border-color: #3ea032;
+  background-color: #4fb845;
+}
+.adminify-section .adminify-field .adminify--transparent-active .fa:before {
+  content: "\f205";
+}
+
+/**
+ * 09. Modal
+ */
+.adminify-modal {
+  position: fixed;
+  z-index: 100101;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.adminify-modal.hidden {
+  display: none;
+}
+
+.adminify-modal-icon {
+  z-index: 100102;
+}
+
+.adminify-modal-table {
+  display: table;
+  width: 100%;
+  height: 100%;
+}
+
+.adminify-modal-table-cell {
+  display: table-cell;
+  vertical-align: middle;
+  margin: 100px 0;
+}
+
+.adminify-modal-inner {
+  position: relative;
+  z-index: 10;
+  width: 760px;
+  height: 750px;
+  margin: 0 auto;
+  background-color: #fff;
+}
+
+.adminify-modal-content {
+  position: relative;
+  overflow: hidden;
+  overflow-y: auto;
+  height: 595px;
+}
+.adminify-modal-content .adminify-shortcode-button {
+  display: none;
+}
+.adminify-modal-content .adminify-field {
+  padding: 15px 30px 15px 15px;
+}
+.adminify-modal-content a:active, .adminify-modal-content a:focus {
+  outline: none;
+  box-shadow: none;
+}
+.adminify-modal-content h4 {
+  font-size: 13px;
+}
+.adminify-modal-content h4 small {
+  font-style: italic;
+  font-weight: 400;
+  color: #aaa;
+}
+
+.adminify-modal-title {
+  position: relative;
+  background-color: #fcfcfc;
+  border-bottom: 1px solid #ddd;
+  height: 36px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 36px;
+  margin: 0;
+  padding: 0 36px 0 16px;
+}
+
+.adminify-modal-header {
+  width: 100%;
+  padding: 14px 0;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+}
+.adminify-modal-header select {
+  display: block;
+  width: 250px;
+  margin: 0 auto;
+  font-size: 13px;
+  line-height: 1;
+  height: 30px;
+  min-height: 30px;
+  background-color: #fff;
+}
+
+.adminify-modal-close {
+  color: #666;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  text-align: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.adminify-modal-close:before {
+  font: normal 20px/36px dashicons;
+  content: "\f158";
+  vertical-align: top;
+  width: 36px;
+  height: 36px;
+}
+.adminify-modal-close:hover {
+  opacity: 0.5;
+}
+
+.adminify-modal-insert-wrapper {
+  text-align: center;
+  width: 100%;
+  padding: 15px 0;
+  background-color: #f5f5f5;
+  border-top: 1px solid #ddd;
+}
+
+.adminify-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  opacity: 0.5;
+}
+
+/**
+ * 09. 01. Shortcode Modal
+ */
+.adminify--repeatable {
+  padding: 15px 15px 0 15px;
+}
+
+.adminify--repeat-button-block {
+  text-align: center;
+  padding-bottom: 15px;
+}
+
+.adminify--repeat-shortcode {
+  position: relative;
+  margin-bottom: 15px;
+  border: 1px dashed #ddd;
+}
+.adminify--repeat-shortcode:first-child .adminify-repeat-remove {
+  display: none;
+}
+.adminify--repeat-shortcode .adminify-repeat-remove {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 10;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 11px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+  border-radius: 2px;
+  color: #fff;
+  background-color: #e14d43;
+  opacity: 0.5;
+}
+.adminify--repeat-shortcode .adminify-repeat-remove:hover {
+  opacity: 0.5;
+}
+
+.adminify-shortcode-single .adminify-modal-inner {
+  height: 750px;
+}
+.adminify-shortcode-single .adminify-modal-content {
+  height: 652px;
+}
+
+.elementor-editor-active .adminify-shortcode-button {
+  margin-left: 5px;
+}
+.elementor-editor-active .adminify-modal .hidden {
+  display: none !important;
+}
+
+/**
+ * 09. 02. Gutenberg Modal
+ */
+.adminify-shortcode-block {
+  text-align: center;
+  padding: 14px;
+  font-size: 13px;
+  background-color: #f5f5f5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+.adminify-shortcode-block .components-button {
+  margin-bottom: 10px;
+}
+
+/**
+ * 09. 03. Icon Modal
+ */
+.adminify-modal-icon .adminify-icon-title {
+  padding: 15px 0;
+  margin: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  border: 1px solid #eee;
+  background-color: #f7f7f7;
+}
+.adminify-modal-icon .adminify-modal-header {
+  text-align: center;
+}
+.adminify-modal-icon .adminify-icon-search {
+  width: 50%;
+  height: 40px;
+  line-height: 40px;
+}
+.adminify-modal-icon i {
+  cursor: pointer;
+  display: inline-block;
+  margin: 4px;
+  width: 35px;
+  height: 35px;
+  line-height: 35px;
+  font-size: 16px;
+  color: #555;
+  text-align: center;
+  border: 1px solid #ccc;
+  background-color: #f7f7f7;
+  border-radius: 2px;
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.05);
+}
+.adminify-modal-icon i:hover {
+  color: #fff;
+  border-color: #222;
+  background-color: #222;
+}
+.adminify-modal-icon .adminify-modal-content {
+  padding: 10px;
+  height: 618px;
+}
+.adminify-modal-icon .adminify-error-text {
+  padding: 10px;
+}
+
+.adminify-modal-loading {
+  display: none;
+  position: absolute;
+  left: 15px;
+  top: 15px;
+}
+
+.adminify-loading {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  background: #ccc;
+  border-radius: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.07);
+}
+.adminify-loading:after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  content: "";
+  margin-top: -2px;
+  margin-left: -2px;
+  background-color: white;
+  animation-duration: 0.5s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-name: adminifyLoader;
+  border-radius: 4px;
+}
+
+@keyframes adminifyLoader {
+  0% {
+    transform: rotate(0deg) translateX(-6px) rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg) translateX(-6px) rotate(-360deg);
+  }
+}
+/**
+ * 10. Helper
+ */
+.adminify-subtitle-text {
+  margin-top: 6px;
+  font-weight: 400;
+  color: #8c89a9;
+}
+.adminify-subtitle-text > a {
+  color: var(--adminify-primary);
+}
+
+.adminify-desc-text {
+  clear: both;
+  float: left;
+  width: 100%;
+  margin-top: 6px;
+  font-weight: 400;
+  color: #8c89a9;
+}
+
+.adminify-error-text {
+  margin-top: 6px;
+  color: #d02c21;
+}
+
+.adminify-before-text {
+  margin-bottom: 6px;
+}
+
+.adminify-after-text {
+  margin-top: 6px;
+}
+
+.adminify-metabox-hide {
+  display: none !important;
+}
+
+.adminify-metabox-show {
+  display: block !important;
+}
+
+.adminify-depend-hidden.adminify-depend-on {
+  display: none;
+}
+
+.adminify-depend-visible.adminify-depend-on {
+  opacity: 0.75;
+  filter: grayscale(1);
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+.adminify-depend-visible.adminify-depend-on .clear:before {
+  content: "";
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  position: absolute;
+  background-color: #dedee7;
+  opacity: 0.25;
+  z-index: 10;
+}
+
+.adminify-form-result {
+  display: none;
+  float: left;
+  padding: 0 8px;
+  margin-right: 4px;
+  font-size: 11px;
+  line-height: 30px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  border-radius: 2px;
+}
+
+.adminify-form-show {
+  display: block;
+}
+
+.adminify-form-success {
+  color: #fff;
+  background-color: #46b450;
+}
+
+.adminify-form-warning {
+  color: #8a6d3b;
+  background-color: #faebcc;
+}
+
+.adminify-label-error {
+  position: relative;
+  top: -2px;
+  display: inline-block;
+  font-size: 10px;
+  line-height: 10px;
+  height: 10px;
+  width: 10px;
+  padding: 1px;
+  font-style: normal;
+  text-align: center;
+  color: #fff;
+  vertical-align: middle;
+  background-color: #e10000;
+  border-radius: 2px;
+}
+
+.adminify-no-option {
+  padding: 30px;
+}
+
+.adminify-input-number {
+  -moz-appearance: textfield;
+}
+
+.adminify-input-number::-webkit-inner-spin-button,
+.adminify-input-number::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.adminify-fa5-shims .adminify .fas,
+.adminify-fa5-shims .adminify .far,
+.adminify-fa5-shims .adminify .fab {
+  font-family: "FontAwesome";
+  font-style: normal;
+}
+
+/**
+ * Chosen JS Styles
+ */
+.chosen-container {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 13px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+
+.chosen-container * {
+  box-sizing: border-box;
+}
+
+.chosen-container .chosen-drop {
+  position: absolute;
+  top: 100%;
+  z-index: 1010;
+  width: 100%;
+  border: 1px solid #dedee7;
+  border-top: 0;
+  background: #fff;
+  box-shadow: 0 4px 5px rgba(0, 0, 0, 0.15);
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(100% 100%);
+}
+
+.chosen-container.chosen-with-drop .chosen-drop {
+  clip: auto;
+  clip-path: none;
+}
+
+.chosen-container a {
+  cursor: pointer;
+}
+
+.chosen-container .search-choice .group-name,
+.chosen-container .chosen-single .group-name {
+  margin-right: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: normal;
+  color: #999999;
+}
+
+.chosen-container .search-choice .group-name:after,
+.chosen-container .chosen-single .group-name:after {
+  content: ":";
+  padding-left: 2px;
+  vertical-align: top;
+}
+
+.chosen-container-single .chosen-single {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  padding: 0 0 0 8px;
+  height: 32px;
+  border: 1px solid #dedee7;
+  border-radius: 4px;
+  background: #fff;
+  color: #736e91;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  white-space: nowrap;
+  line-height: 2.3;
+}
+
+.chosen-container-single .chosen-default {
+  color: #999;
+}
+
+.chosen-container-single .chosen-single span {
+  display: block;
+  overflow: hidden;
+  margin-right: 26px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chosen-container-single .chosen-single-with-deselect span {
+  margin-right: 38px;
+}
+
+.chosen-container-single .chosen-single abbr {
+  position: absolute;
+  top: 6px;
+  right: 26px;
+  display: block;
+  width: 12px;
+  height: 12px;
+  font-size: 1px;
+}
+
+.chosen-container-single .chosen-single div {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: block;
+  width: 18px;
+  height: 100%;
+}
+
+.chosen-container-single .chosen-single div b {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.chosen-container-single .chosen-search {
+  position: relative;
+  z-index: 1010;
+  margin: 0;
+  padding: 3px 4px;
+  white-space: nowrap;
+}
+
+.chosen-container-single .chosen-search input[type=text] {
+  margin: 1px 0;
+  padding: 4px 20px 4px 5px;
+  width: 100%;
+  height: auto;
+  outline: 0;
+  border: 1px solid #aaa;
+  font-size: 1em;
+  font-family: sans-serif;
+  line-height: normal;
+  border-radius: 0;
+}
+
+.chosen-container-single .chosen-drop {
+  margin-top: -1px;
+  border-radius: 0 0 4px 4px;
+  background-clip: padding-box;
+}
+
+.chosen-container-single.chosen-container-single-nosearch .chosen-search {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(100% 100%);
+}
+
+.chosen-container .chosen-results {
+  color: #48455f;
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+  margin: 0 4px 4px 0;
+  padding: 0 0 0 4px;
+  max-height: 240px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chosen-container .chosen-results li {
+  display: none;
+  margin: 0;
+  padding: 5px 6px;
+  list-style: none;
+  line-height: 15px;
+  word-wrap: break-word;
+  -webkit-touch-callout: none;
+}
+
+.chosen-container .chosen-results li.active-result {
+  display: list-item;
+  cursor: pointer;
+}
+
+.chosen-container .chosen-results li.disabled-result {
+  display: list-item;
+  color: #ccc;
+  cursor: default;
+}
+
+.chosen-container .chosen-results li.highlighted {
+  background-color: var(--adminify-primary);
+  color: #fff;
+}
+
+.chosen-container .chosen-results li.no-results {
+  color: #777;
+  display: list-item;
+  background: #f4f4f4;
+}
+
+.chosen-container .chosen-results li.group-result {
+  display: list-item;
+  font-weight: bold;
+  cursor: default;
+}
+
+.chosen-container .chosen-results li.group-option {
+  padding-left: 15px;
+}
+
+.chosen-container .chosen-results li em {
+  font-style: normal;
+  -webkit-text-decoration: underline;
+  text-decoration: underline;
+}
+
+.chosen-container-multi .chosen-choices {
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  padding: 2px 5px;
+  width: 100%;
+  height: auto;
+  border: 1px solid #dedee7;
+  background-color: #fff;
+  cursor: text;
+}
+
+.chosen-container-multi .chosen-choices li {
+  float: left;
+  list-style: none;
+}
+
+.chosen-container-multi .chosen-choices li.search-field {
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.chosen-container-multi .chosen-choices li.search-field input[type=text] {
+  margin: 1px 0;
+  padding: 0;
+  outline: 0;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none;
+  color: #999;
+  font-size: 100%;
+  font-family: sans-serif;
+  line-height: normal;
+  border-radius: 0;
+  width: 25px;
+  height: 25px;
+  min-height: 25px;
+}
+
+.chosen-container-multi .chosen-choices li.search-choice {
+  position: relative;
+  margin: 3px 5px 3px 0;
+  padding: 4px 20px 4px 6px;
+  max-width: 100%;
+  border-radius: 3px;
+  color: #48455f;
+  border: 1px solid #c4c4d4;
+  background: #eaeaf0;
+  font-weight: 500;
+  line-height: 13px;
+  cursor: default;
+}
+
+.chosen-container-multi .chosen-choices li.search-choice span {
+  word-wrap: break-word;
+  white-space: nowrap;
+}
+
+.chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: block;
+  font-family: "Font Awesome 5 Pro", "Font Awesome 5 Free", "FontAwesome";
+  font-weight: 900;
+  font-size: 12px;
+  line-height: 1.3;
+  height: 100%;
+  width: 18px;
+  color: #aaa;
+  text-align: center;
+  background: none;
+}
+.chosen-container-multi .chosen-choices li.search-choice .search-choice-close:before {
+  content: "\f00d";
+  display: inline-block;
+  padding-top: 3px;
+}
+.chosen-container-multi .chosen-choices li.search-choice .search-choice-close:hover {
+  color: #555;
+}
+
+.chosen-container-multi .chosen-choices li.search-choice-disabled {
+  padding-right: 5px;
+  border: 1px solid #ccc;
+  background-color: #e4e4e4;
+  background-image: linear-gradient(#f4f4f4 20%, #f0f0f0 50%, #e8e8e8 52%, #eee 100%);
+  color: #666;
+}
+
+.chosen-container-multi .chosen-choices li.search-choice-focus {
+  background: #d4d4d4;
+}
+
+.chosen-container-multi .chosen-results {
+  margin: 0;
+  padding: 0;
+}
+
+.chosen-container-multi .chosen-drop .result-selected {
+  display: list-item;
+  color: #ccc;
+  cursor: default;
+}
+
+.chosen-container-active .chosen-single {
+  border: 1px solid var(--adminify-primary);
+}
+
+.chosen-container-active.chosen-with-drop .chosen-single {
+  border: 1px solid #dedee7;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.chosen-container-active.chosen-with-drop .chosen-single div {
+  border-left: none;
+  background: transparent;
+}
+
+.chosen-container-active .chosen-choices {
+  border: 1px solid var(--adminify-primary);
+}
+
+.chosen-container-active .chosen-choices li.search-field input[type=text] {
+  color: #222 !important;
+}
+
+.chosen-disabled {
+  opacity: 0.5 !important;
+  cursor: default;
+}
+
+.chosen-disabled .chosen-single {
+  cursor: default;
+}
+
+.chosen-disabled .chosen-choices .search-choice .search-choice-close {
+  cursor: default;
+}
+
+.chosen-rtl {
+  text-align: right;
+}
+
+.chosen-rtl .chosen-single {
+  overflow: visible;
+  padding: 0 8px 0 0;
+}
+
+.chosen-rtl .chosen-single span {
+  margin-right: 0;
+  margin-left: 26px;
+  direction: rtl;
+}
+
+.chosen-rtl .chosen-single-with-deselect span {
+  margin-left: 38px;
+}
+
+.chosen-rtl .chosen-single div {
+  right: auto;
+  left: 3px;
+}
+
+.chosen-rtl .chosen-single abbr {
+  right: auto;
+  left: 26px;
+}
+
+.chosen-rtl .chosen-choices li {
+  float: right;
+}
+
+.chosen-rtl .chosen-choices li.search-field input[type=text] {
+  direction: rtl;
+}
+
+.chosen-rtl .chosen-choices li.search-choice {
+  margin: 3px 5px 3px 0;
+  padding: 3px 5px 3px 19px;
+}
+
+.chosen-rtl .chosen-choices li.search-choice .search-choice-close {
+  right: auto;
+  left: 4px;
+}
+
+.chosen-rtl.chosen-container-single .chosen-results {
+  margin: 0 0 4px 4px;
+  padding: 0 4px 0 0;
+}
+
+.chosen-rtl .chosen-results li.group-option {
+  padding-right: 15px;
+  padding-left: 0;
+}
+
+.chosen-rtl.chosen-container-active.chosen-with-drop .chosen-single div {
+  border-right: none;
+}
+
+.chosen-rtl .chosen-search input[type=text] {
+  padding: 4px 5px 4px 20px;
+  direction: rtl;
+}
+
+/**
+ * Flatpickr
+ */
+.flatpickr-calendar {
+  background: transparent;
+  opacity: 0;
+  display: none;
+  text-align: center;
+  visibility: hidden;
+  padding: 0;
+  animation: none;
+  direction: ltr;
+  border: 0;
+  font-size: 14px;
+  line-height: 24px;
+  border-radius: 5px;
+  position: absolute;
+  width: 307.875px;
+  box-sizing: border-box;
+  touch-action: manipulation;
+  background: #fff;
+  box-shadow: 1px 0 0 #e6e6e6, -1px 0 0 #e6e6e6, 0 1px 0 #e6e6e6, 0 -1px 0 #e6e6e6, 0 3px 13px rgba(0, 0, 0, 0.08);
+}
+
+.flatpickr-calendar.open,
+.flatpickr-calendar.inline {
+  opacity: 1;
+  max-height: 640px;
+  visibility: visible;
+}
+
+.flatpickr-calendar.open {
+  display: inline-block;
+  z-index: 99999;
+}
+
+.flatpickr-calendar.animate.open {
+  animation: fpFadeInDown 300ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.flatpickr-calendar.inline {
+  display: block;
+  position: relative;
+  top: 2px;
+}
+
+.flatpickr-calendar.static {
+  position: absolute;
+  top: calc(100% + 2px);
+}
+
+.flatpickr-calendar.static.open {
+  z-index: 999;
+  display: block;
+}
+
+.flatpickr-calendar.multiMonth .flatpickr-days .dayContainer:nth-child(n+1) .flatpickr-day.inRange:nth-child(7n+7) {
+  box-shadow: none !important;
+}
+
+.flatpickr-calendar.multiMonth .flatpickr-days .dayContainer:nth-child(n+2) .flatpickr-day.inRange:nth-child(7n+1) {
+  box-shadow: -2px 0 0 #e6e6e6, 5px 0 0 #e6e6e6;
+}
+
+.flatpickr-calendar .hasWeeks .dayContainer,
+.flatpickr-calendar .hasTime .dayContainer {
+  border-bottom: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.flatpickr-calendar .hasWeeks .dayContainer {
+  border-left: 0;
+}
+
+.flatpickr-calendar.hasTime .flatpickr-time {
+  height: 40px;
+  border-top: 1px solid #e6e6e6;
+}
+
+.flatpickr-calendar.noCalendar.hasTime .flatpickr-time {
+  height: auto;
+}
+
+.flatpickr-calendar:before,
+.flatpickr-calendar:after {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  border: solid transparent;
+  content: "";
+  height: 0;
+  width: 0;
+  left: 22px;
+}
+
+.flatpickr-calendar.rightMost:before,
+.flatpickr-calendar.arrowRight:before,
+.flatpickr-calendar.rightMost:after,
+.flatpickr-calendar.arrowRight:after {
+  left: auto;
+  right: 22px;
+}
+
+.flatpickr-calendar.arrowCenter:before,
+.flatpickr-calendar.arrowCenter:after {
+  left: 50%;
+  right: 50%;
+}
+
+.flatpickr-calendar:before {
+  border-width: 5px;
+  margin: 0 -5px;
+}
+
+.flatpickr-calendar:after {
+  border-width: 4px;
+  margin: 0 -4px;
+}
+
+.flatpickr-calendar.arrowTop:before,
+.flatpickr-calendar.arrowTop:after {
+  bottom: 100%;
+}
+
+.flatpickr-calendar.arrowTop:before {
+  border-bottom-color: #e6e6e6;
+}
+
+.flatpickr-calendar.arrowTop:after {
+  border-bottom-color: #fff;
+}
+
+.flatpickr-calendar.arrowBottom:before,
+.flatpickr-calendar.arrowBottom:after {
+  top: 100%;
+}
+
+.flatpickr-calendar.arrowBottom:before {
+  border-top-color: #e6e6e6;
+}
+
+.flatpickr-calendar.arrowBottom:after {
+  border-top-color: #fff;
+}
+
+.flatpickr-calendar:focus {
+  outline: 0;
+}
+
+.flatpickr-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.flatpickr-months {
+  display: flex;
+}
+
+.flatpickr-months .flatpickr-month {
+  background: transparent;
+  color: rgba(0, 0, 0, 0.9);
+  fill: rgba(0, 0, 0, 0.9);
+  height: 34px;
+  line-height: 1;
+  text-align: center;
+  position: relative;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  overflow: hidden;
+  flex: 1;
+}
+
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  height: 34px;
+  padding: 10px;
+  z-index: 3;
+  color: rgba(0, 0, 0, 0.9);
+  fill: rgba(0, 0, 0, 0.9);
+}
+
+.flatpickr-months .flatpickr-prev-month.flatpickr-disabled,
+.flatpickr-months .flatpickr-next-month.flatpickr-disabled {
+  display: none;
+}
+
+.flatpickr-months .flatpickr-prev-month i,
+.flatpickr-months .flatpickr-next-month i {
+  position: relative;
+}
+
+.flatpickr-months .flatpickr-prev-month.flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month.flatpickr-prev-month {
+  /*
+        /*rtl:begin:ignore*/
+  /*
+        */
+  left: 0;
+  /*
+        /*rtl:end:ignore*/
+  /*
+        */
+}
+
+/*
+      /*rtl:begin:ignore*/
+/*
+      /*rtl:end:ignore*/
+.flatpickr-months .flatpickr-prev-month.flatpickr-next-month,
+.flatpickr-months .flatpickr-next-month.flatpickr-next-month {
+  /*
+        /*rtl:begin:ignore*/
+  /*
+        */
+  right: 0;
+  /*
+        /*rtl:end:ignore*/
+  /*
+        */
+}
+
+/*
+      /*rtl:begin:ignore*/
+/*
+      /*rtl:end:ignore*/
+.flatpickr-months .flatpickr-prev-month:hover,
+.flatpickr-months .flatpickr-next-month:hover {
+  color: #959ea9;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg {
+  fill: #f64747;
+}
+
+.flatpickr-months .flatpickr-prev-month svg,
+.flatpickr-months .flatpickr-next-month svg {
+  width: 14px;
+  height: 14px;
+}
+
+.flatpickr-months .flatpickr-prev-month svg path,
+.flatpickr-months .flatpickr-next-month svg path {
+  transition: fill 0.1s;
+  fill: inherit;
+}
+
+.numInputWrapper {
+  position: relative;
+  height: auto;
+}
+
+.numInputWrapper input,
+.numInputWrapper span {
+  display: inline-block;
+}
+
+.numInputWrapper input {
+  width: 100%;
+}
+
+.numInputWrapper input::-ms-clear {
+  display: none;
+}
+
+.numInputWrapper input::-webkit-outer-spin-button,
+.numInputWrapper input::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.numInputWrapper span {
+  position: absolute;
+  right: 0;
+  width: 14px;
+  padding: 0 4px 0 2px;
+  height: 50%;
+  line-height: 50%;
+  opacity: 0;
+  cursor: pointer;
+  border: 1px solid rgba(57, 57, 57, 0.15);
+  box-sizing: border-box;
+}
+
+.numInputWrapper span:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.numInputWrapper span:active {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.numInputWrapper span:after {
+  display: block;
+  content: "";
+  position: absolute;
+}
+
+.numInputWrapper span.arrowUp {
+  top: 0;
+  border-bottom: 0;
+}
+
+.numInputWrapper span.arrowUp:after {
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 4px solid rgba(57, 57, 57, 0.6);
+  top: 26%;
+}
+
+.numInputWrapper span.arrowDown {
+  top: 50%;
+}
+
+.numInputWrapper span.arrowDown:after {
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid rgba(57, 57, 57, 0.6);
+  top: 40%;
+}
+
+.numInputWrapper span svg {
+  width: inherit;
+  height: auto;
+}
+
+.numInputWrapper span svg path {
+  fill: rgba(0, 0, 0, 0.5);
+}
+
+.numInputWrapper:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.numInputWrapper:hover span {
+  opacity: 1;
+}
+
+.flatpickr-current-month {
+  font-size: 135%;
+  line-height: inherit;
+  font-weight: 300;
+  color: inherit;
+  position: absolute;
+  width: 75%;
+  left: 12.5%;
+  padding: 7.48px 0 0 0;
+  line-height: 1;
+  height: 34px;
+  display: inline-block;
+  text-align: center;
+  transform: translate3d(0px, 0px, 0px);
+}
+
+.flatpickr-current-month span.cur-month {
+  font-family: inherit;
+  font-weight: 700;
+  color: inherit;
+  display: inline-block;
+  margin-left: 0.5ch;
+  padding: 0;
+}
+
+.flatpickr-current-month span.cur-month:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.flatpickr-current-month .numInputWrapper {
+  width: 6ch;
+  width: 7ch\0 ;
+  display: inline-block;
+}
+
+.flatpickr-current-month .numInputWrapper span.arrowUp:after {
+  border-bottom-color: rgba(0, 0, 0, 0.9);
+}
+
+.flatpickr-current-month .numInputWrapper span.arrowDown:after {
+  border-top-color: rgba(0, 0, 0, 0.9);
+}
+
+.flatpickr-current-month input.cur-year {
+  background: transparent;
+  box-sizing: border-box;
+  color: inherit;
+  cursor: text;
+  padding: 0 0 0 0.5ch;
+  margin: 0;
+  display: inline-block;
+  font-size: inherit;
+  font-family: inherit;
+  font-weight: 300;
+  line-height: inherit;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  vertical-align: baseline;
+  vertical-align: initial;
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.flatpickr-current-month input.cur-year:focus {
+  outline: 0;
+}
+
+.flatpickr-current-month input.cur-year[disabled],
+.flatpickr-current-month input.cur-year[disabled]:hover {
+  font-size: 100%;
+  color: rgba(0, 0, 0, 0.5);
+  background: transparent;
+  pointer-events: none;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+  appearance: menulist;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-sizing: border-box;
+  color: inherit;
+  cursor: pointer;
+  font-size: inherit;
+  font-family: inherit;
+  font-weight: 300;
+  height: auto;
+  line-height: inherit;
+  margin: -1px 0 0 0;
+  outline: none;
+  padding: 0 0 0 0.5ch;
+  position: relative;
+  vertical-align: baseline;
+  vertical-align: initial;
+  -webkit-box-sizing: border-box;
+  -webkit-appearance: menulist;
+  -moz-appearance: menulist;
+  width: auto;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months:focus,
+.flatpickr-current-month .flatpickr-monthDropdown-months:active {
+  outline: none;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month {
+  background-color: transparent;
+  outline: none;
+  padding: 0;
+}
+
+.flatpickr-weekdays {
+  background: transparent;
+  text-align: center;
+  overflow: hidden;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  height: 28px;
+}
+
+.flatpickr-weekdays .flatpickr-weekdaycontainer {
+  display: flex;
+  flex: 1;
+}
+
+span.flatpickr-weekday {
+  cursor: default;
+  font-size: 90%;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.54);
+  line-height: 1;
+  margin: 0;
+  text-align: center;
+  display: block;
+  flex: 1;
+  font-weight: bolder;
+}
+
+.dayContainer,
+.flatpickr-weeks {
+  padding: 1px 0 0 0;
+}
+
+.flatpickr-days {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  width: 307.875px;
+}
+
+.flatpickr-days:focus {
+  outline: 0;
+}
+
+.dayContainer {
+  padding: 0;
+  outline: 0;
+  text-align: left;
+  width: 307.875px;
+  min-width: 307.875px;
+  max-width: 307.875px;
+  box-sizing: border-box;
+  display: inline-block;
+  display: flex;
+  flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  justify-content: space-around;
+  transform: translate3d(0px, 0px, 0px);
+  opacity: 1;
+}
+
+.dayContainer + .dayContainer {
+  box-shadow: -1px 0 0 #e6e6e6;
+}
+
+.flatpickr-day {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 150px;
+  box-sizing: border-box;
+  color: #393939;
+  cursor: pointer;
+  font-weight: 400;
+  width: 14.2857143%;
+  flex-basis: 14.2857143%;
+  max-width: 39px;
+  height: 39px;
+  line-height: 39px;
+  margin: 0;
+  display: inline-block;
+  position: relative;
+  justify-content: center;
+  text-align: center;
+}
+
+.flatpickr-day.inRange,
+.flatpickr-day.prevMonthDay.inRange,
+.flatpickr-day.nextMonthDay.inRange,
+.flatpickr-day.today.inRange,
+.flatpickr-day.prevMonthDay.today.inRange,
+.flatpickr-day.nextMonthDay.today.inRange,
+.flatpickr-day:hover,
+.flatpickr-day.prevMonthDay:hover,
+.flatpickr-day.nextMonthDay:hover,
+.flatpickr-day:focus,
+.flatpickr-day.prevMonthDay:focus,
+.flatpickr-day.nextMonthDay:focus {
+  cursor: pointer;
+  outline: 0;
+  background: #e6e6e6;
+  border-color: #e6e6e6;
+}
+
+.flatpickr-day.today {
+  border-color: #959ea9;
+}
+
+.flatpickr-day.today:hover,
+.flatpickr-day.today:focus {
+  border-color: #959ea9;
+  background: #959ea9;
+  color: #fff;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange,
+.flatpickr-day.selected.inRange,
+.flatpickr-day.startRange.inRange,
+.flatpickr-day.endRange.inRange,
+.flatpickr-day.selected:focus,
+.flatpickr-day.startRange:focus,
+.flatpickr-day.endRange:focus,
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange:hover,
+.flatpickr-day.endRange:hover,
+.flatpickr-day.selected.prevMonthDay,
+.flatpickr-day.startRange.prevMonthDay,
+.flatpickr-day.endRange.prevMonthDay,
+.flatpickr-day.selected.nextMonthDay,
+.flatpickr-day.startRange.nextMonthDay,
+.flatpickr-day.endRange.nextMonthDay {
+  background: #569ff7;
+  box-shadow: none;
+  color: #fff;
+  border-color: #569ff7;
+}
+
+.flatpickr-day.selected.startRange,
+.flatpickr-day.startRange.startRange,
+.flatpickr-day.endRange.startRange {
+  border-radius: 50px 0 0 50px;
+}
+
+.flatpickr-day.selected.endRange,
+.flatpickr-day.startRange.endRange,
+.flatpickr-day.endRange.endRange {
+  border-radius: 0 50px 50px 0;
+}
+
+.flatpickr-day.selected.startRange + .endRange:not(:nth-child(7n+1)),
+.flatpickr-day.startRange.startRange + .endRange:not(:nth-child(7n+1)),
+.flatpickr-day.endRange.startRange + .endRange:not(:nth-child(7n+1)) {
+  box-shadow: -10px 0 0 #569ff7;
+}
+
+.flatpickr-day.selected.startRange.endRange,
+.flatpickr-day.startRange.startRange.endRange,
+.flatpickr-day.endRange.startRange.endRange {
+  border-radius: 50px;
+}
+
+.flatpickr-day.inRange {
+  border-radius: 0;
+  box-shadow: -5px 0 0 #e6e6e6, 5px 0 0 #e6e6e6;
+}
+
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover,
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay,
+.flatpickr-day.notAllowed,
+.flatpickr-day.notAllowed.prevMonthDay,
+.flatpickr-day.notAllowed.nextMonthDay {
+  color: rgba(57, 57, 57, 0.3);
+  background: transparent;
+  border-color: transparent;
+  cursor: default;
+}
+
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover {
+  cursor: not-allowed;
+  color: rgba(57, 57, 57, 0.1);
+}
+
+.flatpickr-day.week.selected {
+  border-radius: 0;
+  box-shadow: -5px 0 0 #569ff7, 5px 0 0 #569ff7;
+}
+
+.flatpickr-day.hidden {
+  visibility: hidden;
+}
+
+.rangeMode .flatpickr-day {
+  margin-top: 1px;
+}
+
+.flatpickr-weekwrapper {
+  float: left;
+}
+
+.flatpickr-weekwrapper .flatpickr-weeks {
+  padding: 0 12px;
+  box-shadow: 1px 0 0 #e6e6e6;
+}
+
+.flatpickr-weekwrapper .flatpickr-weekday {
+  float: none;
+  width: 100%;
+  line-height: 28px;
+}
+
+.flatpickr-weekwrapper span.flatpickr-day,
+.flatpickr-weekwrapper span.flatpickr-day:hover {
+  display: block;
+  width: 100%;
+  max-width: none;
+  color: rgba(57, 57, 57, 0.3);
+  background: transparent;
+  cursor: default;
+  border: none;
+}
+
+.flatpickr-innerContainer {
+  display: block;
+  display: flex;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.flatpickr-rContainer {
+  display: inline-block;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.flatpickr-time {
+  text-align: center;
+  outline: 0;
+  display: block;
+  height: 0;
+  line-height: 40px;
+  max-height: 40px;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+}
+
+.flatpickr-time:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.flatpickr-time .numInputWrapper {
+  flex: 1;
+  width: 40%;
+  height: 40px;
+  float: left;
+}
+
+.flatpickr-time .numInputWrapper span.arrowUp:after {
+  border-bottom-color: #393939;
+}
+
+.flatpickr-time .numInputWrapper span.arrowDown:after {
+  border-top-color: #393939;
+}
+
+.flatpickr-time.hasSeconds .numInputWrapper {
+  width: 26%;
+}
+
+.flatpickr-time.time24hr .numInputWrapper {
+  width: 49%;
+}
+
+.flatpickr-time input {
+  background: transparent;
+  box-shadow: none;
+  border: 0;
+  border-radius: 0;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  height: inherit;
+  line-height: inherit;
+  color: #393939;
+  font-size: 14px;
+  position: relative;
+  box-sizing: border-box;
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.flatpickr-time input.flatpickr-hour {
+  font-weight: bold;
+}
+
+.flatpickr-time input.flatpickr-minute,
+.flatpickr-time input.flatpickr-second {
+  font-weight: 400;
+}
+
+.flatpickr-time input:focus {
+  outline: 0;
+  border: 0;
+}
+
+.flatpickr-time .flatpickr-time-separator,
+.flatpickr-time .flatpickr-am-pm {
+  height: inherit;
+  float: left;
+  line-height: inherit;
+  color: #393939;
+  font-weight: bold;
+  width: 2%;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  align-self: center;
+}
+
+.flatpickr-time .flatpickr-am-pm {
+  outline: 0;
+  width: 18%;
+  cursor: pointer;
+  text-align: center;
+  font-weight: 400;
+}
+
+.flatpickr-time input:hover,
+.flatpickr-time .flatpickr-am-pm:hover,
+.flatpickr-time input:focus,
+.flatpickr-time .flatpickr-am-pm:focus {
+  background: #eee;
+}
+
+.flatpickr-input[readonly] {
+  cursor: pointer;
+}
+@keyframes fpFadeInDown {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+.wp-adminify-two-columns {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 15px;
+  position: relative;
+}
+.wp-adminify-two-columns.hidden {
+  display: none;
+}
+.wp-adminify-two-columns .adminify-full-width-field {
+  width: 100% !important;
+  flex-basis: 100% !important;
+}
+.wp-adminify-two-columns > .adminify-field {
+  width: 49%;
+  display: flex;
+  flex-basis: 49%;
+  justify-content: space-between;
+  margin-right: 1%;
+  margin-top: -1px;
+  border: 1px solid #eee;
+  box-sizing: border-box;
+}
+.wp-adminify-two-columns > .adminify-field .adminify-fieldset input[type=text] {
+  width: 100%;
+}
+.wp-adminify-two-columns[data-section-id=white-label] > .adminify-field {
+  display: grid;
+}
+.wp-adminify-two-columns.aminify-title-width-40 .adminify-title {
+  width: 40% !important;
+}
+.wp-adminify-two-columns.aminify-title-width-40 .adminify-fieldset {
+  width: calc(60% - 20px) !important;
+}
+.wp-adminify-two-columns.aminify-title-width-65 .adminify-title {
+  width: 65%;
+}
+.wp-adminify-two-columns.aminify-title-width-65 .adminify-fieldset {
+  width: calc(35% - 20px);
+}
+.wp-adminify-two-columns .adminify-field-subheading {
+  box-sizing: content-box;
+  width: 100%;
+  flex-basis: 100%;
+}
+.wp-adminify-two-columns > .adminify-section-title {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+}
+
+.wp-adminify .adminify-hightlight-field {
+  border: 2px solid var(--adminify-primary) !important;
+  font-weight: 600 !important;
+}
+
+.aminify-title-width-40 .adminify-title {
+  width: 40% !important;
+}
+.aminify-title-width-40 .adminify-fieldset {
+  width: calc(60% - 20px) !important;
+}
+
+.wp-adminify-white-label-notice-content {
+  background-color: #fff;
+  box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.13);
+  position: absolute;
+  top: 150px;
+  left: 400px;
+  width: 530px;
+  padding: 32px;
+  padding-bottom: 50px;
+  border-radius: 20px;
+  text-align: center;
+  z-index: 2;
+}
+
+.wp-adminify-white-label-notice-logo img {
+  height: 100px;
+  width: 250px;
+  padding: 10px;
+  padding-top: 10px;
+}
+
+.wp-adminify-white-label-notice-content h2 span {
+  color: #6814cd;
+  text-transform: uppercase;
+}
+
+.wp-adminify-white-label-notice-content em {
+  font-size: 13px;
+  color: red;
+}
+
+.wp-adminify-white-label-notice .wp-adminify-get-pro {
+  background-image: -ms-linear-gradient(0deg, rgb(223, 29, 198) 0%, rgb(106, 20, 209) 100%);
+  border: none;
+  box-shadow: none;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+  line-height: 35px;
+  padding: 0 15px;
+  text-transform: uppercase;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  display: inline-block;
+  width: 180px;
+  padding: 5px 15px !important;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 800;
+  transition: all 0.2s ease-in-out;
+}
+
+.wp-adminify-white-label-notice {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100%;
+  background: rgba(200, 200, 200, 0.5);
+  -js-display: flex;
+  display: flex;
+  justify-content: center;
+  z-index: 1;
+}
+
+.wp-adminify-white-label-notice .wp-adminify-get-pro:hover {
+  color: #fff;
+  background-image: -ms-linear-gradient(0deg, rgb(106, 20, 209) 0%, rgb(223, 29, 198) 100%);
+}
+
+.adminify-field-callback a.wp-adminify-rollback-button {
+  font-family: inherit !important;
+}
+
+.wp-adminify-rollback-button.dashicons,
+.wp-adminify-rollback-button.dashicons-before:before {
+  width: inherit !important;
+}
