@@ -1,21 +1,67 @@
-# WordPress core
+############################
+# WORDPRESS CORE
+############################
 /wp-admin/
 /wp-includes/
+/wp-content/index.php
 
-# Uploads
+############################
+# CONFIGURAÇÕES SENSÍVEIS
+############################
+wp-config.php
+.env
+.env.*
+*.env
+
+############################
+# UPLOADS E MÍDIA
+############################
 /wp-content/uploads/
 
-# Config
-wp-config.php
+############################
+# BACKUPS (NUNCA VERSIONAR)
+############################
+/wp-content/wpvividbackups/
+/wp-content/backups/
+/wp-content/ai1wm-backups/
+*.zip
+*.tar
+*.gz
 
-# Cache / logs
+############################
+# CACHE / LOGS
+############################
 /wp-content/cache/
 /wp-content/wflogs/
+/wp-content/debug.log
 *.log
 
-# Env
-.env
+############################
+# PLUGINS QUE GERAM LIXO
+############################
+/wp-content/upgrade/
+error_log
 
-# OS
+############################
+# SISTEMA OPERACIONAL
+############################
 .DS_Store
 Thumbs.db
+
+############################
+# IDE / EDITOR
+############################
+.vscode/
+.idea/
+
+############################
+# NODE / BUILD (se existir)
+############################
+node_modules/
+dist/
+build/
+
+############################
+# GIT
+############################
+.gitignore
