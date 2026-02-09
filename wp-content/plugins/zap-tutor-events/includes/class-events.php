@@ -1,7 +1,9 @@
 <?php
+namespace ZapTutorEvents;
+
 if (!defined('ABSPATH')) exit;
 
-class ZAP_Events {
+class Events {
 
     /**
      * REGISTRO CENTRAL DE EVENTOS
@@ -49,14 +51,14 @@ class ZAP_Events {
     /* ================= USUÁRIO ================= */
 
     public static function student_signup($user_id) {
-        ZAP_Tutor_Events_Dispatcher::dispatch(
+        Dispatcher::dispatch(
             'tutor_student_signup',
             $user_id
         );
     }
 
     public static function student_login($user_id) {
-        ZAP_Tutor_Events_Dispatcher::dispatch(
+        Dispatcher::dispatch(
             'tutor_student_login',
             $user_id
         );
@@ -65,7 +67,7 @@ class ZAP_Events {
     /* ================= CURSO ================= */
 
     public static function course_enrolled($course_id, $user_id, $enrolled_id) {
-        ZAP_Tutor_Events_Dispatcher::dispatch(
+        Dispatcher::dispatch(
             'tutor_course_enrolled',
             $user_id,
             [
@@ -80,7 +82,7 @@ class ZAP_Events {
         $enrol = tutor_utils()->get_enrolment_by_enrol_id($enrol_id);
         if (!$enrol) return;
 
-        ZAP_Tutor_Events_Dispatcher::dispatch(
+        Dispatcher::dispatch(
             'tutor_enrol_status_changed',
             (int) $enrol->user_id,
             [
@@ -94,7 +96,7 @@ class ZAP_Events {
 
     public static function lesson_completed($lesson_id, $course_id, $user_id) {
 
-        ZAP_Tutor_Events_Dispatcher::dispatch(
+        Dispatcher::dispatch(
             'tutor_lesson_completed',
             $user_id,
             [
@@ -116,7 +118,7 @@ class ZAP_Events {
 
         update_user_meta($user_id, $meta_key, 1);
 
-        ZAP_Tutor_Events_Dispatcher::dispatch(
+        Dispatcher::dispatch(
             'tutor_course_progress_50',
             $user_id,
             [
@@ -129,7 +131,7 @@ class ZAP_Events {
     /* ================= QUIZ ================= */
 
     public static function quiz_started($quiz_id, $user_id, $attempt_id) {
-        ZAP_Tutor_Events_Dispatcher::dispatch(
+        Dispatcher::dispatch(
             'tutor_quiz_started',
             $user_id,
             [
@@ -140,7 +142,7 @@ class ZAP_Events {
     }
 
     public static function quiz_finished($attempt_id, $quiz_id, $user_id) {
-        ZAP_Tutor_Events_Dispatcher::dispatch(
+        Dispatcher::dispatch(
             'tutor_quiz_finished',
             $user_id,
             [
@@ -157,7 +159,7 @@ class ZAP_Events {
         $order = tutor_utils()->get_order_by_id($order_id);
         if (!$order) return;
 
-        ZAP_Tutor_Events_Dispatcher::dispatch(
+        Dispatcher::dispatch(
             'tutor_order_payment_status_changed',
             (int) $order->user_id,
             [

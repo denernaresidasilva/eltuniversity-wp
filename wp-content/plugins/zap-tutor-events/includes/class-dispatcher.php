@@ -25,8 +25,8 @@ class Dispatcher {
         ];
 
         // ✅ LOG INTERNO (AGORA VAI APARECER)
-        if (class_exists('ZAP_Events_Logger')) {
-            \ZAP_Events_Logger::log(
+        if (class_exists(__NAMESPACE__ . '\\Logger')) {
+            Logger::log(
                 $event_key,
                 $user_id,
                 $context

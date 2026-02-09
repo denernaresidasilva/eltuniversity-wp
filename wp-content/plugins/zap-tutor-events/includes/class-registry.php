@@ -1,7 +1,9 @@
 <?php
+namespace ZapTutorEvents;
+
 if (!defined('ABSPATH')) exit;
 
-class ZAP_Events_Registry {
+class Registry {
 
     private static $events = [];
 
