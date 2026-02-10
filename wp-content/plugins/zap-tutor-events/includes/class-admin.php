@@ -75,27 +75,20 @@ class Admin {
     public static function logs_page() {
         global $wpdb;
 
-        // Handle CSV export with CSRF protection (check nonce first before processing)
-        if (isset($_GET['export_csv'])) {
-            check_admin_referer('zap_export_logs', 'zap_export_nonce');
-            
-            // Read and sanitize parameters only for export
-            $event_filter = isset($_GET['event_filter']) ? sanitize_text_field($_GET['event_filter']) : '';
-            $user_filter = isset($_GET['user_filter']) ? absint($_GET['user_filter']) : 0;
-            $date_from = isset($_GET['date_from']) ? sanitize_text_field($_GET['date_from']) : '';
-            $date_to = isset($_GET['date_to']) ? sanitize_text_field($_GET['date_to']) : '';
-            
-            self::export_logs_csv($event_filter, $user_filter, $date_from, $date_to);
-            return;
-        }
-
-        // Get filters for regular page display
+        // Read and sanitize filter parameters (used by both display and export)
         $event_filter = isset($_GET['event_filter']) ? sanitize_text_field($_GET['event_filter']) : '';
         $user_filter = isset($_GET['user_filter']) ? absint($_GET['user_filter']) : 0;
         $date_from = isset($_GET['date_from']) ? sanitize_text_field($_GET['date_from']) : '';
         $date_to = isset($_GET['date_to']) ? sanitize_text_field($_GET['date_to']) : '';
         $per_page = isset($_GET['per_page']) ? absint($_GET['per_page']) : 50;
         $paged = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+
+        // Handle CSV export with CSRF protection
+        if (isset($_GET['export_csv'])) {
+            check_admin_referer('zap_export_logs', 'zap_export_nonce');
+            self::export_logs_csv($event_filter, $user_filter, $date_from, $date_to);
+            return;
+        }
 
         $filters = [];
         if ($event_filter) $filters['event_key'] = $event_filter;
