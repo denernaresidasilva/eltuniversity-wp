@@ -1,33 +1,4 @@
-<?php
-/**
- * Dispatcher Class
- * 
- * Central event dispatcher that:
- * - Logs events to database
- * - Sends events to webhooks
- * - Triggers global WordPress action
- * - Supports debug mode
- * 
- * @package ZapTutorEvents
- * @since 1.0.0
- */
-
-namespace ZapTutorEvents;
-
-if (!defined('ABSPATH')) {
-    exit;
-}
-
-class Dispatcher {
-
-    /**
-     * Dispatch an event
-     * 
-     * @param string $event_key Event identifier
-     * @param int $user_id User ID
-     * @param array $context Event context data
-     */
-    public static function dispatch($event_key, $user_id, $context = []) {
+public static function dispatch($event_key, $user_id, $context = []) {
 
         if (empty($event_key) || empty($user_id)) {
             self::debug("Dispatch skipped: empty event_key or user_id", [
@@ -85,9 +56,6 @@ class Dispatcher {
 
     /**
      * Log debug message
-     * 
-     * @param string $message Debug message
-     * @param array $context Additional context
      */
     private static function debug($message, $context = []) {
         if (!defined('ZAP_EVENTS_DEBUG') || !ZAP_EVENTS_DEBUG) {
@@ -95,19 +63,14 @@ class Dispatcher {
         }
 
         $log_message = '[ZAP Events Debug] ' . $message;
-        
         if (!empty($context)) {
             $log_message .= ' | Context: ' . wp_json_encode($context);
         }
-
         error_log($log_message);
     }
 
     /**
-     * Log debug error with stack trace
-     * 
-     * @param string $message Error message
-     * @param array $context Additional context
+     * Log debug error
      */
     private static function debug_error($message, $context = []) {
         if (!defined('ZAP_EVENTS_DEBUG') || !ZAP_EVENTS_DEBUG) {
@@ -115,11 +78,8 @@ class Dispatcher {
         }
 
         $log_message = '[ZAP Events ERROR] ' . $message;
-        
         if (!empty($context)) {
             $log_message .= ' | Context: ' . wp_json_encode($context);
         }
-
         error_log($log_message);
     }
-}

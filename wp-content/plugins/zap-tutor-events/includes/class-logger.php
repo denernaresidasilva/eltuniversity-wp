@@ -30,8 +30,15 @@ class Logger {
         }
 
         global $wpdb;
-
         $table = $wpdb->prefix . 'zap_event_logs';
+
+        // Verifica se a tabela existe antes de tentar inserir (Segurança adicional)
+        $table_exists = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $table)) === $table;
+        
+        if (!$table_exists) {
+            error_log('ZAP Events Logger: Database table does not exist');
+            return false;
+        }
 
         $result = $wpdb->insert(
             $table,
@@ -49,7 +56,13 @@ class Logger {
             ]
         );
 
-        return $result ? $wpdb->insert_id : false;
+        if ($result === false) {
+            error_log('ZAP Events Logger: Erro ao inserir evento - ' . $wpdb->last_error);
+            return false;
+        }
+
+        // Retorna o ID da inserção conforme a branch main original
+        return $wpdb->insert_id;
     }
 
     /**
@@ -61,7 +74,6 @@ class Logger {
         
         $retention_days = get_option('zap_events_log_retention_days', 30);
         
-        // If set to 0 (infinite), don't delete anything
         if ($retention_days === 0 || $retention_days === '0') {
             return 0;
         }
@@ -81,9 +93,6 @@ class Logger {
 
     /**
      * Get total count of logs
-     * 
-     * @param array $filters Optional filters (event_key, user_id, date_from, date_to)
-     * @return int Total count
      */
     public static function get_count($filters = []) {
         global $wpdb;
@@ -125,11 +134,6 @@ class Logger {
 
     /**
      * Get logs with filters and pagination
-     * 
-     * @param array $filters Filters (event_key, user_id, date_from, date_to)
-     * @param int $per_page Results per page
-     * @param int $page Current page
-     * @return array Logs
      */
     public static function get_logs($filters = [], $per_page = 50, $page = 1) {
         global $wpdb;
