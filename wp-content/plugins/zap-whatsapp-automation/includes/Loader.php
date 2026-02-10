@@ -56,6 +56,7 @@ class Loader {
             'AntiSpam.php',
             'Broadcast.php',
             'Listener.php',
+            'ConnectionManager.php',
             'EvolutionAPI.php',
             'Cron.php',
             'Metrics.php', // ✅ MÉTRICAS
