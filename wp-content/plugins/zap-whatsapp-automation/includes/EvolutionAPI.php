@@ -21,8 +21,8 @@ class EvolutionAPI {
             return;
         }
 
-        $api_url   = rtrim(get_option('zapwa_api_url'), '/');
-        $api_token = get_option('zapwa_api_token');
+        $api_url   = rtrim(get_option('zapwa_evolution_url'), '/');
+        $api_token = get_option('zapwa_evolution_token');
 
         if (!$api_url || !$api_token) {
             Logger::debug('Evolution API não configurada');
@@ -123,9 +123,9 @@ class EvolutionAPI {
      * Send message via Evolution API
      */
     private static function send_via_evolution($phone, $text) {
-        $api_url = rtrim(get_option('zapwa_api_url'), '/');
-        $api_token = get_option('zapwa_api_token');
-        $instance_name = get_option('zapwa_instance_name');
+        $api_url = rtrim(get_option('zapwa_evolution_url'), '/');
+        $api_token = get_option('zapwa_evolution_token');
+        $instance_name = get_option('zapwa_evolution_instance');
 
         if (!$api_url || !$api_token || !$instance_name) {
             return ['success' => false, 'error' => 'Evolution API not configured'];

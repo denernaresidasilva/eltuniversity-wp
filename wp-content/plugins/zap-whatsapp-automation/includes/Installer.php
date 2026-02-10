@@ -58,20 +58,20 @@ class Installer {
         }
 
         // Set default options with standardized names
-        if (get_option('zapwa_api_url') === false) {
-            add_option('zapwa_api_url', '');
+        if (get_option('zapwa_evolution_url') === false) {
+            add_option('zapwa_evolution_url', '');
         }
 
-        if (get_option('zapwa_api_token') === false) {
-            add_option('zapwa_api_token', '');
+        if (get_option('zapwa_evolution_token') === false) {
+            add_option('zapwa_evolution_token', '');
         }
 
         if (get_option('zapwa_connection_type') === false) {
             add_option('zapwa_connection_type', 'evolution');
         }
 
-        if (get_option('zapwa_instance_name') === false) {
-            add_option('zapwa_instance_name', '');
+        if (get_option('zapwa_evolution_instance') === false) {
+            add_option('zapwa_evolution_instance', '');
         }
 
         if (get_option('zapwa_official_phone_id') === false) {

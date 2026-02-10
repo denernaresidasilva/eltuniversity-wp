@@ -16,13 +16,13 @@ class Settings {
                 wp_die('Invalid security token');
             }
 
-            update_option('zapwa_api_url', sanitize_text_field($_POST['zapwa_api_url']));
-            update_option('zapwa_api_token', sanitize_text_field($_POST['zapwa_api_token']));
+            update_option('zapwa_evolution_url', sanitize_text_field($_POST['zapwa_evolution_url']));
+            update_option('zapwa_evolution_token', sanitize_text_field($_POST['zapwa_evolution_token']));
             echo '<div class="updated"><p>Configurações salvas.</p></div>';
         }
 
-        $api_url   = get_option('zapwa_api_url');
-        $api_token = get_option('zapwa_api_token');
+        $api_url   = get_option('zapwa_evolution_url');
+        $api_token = get_option('zapwa_evolution_token');
         ?>
 
         <div class="wrap">
@@ -34,13 +34,13 @@ class Settings {
                     <tr>
                         <th>URL da Evolution API</th>
                         <td>
-                            <input type="text" name="zapwa_api_url" value="<?php echo esc_attr($api_url); ?>" class="regular-text">
+                            <input type="text" name="zapwa_evolution_url" value="<?php echo esc_attr($api_url); ?>" class="regular-text">
                         </td>
                     </tr>
                     <tr>
                         <th>Token da API</th>
                         <td>
-                            <input type="password" name="zapwa_api_token" value="<?php echo esc_attr($api_token); ?>" class="regular-text">
+                            <input type="password" name="zapwa_evolution_token" value="<?php echo esc_attr($api_token); ?>" class="regular-text">
                         </td>
                     </tr>
                 </table>

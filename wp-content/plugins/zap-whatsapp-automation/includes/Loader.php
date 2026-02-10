@@ -78,6 +78,7 @@ class Loader {
             'EventLogReader.php', // ✅ LEITOR DE EVENTOS
             'ConnectionManager.php',
             'EvolutionAPI.php',
+            'QRCodeGenerator.php', // ✅ QR CODE GENERATOR
             'Cron.php',
             'Metrics.php', // ✅ MÉTRICAS
             'HealthCheck.php', // ✅ HEALTH CHECK

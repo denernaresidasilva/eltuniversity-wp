@@ -28,10 +28,10 @@ class ConnectionManager {
     /**
      * Check Evolution API connection
      */
-    private static function check_evolution_connection() {
-        $api_url = get_option('zapwa_api_url');
-        $api_token = get_option('zapwa_api_token');
-        $instance_name = get_option('zapwa_instance_name');
+    public static function check_evolution_connection() {
+        $api_url = get_option('zapwa_evolution_url');
+        $api_token = get_option('zapwa_evolution_token');
+        $instance_name = get_option('zapwa_evolution_instance');
 
         if (!$api_url || !$api_token || !$instance_name) {
             return false;
@@ -69,8 +69,8 @@ class ConnectionManager {
      * Create Evolution API instance
      */
     public static function create_instance($instance_name) {
-        $api_url = get_option('zapwa_api_url');
-        $api_token = get_option('zapwa_api_token');
+        $api_url = get_option('zapwa_evolution_url');
+        $api_token = get_option('zapwa_evolution_token');
 
         if (!$api_url || !$api_token || !$instance_name) {
             return ['success' => false, 'error' => 'Missing configuration'];
@@ -101,7 +101,7 @@ class ConnectionManager {
             return ['success' => false, 'error' => $body['error']];
         }
 
-        update_option('zapwa_instance_name', $instance_name);
+        update_option('zapwa_evolution_instance', $instance_name);
         
         return ['success' => true, 'data' => $body];
     }
@@ -110,8 +110,8 @@ class ConnectionManager {
      * Get QR Code for Evolution API
      */
     public static function get_qr_code($instance_name) {
-        $api_url = get_option('zapwa_api_url');
-        $api_token = get_option('zapwa_api_token');
+        $api_url = get_option('zapwa_evolution_url');
+        $api_token = get_option('zapwa_evolution_token');
 
         if (!$api_url || !$api_token || !$instance_name) {
             return ['success' => false, 'error' => 'Missing configuration'];
@@ -144,8 +144,8 @@ class ConnectionManager {
      * Disconnect instance
      */
     public static function disconnect_instance($instance_name) {
-        $api_url = get_option('zapwa_api_url');
-        $api_token = get_option('zapwa_api_token');
+        $api_url = get_option('zapwa_evolution_url');
+        $api_token = get_option('zapwa_evolution_token');
 
         if (!$api_url || !$api_token || !$instance_name) {
             return ['success' => false, 'error' => 'Missing configuration'];
