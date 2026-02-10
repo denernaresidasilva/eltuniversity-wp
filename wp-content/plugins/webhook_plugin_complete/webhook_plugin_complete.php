@@ -55,6 +55,10 @@ class Webhook_Receiver {
         
         // AJAX para obter dados do webhook
         add_action('wp_ajax_webhook_receiver_get_webhook_data', array($this, 'ajax_get_webhook_data'));
+        
+        // AJAX para testar webhook
+        add_action('wp_ajax_webhook_receiver_test_webhook', array($this, 'ajax_test_webhook'));
+        
         add_option('webhook_receiver_user_email_subject', 'Bem-vindo! Seus dados de acesso');
         add_option('webhook_receiver_user_email_template', 'Olá <strong>(nome)</strong>,<br>Sua conta foi criada! ...');
 
@@ -1525,7 +1529,413 @@ class Webhook_Receiver {
             26
         );
         
+        // Adicionar submenu de teste
+        add_submenu_page(
+            'webhook-receiver-endpoints',
+            'Testar Webhook',
+            '🧪 Testar Webhook',
+            'manage_options',
+            'webhook-receiver-test',
+            array($this, 'test_webhook_page')
+        );
+    }
+    
+    /**
+     * ========================================
+     * PÁGINA DE TESTE DE WEBHOOK
+     * ========================================
+     */
+    public function test_webhook_page() {
+        global $wpdb;
+        $webhooks_table = $wpdb->prefix . 'webhook_receiver_endpoints';
         
+        // Buscar todos os webhooks criados
+        $webhooks = $wpdb->get_results("SELECT * FROM $webhooks_table ORDER BY created_at DESC");
+        
+        // Buscar todos os usuários
+        $users = get_users(array(
+            'orderby' => 'display_name',
+            'order' => 'ASC'
+        ));
+        
+        ?>
+        <div class="wrap webhook-test-page">
+            <h1>🧪 Testar Webhook</h1>
+            <p class="description">Simule uma compra e teste o fluxo completo de matrícula sem precisar enviar webhooks reais.</p>
+            
+            <div class="webhook-test-card">
+                <form id="webhook-test-form" method="post">
+                    <?php wp_nonce_field('webhook_test_action', 'webhook_test_nonce'); ?>
+                    
+                    <h2>📝 Dados da Simulação</h2>
+                    
+                    <!-- Seleção de Webhook -->
+                    <div class="form-group">
+                        <label for="test_webhook_id">
+                            <span class="icon">🔗</span> Selecionar Webhook *
+                        </label>
+                        <select name="test_webhook_id" id="test_webhook_id" required>
+                            <option value="">Selecione um webhook...</option>
+                            <?php foreach ($webhooks as $webhook): ?>
+                                <?php
+                                $enrollment_icon = $webhook->enrollment_type === 'unenroll' ? '❌' : '✅';
+                                $enrollment_label = $webhook->enrollment_type === 'unenroll' ? 'Desmatrícula' : 'Matrícula';
+                                ?>
+                                <option value="<?php echo esc_attr($webhook->webhook_id); ?>">
+                                    <?php echo $enrollment_icon; ?> <?php echo esc_html($webhook->webhook_name); ?> 
+                                    (<?php echo $enrollment_label; ?>)
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <p class="form-description">Selecione o webhook que deseja testar</p>
+                    </div>
+                    
+                    <!-- Seleção de Usuário -->
+                    <div class="form-group">
+                        <label for="test_user_type">
+                            <span class="icon">👤</span> Tipo de Usuário *
+                        </label>
+                        <div class="radio-options">
+                            <label class="radio-option">
+                                <input type="radio" name="test_user_type" value="existing" checked>
+                                <span class="option-content">
+                                    <span class="option-icon">👥</span>
+                                    <span class="option-text">
+                                        <strong>Usuário Existente</strong>
+                                        <small>Selecionar usuário já cadastrado</small>
+                                    </span>
+                                </span>
+                            </label>
+                            
+                            <label class="radio-option">
+                                <input type="radio" name="test_user_type" value="new">
+                                <span class="option-content">
+                                    <span class="option-icon">➕</span>
+                                    <span class="option-text">
+                                        <strong>Novo Usuário</strong>
+                                        <small>Criar novo usuário para teste</small>
+                                    </span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Usuário Existente -->
+                    <div id="existing-user-section" class="form-group">
+                        <label for="test_user_id">
+                            <span class="icon">👤</span> Selecionar Usuário
+                        </label>
+                        <select name="test_user_id" id="test_user_id">
+                            <option value="">Selecione um usuário...</option>
+                            <?php foreach ($users as $user): ?>
+                                <option value="<?php echo $user->ID; ?>">
+                                    <?php echo esc_html($user->display_name); ?> 
+                                    (<?php echo esc_html($user->user_email); ?>)
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <p class="form-description">Selecione o aluno que será matriculado</p>
+                    </div>
+                    
+                    <!-- Novo Usuário -->
+                    <div id="new-user-section" class="form-group" style="display: none;">
+                        <label>
+                            <span class="icon">➕</span> Dados do Novo Usuário
+                        </label>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label for="test_new_name">Nome Completo</label>
+                                <input type="text" name="test_new_name" id="test_new_name" placeholder="João Silva">
+                            </div>
+                            <div class="form-col">
+                                <label for="test_new_email">Email</label>
+                                <input type="email" name="test_new_email" id="test_new_email" placeholder="joao@email.com">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label for="test_new_phone">Telefone</label>
+                                <input type="text" name="test_new_phone" id="test_new_phone" placeholder="11999999999">
+                            </div>
+                        </div>
+                        
+                        <p class="form-description">
+                            ℹ️ Um novo usuário será criado com senha gerada automaticamente e email de boas-vindas será enviado.
+                        </p>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="button button-primary button-large">
+                            <span class="dashicons dashicons-yes-alt"></span>
+                            🚀 Simular Webhook e Processar
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="test-info-box">
+                    <h3>📋 O que acontecerá:</h3>
+                    <ol>
+                        <li>✅ Webhook será simulado internamente com dados reais</li>
+                        <li>✅ Usuário será criado (se novo) ou usado (se existente)</li>
+                        <li>✅ Matrícula/desmatrícula será processada nos cursos configurados</li>
+                        <li>✅ Order bumps serão aplicados (se configurados)</li>
+                        <li>✅ Hook <code>tutor_after_enrolled</code> será disparado</li>
+                        <li>✅ ZAP Tutor Events capturará o evento</li>
+                        <li>✅ ZAP WhatsApp enviará mensagem automática</li>
+                        <li>✅ Logs serão registrados normalmente</li>
+                    </ol>
+                    
+                    <div class="warning-box">
+                        <span class="dashicons dashicons-warning"></span>
+                        <strong>Atenção:</strong> Esta é uma simulação real. O aluno será de fato matriculado/desmatriculado nos cursos!
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resultado do Teste -->
+            <div id="test-result" style="display: none;"></div>
+        </div>
+        
+        <style>
+        .webhook-test-page {
+            background: #f8fafc;
+            padding: 20px;
+        }
+        
+        .webhook-test-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            max-width: 900px;
+            margin: 20px auto;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #2d3748;
+        }
+        
+        .form-group .icon {
+            font-size: 18px;
+            margin-right: 5px;
+        }
+        
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .form-description {
+            font-size: 13px;
+            color: #718096;
+            margin: 5px 0 0 0;
+        }
+        
+        .radio-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .radio-option {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .radio-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+        
+        .option-content {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .radio-option input[type="radio"]:checked + .option-content {
+            border-color: #4299e1;
+            background: #ebf8ff;
+        }
+        
+        .option-icon {
+            font-size: 24px;
+            margin-right: 12px;
+        }
+        
+        .option-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .option-text strong {
+            font-size: 14px;
+            color: #2d3748;
+        }
+        
+        .option-text small {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 2px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-col label {
+            font-weight: 500;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+        
+        .form-actions {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .button-large {
+            padding: 12px 30px !important;
+            height: auto !important;
+            font-size: 16px !important;
+        }
+        
+        .test-info-box {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .test-info-box h3 {
+            margin-top: 0;
+            color: #2d3748;
+        }
+        
+        .test-info-box ol {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+        
+        .test-info-box li {
+            margin-bottom: 8px;
+            color: #4a5568;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .warning-box .dashicons {
+            color: #ff9800;
+            font-size: 20px;
+        }
+        
+        #test-result {
+            max-width: 900px;
+            margin: 20px auto;
+        }
+        </style>
+        
+        <script>
+        jQuery(document).ready(function($) {
+            // Toggle entre usuário existente e novo
+            $('input[name="test_user_type"]').on('change', function() {
+                if ($(this).val() === 'existing') {
+                    $('#existing-user-section').show();
+                    $('#new-user-section').hide();
+                    $('#test_user_id').prop('required', true);
+                    $('#test_new_name, #test_new_email').prop('required', false);
+                } else {
+                    $('#existing-user-section').hide();
+                    $('#new-user-section').show();
+                    $('#test_user_id').prop('required', false);
+                    $('#test_new_name, #test_new_email').prop('required', true);
+                }
+            });
+            
+            // Submit do formulário
+            $('#webhook-test-form').on('submit', function(e) {
+                e.preventDefault();
+                
+                var submitButton = $(this).find('button[type="submit"]');
+                submitButton.prop('disabled', true).html('<span class="dashicons dashicons-update-alt"></span> Processando...');
+                
+                $.ajax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    data: $(this).serialize() + '&action=webhook_receiver_test_webhook',
+                    success: function(response) {
+                        if (response.success) {
+                            $('#test-result').html(
+                                '<div class="notice notice-success is-dismissible">' +
+                                '<p><strong>✅ Teste realizado com sucesso!</strong></p>' +
+                                '<ul>' + response.data.details.map(function(detail) {
+                                    return '<li>' + detail + '</li>';
+                                }).join('') + '</ul>' +
+                                '</div>'
+                            ).show();
+                            
+                            // Scroll para resultado
+                            $('html, body').animate({
+                                scrollTop: $('#test-result').offset().top - 100
+                            }, 500);
+                        } else {
+                            $('#test-result').html(
+                                '<div class="notice notice-error is-dismissible">' +
+                                '<p><strong>❌ Erro ao processar teste:</strong></p>' +
+                                '<p>' + response.data.message + '</p>' +
+                                '</div>'
+                            ).show();
+                        }
+                    },
+                    error: function() {
+                        $('#test-result').html(
+                            '<div class="notice notice-error is-dismissible">' +
+                            '<p><strong>❌ Erro de conexão ao processar teste.</strong></p>' +
+                            '</div>'
+                        ).show();
+                    },
+                    complete: function() {
+                        submitButton.prop('disabled', false).html(
+                            '<span class="dashicons dashicons-yes-alt"></span> 🚀 Simular Webhook e Processar'
+                        );
+                    }
+                });
+            });
+        });
+        </script>
+        <?php
     }
     
     /**
@@ -3486,6 +3896,221 @@ class Webhook_Receiver {
         wp_send_json_success(array(
             'webhook_data' => $webhook->webhook_data,
             'formatted_data' => json_encode($json_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+        ));
+    }
+    
+    /**
+     * ========================================
+     * AJAX PARA TESTAR WEBHOOK
+     * ========================================
+     */
+    public function ajax_test_webhook() {
+        // Verificar nonce
+        check_ajax_referer('webhook_test_action', 'webhook_test_nonce');
+        
+        // Verificar permissões
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'Permissão negada'));
+        }
+        
+        global $wpdb;
+        $webhooks_table = $wpdb->prefix . 'webhook_receiver_endpoints';
+        $webhook_courses_table = $wpdb->prefix . 'webhook_receiver_courses';
+        
+        // Sanitizar dados
+        $webhook_id = sanitize_text_field($_POST['test_webhook_id']);
+        $user_type = sanitize_text_field($_POST['test_user_type']);
+        
+        // Validar webhook_id não vazio
+        if (empty($webhook_id)) {
+            wp_send_json_error(array('message' => 'ID do webhook é obrigatório'));
+        }
+        
+        // Buscar webhook
+        $webhook = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM $webhooks_table WHERE webhook_id = %s",
+            $webhook_id
+        ));
+        
+        if (!$webhook) {
+            wp_send_json_error(array('message' => 'Webhook não encontrado'));
+        }
+        
+        $details = array();
+        $user_id = 0;
+        $user_email = '';
+        $user_name = '';
+        $user_phone = '';
+        $is_new_user = false;
+        
+        // Processar usuário
+        if ($user_type === 'existing') {
+            $user_id = intval($_POST['test_user_id']);
+            $user = get_userdata($user_id);
+            
+            if (!$user) {
+                wp_send_json_error(array('message' => 'Usuário não encontrado'));
+            }
+            
+            $user_email = $user->user_email;
+            $user_name = $user->display_name;
+            $user_phone = get_user_meta($user_id, 'billing_phone', true);
+            
+            $details[] = '👤 Usuário existente: ' . $user_name . ' (' . $user_email . ')';
+            
+        } else {
+            // Criar novo usuário
+            $user_name = sanitize_text_field($_POST['test_new_name']);
+            $user_email = sanitize_email($_POST['test_new_email']);
+            $user_phone = sanitize_text_field($_POST['test_new_phone']);
+            
+            if (!$user_name || !$user_email) {
+                wp_send_json_error(array('message' => 'Nome e email são obrigatórios'));
+            }
+            
+            // Verificar se email já existe
+            if (email_exists($user_email)) {
+                $user = get_user_by('email', $user_email);
+                $user_id = $user->ID;
+                $details[] = '⚠️ Email já existe, usando usuário: ' . $user->display_name;
+            } else {
+                // Criar novo usuário
+                $random_password = wp_generate_password(12, true);
+                $user_id = wp_create_user($user_email, $random_password, $user_email);
+                
+                if (is_wp_error($user_id)) {
+                    wp_send_json_error(array('message' => 'Erro ao criar usuário: ' . $user_id->get_error_message()));
+                }
+                
+                // Extrair primeiro nome com validação
+                $name_parts = explode(' ', trim($user_name));
+                $first_name = !empty($name_parts[0]) ? $name_parts[0] : $user_name;
+                
+                // Atualizar dados do usuário
+                wp_update_user(array(
+                    'ID' => $user_id,
+                    'display_name' => $user_name,
+                    'first_name' => $first_name,
+                ));
+                
+                // Salvar telefone
+                if ($user_phone) {
+                    update_user_meta($user_id, 'billing_phone', $user_phone);
+                }
+                
+                $is_new_user = true;
+                $details[] = '✅ Novo usuário criado: ' . $user_name . ' (' . $user_email . ')';
+                $details[] = '🔑 Senha gerada: ' . $random_password;
+            }
+        }
+        
+        // Preparar payload simulado com ID único
+        $fake_payload = array(
+            'email' => $user_email,
+            'name' => $user_name,
+            'phone' => $user_phone,
+            'product_id' => 'TEST-' . uniqid(),
+            'transaction_id' => 'SIM-' . uniqid(),
+            'status' => 'approved',
+            'test_mode' => true
+        );
+        
+        $details[] = '🔗 Webhook simulado: ' . $webhook->webhook_name;
+        $details[] = '📦 Payload: ' . json_encode($fake_payload);
+        
+        // Buscar cursos do webhook
+        $course_ids = $wpdb->get_col($wpdb->prepare(
+            "SELECT course_id FROM $webhook_courses_table WHERE webhook_id = %s",
+            $webhook_id
+        ));
+        
+        // Buscar order bumps
+        $order_bumps_table = $wpdb->prefix . 'webhook_receiver_order_bumps';
+        $order_bumps = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM $order_bumps_table WHERE webhook_id = %s",
+            $webhook_id
+        ));
+        
+        if ($webhook->enrollment_type === 'unenroll') {
+            // Desmatricular
+            if (!empty($course_ids)) {
+                foreach ($course_ids as $course_id) {
+                    $is_enrolled = tutor_utils()->is_enrolled($course_id, $user_id);
+                    
+                    if ($is_enrolled) {
+                        // Buscar enrollment_id
+                        $enrollment_id = $wpdb->get_var($wpdb->prepare("
+                            SELECT ID FROM {$wpdb->posts} 
+                            WHERE post_type = 'tutor_enrolled' 
+                            AND post_parent = %d 
+                            AND post_author = %d
+                        ", $course_id, $user_id));
+                        
+                        if ($enrollment_id) {
+                            wp_delete_post($enrollment_id, true);
+                            $course = get_post($course_id);
+                            $details[] = '❌ Desmatriculado do curso: ' . $course->post_title;
+                        }
+                    } else {
+                        $course = get_post($course_id);
+                        $details[] = 'ℹ️ Não estava matriculado no curso: ' . $course->post_title;
+                    }
+                }
+            }
+        } else {
+            // Matricular nos cursos principais
+            if (!empty($course_ids)) {
+                foreach ($course_ids as $course_id) {
+                    $is_enrolled = tutor_utils()->is_enrolled($course_id, $user_id);
+                    
+                    if (!$is_enrolled) {
+                        if (function_exists('tutils')) {
+                            tutils()->do_enroll($course_id, 0, $user_id);
+                        }
+                        $course = get_post($course_id);
+                        $details[] = '✅ Matriculado no curso: ' . $course->post_title;
+                    } else {
+                        $course = get_post($course_id);
+                        $details[] = 'ℹ️ Já matriculado no curso: ' . $course->post_title;
+                    }
+                }
+            }
+            
+            // Matricular nos order bumps
+            if (!empty($order_bumps)) {
+                foreach ($order_bumps as $bump) {
+                    $bump_course_id = $bump->course_id;
+                    $is_enrolled = tutor_utils()->is_enrolled($bump_course_id, $user_id);
+                    
+                    if (!$is_enrolled) {
+                        if (function_exists('tutils')) {
+                            tutils()->do_enroll($bump_course_id, 0, $user_id);
+                        }
+                        $course = get_post($bump_course_id);
+                        $details[] = '📦 Matriculado no order bump: ' . $course->post_title;
+                    }
+                }
+            }
+        }
+        
+        // Atualizar dados do webhook
+        $wpdb->update(
+            $webhooks_table,
+            array('webhook_data' => json_encode($fake_payload)),
+            array('webhook_id' => $webhook_id),
+            array('%s'),
+            array('%s')
+        );
+        
+        $details[] = '🎯 Hooks do Tutor LMS devem ter sido disparados automaticamente';
+        $details[] = '📱 Se ZAP Tutor Events estiver ativo, evento deve ser capturado';
+        $details[] = '💬 Se WhatsApp estiver configurado, mensagem deve ser enviada';
+        
+        wp_send_json_success(array(
+            'message' => 'Teste realizado com sucesso!',
+            'details' => $details,
+            'user_id' => $user_id,
+            'webhook_id' => $webhook_id
         ));
     }
     
