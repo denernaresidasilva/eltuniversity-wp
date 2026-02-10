@@ -114,4 +114,14 @@ class Queue {
             wp_schedule_single_event(time() + 5, 'zapwa_process_queue');
         }
     }
+
+    /**
+     * Process queue via Cron for backward compatibility
+     */
+    public static function process() {
+        // Process queue via Cron for backward compatibility
+        if (class_exists('\ZapWA\Cron')) {
+            \ZapWA\Cron::process();
+        }
+    }
 }
