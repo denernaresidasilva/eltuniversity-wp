@@ -1,4 +1,30 @@
-public static function dispatch($event_key, $user_id, $context = []) {
+<?php
+/**
+ * Dispatcher Class
+ * 
+ * Coordinates event dispatching to multiple destinations
+ * 
+ * @package ZapTutorEvents
+ * @since 1.0.0
+ */
+
+namespace ZapTutorEvents;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+class Dispatcher {
+
+    /**
+     * Dispatch event to all configured destinations
+     * 
+     * @param string $event_key Event identifier
+     * @param int $user_id User ID
+     * @param array $context Event context data
+     * @return void
+     */
+    public static function dispatch($event_key, $user_id, $context = []) {
 
         if (empty($event_key) || empty($user_id)) {
             self::debug("Dispatch skipped: empty event_key or user_id", [
@@ -28,7 +54,7 @@ public static function dispatch($event_key, $user_id, $context = []) {
                 if ($result === false) {
                     self::debug_error("Logger failed to insert event", [
                         'event_key' => $event_key,
-                        'user_id' => $user_id,
+                        'user_id'   => $user_id,
                     ]);
                 } else {
                     self::debug("Event logged to database with ID: {$result}");
@@ -114,3 +140,4 @@ public static function dispatch($event_key, $user_id, $context = []) {
             }
         }
     }
+}
