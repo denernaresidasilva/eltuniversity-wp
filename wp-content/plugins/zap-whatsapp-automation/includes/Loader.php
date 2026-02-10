@@ -25,6 +25,10 @@ class Loader {
             \ZapWA\PostTypes\Message::register();
         }
 
+        if (class_exists('\ZapWA\Helpers')) {
+            \ZapWA\Helpers::init();
+        }
+
         if (class_exists('\ZapWA\Listener')) {
             \ZapWA\Listener::init();
         }
@@ -35,6 +39,10 @@ class Loader {
 
         if (class_exists('\ZapWA\Cron')) {
             \ZapWA\Cron::init();
+        }
+
+        if (class_exists('\ZapWA\HealthCheck')) {
+            \ZapWA\HealthCheck::init();
         }
     }
 
@@ -60,6 +68,7 @@ class Loader {
             'EvolutionAPI.php',
             'Cron.php',
             'Metrics.php', // ✅ MÉTRICAS
+            'HealthCheck.php', // ✅ HEALTH CHECK
         ];
 
         foreach ($core_files as $file) {

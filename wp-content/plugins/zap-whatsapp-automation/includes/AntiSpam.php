@@ -16,8 +16,9 @@ class AntiSpam {
             return false;
         }
 
-        // 1 mensagem a cada 30 segundos por número
-        set_transient($key, time(), 30);
+        // Permitir configurar via opção (padrão 30 segundos)
+        $interval = (int) get_option('zapwa_antispam_interval', 30);
+        set_transient($key, time(), $interval);
         return true;
     }
 }
