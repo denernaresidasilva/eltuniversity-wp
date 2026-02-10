@@ -506,6 +506,125 @@ class Webhook_Receiver {
     }
     
     /**
+     * ==========================================
+     * FORMATAÇÃO DE TELEFONE - FUNÇÕES AUXILIARES
+     * ==========================================
+     */
+
+    /**
+     * Limpar telefone (apenas números)
+     */
+    private function clean_phone($phone) {
+        return preg_replace('/[^0-9]/', '', $phone);
+    }
+
+    /**
+     * Validar telefone brasileiro
+     */
+    private function is_valid_phone($phone) {
+        $clean = $this->clean_phone($phone);
+        
+        // Remover DDI se houver
+        if (strlen($clean) > 11 && substr($clean, 0, 2) === '55') {
+            $clean = substr($clean, 2);
+        }
+        
+        // Validar tamanho (10 ou 11 dígitos)
+        return (strlen($clean) === 10 || strlen($clean) === 11);
+    }
+
+    /**
+     * Formatar telefone com máscara brasileira
+     */
+    private function format_phone_mask($phone) {
+        $clean = $this->clean_phone($phone);
+        
+        // Remover DDI
+        if (strlen($clean) > 11 && substr($clean, 0, 2) === '55') {
+            $clean = substr($clean, 2);
+        }
+        
+        if (strlen($clean) === 11) {
+            // Celular: (11) 99988-7766
+            return sprintf('(%s) %s-%s',
+                substr($clean, 0, 2),
+                substr($clean, 2, 5),
+                substr($clean, 7, 4)
+            );
+        } elseif (strlen($clean) === 10) {
+            // Fixo: (11) 3222-1100
+            return sprintf('(%s) %s-%s',
+                substr($clean, 0, 2),
+                substr($clean, 2, 4),
+                substr($clean, 6, 4)
+            );
+        }
+        
+        return $phone; // Retorna original se inválido
+    }
+
+    /**
+     * Formatar telefone para WhatsApp
+     */
+    private function format_phone_whatsapp($phone) {
+        $clean = $this->clean_phone($phone);
+        
+        // Remover DDI se já houver
+        if (strlen($clean) > 11 && substr($clean, 0, 2) === '55') {
+            $clean = substr($clean, 2);
+        }
+        
+        // Adicionar DDI 55
+        if (strlen($clean) === 10 || strlen($clean) === 11) {
+            return '55' . $clean;
+        }
+        
+        return '';
+    }
+
+    /**
+     * Salvar telefone com múltiplos formatos
+     */
+    private function save_phone_multiple_formats($user_id, $phone_raw) {
+        if (empty($phone_raw)) {
+            return;
+        }
+        
+        // Validar
+        if (!$this->is_valid_phone($phone_raw)) {
+            $this->log_webhook("AVISO: Telefone inválido recebido: $phone_raw");
+            return;
+        }
+        
+        // Limpar
+        $clean = $this->clean_phone($phone_raw);
+        
+        // Remover DDI para formato BR
+        if (strlen($clean) > 11 && substr($clean, 0, 2) === '55') {
+            $phone_br = substr($clean, 2);
+        } else {
+            $phone_br = $clean;
+        }
+        
+        // Salvar múltiplos formatos
+        update_user_meta($user_id, 'telefone_original', $phone_raw);
+        update_user_meta($user_id, 'telefone_limpo', $phone_br);
+        update_user_meta($user_id, 'telefone_whatsapp', '55' . $phone_br);
+        update_user_meta($user_id, 'telefone_formatado', $this->format_phone_mask($phone_br));
+        
+        // Backward compatibility (campo antigo)
+        update_user_meta($user_id, 'telefone', $phone_br);
+        
+        // Log
+        $this->log_webhook(sprintf(
+            "Telefone salvo - Original: %s | Limpo: %s | WhatsApp: 55%s",
+            $phone_raw,
+            $phone_br,
+            $phone_br
+        ));
+    }
+    
+    /**
      * ================================================================================
      * BUSCAR CAMPO RECURSIVAMENTE EM UM ARRAY
      * ================================================================================
@@ -777,7 +896,7 @@ class Webhook_Receiver {
                
                 // Salvar metadados adicionais
                 update_user_meta($user_id, 'cpf', $sale_data['cpf']);
-                update_user_meta($user_id, 'telefone', $sale_data['telefone']);
+                $this->save_phone_multiple_formats($user_id, $sale_data['telefone']);
                 
                 // Matricular usuário nos cursos principais
                 if (!empty($course_ids)) {
