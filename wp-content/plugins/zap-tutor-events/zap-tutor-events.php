@@ -62,7 +62,7 @@ add_action('plugins_loaded', function() {
     // Verificar se Tutor LMS está ativo
     if (!function_exists('tutor')) {
         add_action('admin_notices', function() {
-            echo '<div class="notice notice-error"><p><strong>ZAP Tutor Events:</strong> Requer o plugin Tutor LMS ativo.</p></div>';
+            echo '<div class="notice notice-error"><p><strong>' . esc_html__('ZAP Tutor Events:', 'zap-tutor-events') . '</strong> ' . esc_html__('Requer o plugin Tutor LMS ativo.', 'zap-tutor-events') . '</p></div>';
         });
         return;
     }

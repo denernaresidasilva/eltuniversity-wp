@@ -33,7 +33,7 @@ class Dispatcher {
                     $context
                 );
             } catch (\Exception $e) {
-                // Silenciosamente falha para não quebrar o site
+                // Silently fails to avoid breaking the site
                 error_log('ZAP Events Logger Error: ' . $e->getMessage());
             }
         }

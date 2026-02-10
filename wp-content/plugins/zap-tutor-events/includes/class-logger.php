@@ -12,10 +12,10 @@ class Logger {
         $table = $wpdb->prefix . 'zap_event_logs';
 
         // Verificar se a tabela existe antes de tentar inserir
-        $table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table'") === $table;
+        $table_exists = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $table)) === $table;
         
         if (!$table_exists) {
-            error_log('ZAP Events Logger: Tabela ' . $table . ' não existe');
+            error_log('ZAP Events Logger: Database table does not exist');
             return false;
         }
 
