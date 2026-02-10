@@ -89,6 +89,10 @@ class Loader {
             \ZapWA\Admin\AdminMenu::init();
         }
 
+        if (class_exists('\ZapWA\Admin\Actions')) {
+            \ZapWA\Admin\Actions::init();
+        }
+
         if (class_exists('\ZapWA\Admin\Ajax')) {
             \ZapWA\Admin\Ajax::init();
         }

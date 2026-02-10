@@ -10,8 +10,22 @@ class Cron {
         add_action('zapwa_process_queue', [__CLASS__, 'process']);
 
         if (!wp_next_scheduled('zapwa_process_queue')) {
-            wp_schedule_event(time(), 'minute', 'zapwa_process_queue');
+            wp_schedule_event(time(), 'zapwa_every_minute', 'zapwa_process_queue');
         }
+
+        // Register custom cron interval
+        add_filter('cron_schedules', [__CLASS__, 'add_cron_interval']);
+    }
+
+    /**
+     * Add custom minute interval for cron
+     */
+    public static function add_cron_interval($schedules) {
+        $schedules['zapwa_every_minute'] = [
+            'interval' => 60,
+            'display'  => __('Every Minute (ZapWA)')
+        ];
+        return $schedules;
     }
 
     public static function process() {
@@ -43,7 +57,7 @@ class Cron {
 
             Queue::done($item->id);
 
-            Logger::log(
+            Logger::log_send(
                 $item->user_id,
                 $item->event,
                 $item->phone,
@@ -55,6 +69,14 @@ class Cron {
 
             if ($item->attempts >= 3) {
                 Queue::fail($item->id);
+                
+                Logger::log_send(
+                    $item->user_id,
+                    $item->event,
+                    $item->phone,
+                    $text,
+                    'erro'
+                );
             }
         }
     }

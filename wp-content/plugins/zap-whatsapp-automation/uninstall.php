@@ -1,47 +1,23 @@
 <?php
-namespace ZapWA;
+/**
+ * Uninstall script for Zap WhatsApp Automation plugin
+ * This file is triggered when the plugin is uninstalled (deleted)
+ */
 
-if (!defined('ABSPATH')) {
+if (!defined('WP_UNINSTALL_PLUGIN')) {
     exit;
 }
 
-class Installer {
+global $wpdb;
 
-    public static function activate() {
+// Delete all plugin options
+delete_option('zapwa_api_url');
+delete_option('zapwa_api_token');
 
-        // 🔹 Registrar CPT manualmente (Loader ainda não existe aqui)
-        $cpt_file = ZAP_WA_PATH . 'includes/PostTypes/Message.php';
+// Drop custom tables
+$wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}zap_wa_logs");
+$wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}zapwa_queue");
 
-        if (file_exists($cpt_file)) {
-            require_once $cpt_file;
-
-            if (class_exists('\ZapWA\PostTypes\Message')) {
-                \ZapWA\PostTypes\Message::register();
-            }
-        }
-
-        // 🔹 Flush rewrite após registrar CPT
-        flush_rewrite_rules();
-
-        // 🔹 Opções padrão
-        if (get_option('zap_wa_queue') === false) {
-            add_option('zap_wa_queue', []);
-        }
-
-        if (get_option('zap_wa_api_url') === false) {
-            add_option('zap_wa_api_url', '');
-        }
-
-        if (get_option('zap_wa_api_key') === false) {
-            add_option('zap_wa_api_key', '');
-        }
-    }
-
-    public static function deactivate() {
-
-        // Limpa cron da fila
-        wp_clear_scheduled_hook('zap_wa_process_queue');
-
-        flush_rewrite_rules();
-    }
-}
+// Clear scheduled cron hooks
+wp_clear_scheduled_hook('zapwa_process_queue');
+wp_clear_scheduled_hook('zap_wa_process_queue');
