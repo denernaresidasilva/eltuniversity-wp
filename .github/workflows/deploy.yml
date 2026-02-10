@@ -19,5 +19,19 @@ jobs:
           port: 22
           timeout: 60s
           script: |
+            echo "Entrando na pasta do site..."
             cd /home/adminsite/htdocs/www.eltuniversity.com
-            git pull origin main
+
+            echo "Atualizando código..."
+            git pull --ff-only origin main
+
+            echo "Corrigindo permissões..."
+            find . -type d -exec chmod 755 {} \;
+            find . -type f -exec chmod 644 {} \;
+
+            echo "Limpando cache WordPress (se existir WP-CLI)..."
+            if command -v wp > /dev/null; then
+              wp cache flush --allow-root
+            fi
+
+            echo "Deploy finalizado com sucesso!"
