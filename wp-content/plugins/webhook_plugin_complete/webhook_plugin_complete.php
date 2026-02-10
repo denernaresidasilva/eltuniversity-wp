@@ -598,21 +598,25 @@ class Webhook_Receiver {
         // Remover DDI para formato BR
         $phone_br = $this->remove_ddi($phone_raw);
         
+        // Gerar formatos
+        $phone_whatsapp = $this->format_phone_whatsapp($phone_raw);
+        $phone_formatted = $this->format_phone_mask($phone_br);
+        
         // Salvar múltiplos formatos
         update_user_meta($user_id, 'telefone_original', $phone_raw);
         update_user_meta($user_id, 'telefone_limpo', $phone_br);
-        update_user_meta($user_id, 'telefone_whatsapp', $this->format_phone_whatsapp($phone_raw));
-        update_user_meta($user_id, 'telefone_formatado', $this->format_phone_mask($phone_br));
+        update_user_meta($user_id, 'telefone_whatsapp', $phone_whatsapp);
+        update_user_meta($user_id, 'telefone_formatado', $phone_formatted);
         
         // Backward compatibility (campo antigo)
         update_user_meta($user_id, 'telefone', $phone_br);
         
         // Log
         $this->log_webhook(sprintf(
-            "Telefone salvo - Original: %s | Limpo: %s | WhatsApp: 55%s",
+            "Telefone salvo - Original: %s | Limpo: %s | WhatsApp: %s",
             $phone_raw,
             $phone_br,
-            $phone_br
+            $phone_whatsapp
         ));
     }
     
