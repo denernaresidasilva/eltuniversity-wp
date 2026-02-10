@@ -54,7 +54,12 @@ class Cron {
 
         // Verificar anti-spam
         if (!AntiSpam::can_send($item->phone)) {
-            Logger::debug('Mensagem bloqueada por anti-spam', ['phone' => $item->phone]);
+            // Marcar como falhado para não bloquear a fila
+            Queue::fail($item->id);
+            Logger::debug('Mensagem bloqueada por anti-spam', [
+                'phone' => $item->phone,
+                'item_id' => $item->id
+            ]);
             return;
         }
 

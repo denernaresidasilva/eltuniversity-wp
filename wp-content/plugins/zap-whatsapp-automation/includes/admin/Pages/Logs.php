@@ -11,7 +11,7 @@ class Logs {
         $table = $wpdb->prefix . 'zap_wa_logs';
 
         // Filtros - Fixed SQL injection vulnerability by using complete prepared statement
-        $where_conditions = ['1=1'];
+        $where_conditions = [];
         $where_values = [];
 
         if (!empty($_GET['status'])) {
@@ -29,11 +29,10 @@ class Logs {
             $where_values[] = intval($_GET['user_id']);
         }
 
-        $where_clause = implode(' AND ', $where_conditions);
-
-        if (!empty($where_values)) {
+        if (!empty($where_conditions)) {
+            $where_clause = 'WHERE ' . implode(' AND ', $where_conditions);
             $query = $wpdb->prepare(
-                "SELECT * FROM $table WHERE $where_clause ORDER BY created_at DESC LIMIT 100",
+                "SELECT * FROM $table $where_clause ORDER BY created_at DESC LIMIT 100",
                 ...$where_values
             );
         } else {
