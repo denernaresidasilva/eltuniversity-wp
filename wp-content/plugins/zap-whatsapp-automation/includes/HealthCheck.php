@@ -59,8 +59,8 @@ class HealthCheck {
         $status['checks']['pending_queue'] = (int) $pending_count;
 
         // 4. Verificar Evolution API configurada
-        $api_url = get_option('zapwa_api_url');
-        $api_token = get_option('zapwa_api_token');
+        $api_url = get_option('zapwa_evolution_url');
+        $api_token = get_option('zapwa_evolution_token');
         $status['checks']['api_configured'] = !empty($api_url) && !empty($api_token);
 
         // 5. Verificar Listener ativo

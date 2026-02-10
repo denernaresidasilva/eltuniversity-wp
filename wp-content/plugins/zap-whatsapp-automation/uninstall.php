@@ -11,8 +11,12 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 global $wpdb;
 
 // Delete all plugin options
-delete_option('zapwa_api_url');
-delete_option('zapwa_api_token');
+delete_option('zapwa_evolution_url');
+delete_option('zapwa_evolution_token');
+delete_option('zapwa_evolution_instance');
+delete_option('zapwa_connection_type');
+delete_option('zapwa_official_phone_id');
+delete_option('zapwa_official_access_token');
 
 // Drop custom tables
 $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}zap_wa_logs");
