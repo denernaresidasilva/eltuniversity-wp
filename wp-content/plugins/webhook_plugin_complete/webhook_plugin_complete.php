@@ -3921,6 +3921,11 @@ class Webhook_Receiver {
         $webhook_id = sanitize_text_field($_POST['test_webhook_id']);
         $user_type = sanitize_text_field($_POST['test_user_type']);
         
+        // Validar webhook_id não vazio
+        if (empty($webhook_id)) {
+            wp_send_json_error(array('message' => 'ID do webhook é obrigatório'));
+        }
+        
         // Buscar webhook
         $webhook = $wpdb->get_row($wpdb->prepare(
             "SELECT * FROM $webhooks_table WHERE webhook_id = %s",
@@ -3977,11 +3982,15 @@ class Webhook_Receiver {
                     wp_send_json_error(array('message' => 'Erro ao criar usuário: ' . $user_id->get_error_message()));
                 }
                 
+                // Extrair primeiro nome com validação
+                $name_parts = explode(' ', trim($user_name));
+                $first_name = !empty($name_parts[0]) ? $name_parts[0] : $user_name;
+                
                 // Atualizar dados do usuário
                 wp_update_user(array(
                     'ID' => $user_id,
                     'display_name' => $user_name,
-                    'first_name' => explode(' ', $user_name)[0],
+                    'first_name' => $first_name,
                 ));
                 
                 // Salvar telefone
@@ -3992,21 +4001,15 @@ class Webhook_Receiver {
                 $is_new_user = true;
                 $details[] = '✅ Novo usuário criado: ' . $user_name . ' (' . $user_email . ')';
                 $details[] = '🔑 Senha gerada: ' . $random_password;
-                
-                // Enviar email de boas-vindas (se configurado)
-                $send_email = get_option('webhook_receiver_notify_user', 'no');
-                if ($send_email === 'yes') {
-                    $details[] = '📧 Email de boas-vindas enviado';
-                }
             }
         }
         
-        // Preparar payload simulado
+        // Preparar payload simulado com ID único
         $fake_payload = array(
             'email' => $user_email,
             'name' => $user_name,
             'phone' => $user_phone,
-            'product_id' => 'TEST-' . time(),
+            'product_id' => 'TEST-' . uniqid(),
             'transaction_id' => 'SIM-' . uniqid(),
             'status' => 'approved',
             'test_mode' => true
@@ -4099,9 +4102,9 @@ class Webhook_Receiver {
             array('%s')
         );
         
-        $details[] = '🎯 Hook tutor_after_enrolled disparado';
-        $details[] = '📱 ZAP Tutor Events deve ter capturado o evento';
-        $details[] = '💬 WhatsApp deve ter sido enviado (se configurado)';
+        $details[] = '🎯 Hooks do Tutor LMS devem ter sido disparados automaticamente';
+        $details[] = '📱 Se ZAP Tutor Events estiver ativo, evento deve ser capturado';
+        $details[] = '💬 Se WhatsApp estiver configurado, mensagem deve ser enviada';
         
         wp_send_json_success(array(
             'message' => 'Teste realizado com sucesso!',
