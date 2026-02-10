@@ -14,10 +14,24 @@ class Listener {
      */
     public static function handle($payload) {
 
-        if (
-            empty($payload['event']) ||
-            empty($payload['user_id'])
-        ) {
+        // 1. Validar user_id
+        if (empty($payload['user_id'])) {
+            error_log('[ZAP WhatsApp] Evento sem user_id: ' . wp_json_encode($payload));
+            return;
+        }
+        
+        $user_id = absint($payload['user_id']);
+        
+        // 2. Verificar se usuário existe no WordPress
+        $user = get_userdata($user_id);
+        if (!$user) {
+            error_log("[ZAP WhatsApp] User ID {$user_id} não existe no WordPress");
+            return;
+        }
+        
+        // 3. Validar evento
+        if (empty($payload['event'])) {
+            error_log("[ZAP WhatsApp] Evento sem tipo para user {$user_id}");
             return;
         }
 
@@ -35,20 +49,31 @@ class Listener {
         }
 
         // 📞 Buscar telefone do usuário
-        $phone = Helpers::get_user_phone($payload['user_id']);
+        $phone = Helpers::get_user_phone($user_id);
 
         if (!$phone) {
+            error_log("[ZAP WhatsApp] User ID {$user_id} ({$user->user_email}) não tem telefone cadastrado");
             Logger::debug('Usuário sem telefone', [
-                'user_id' => $payload['user_id']
+                'user_id' => $user_id,
+                'user_email' => $user->user_email
             ]);
             return;
         }
+        
+        // 4. Validar telefone
+        if (!self::is_valid_phone($phone)) {
+            error_log("[ZAP WhatsApp] Telefone inválido para user ID {$user_id}: {$phone}");
+            return;
+        }
+        
+        // 5. Log do processamento
+        error_log("[ZAP WhatsApp] Processando evento '{$payload['event']}' para user {$user_id} - Telefone: {$phone}");
 
         foreach ($messages as $message) {
 
             Queue::add([
                 'message_id' => $message->ID, // ✅ CORRETO
-                'user_id'    => $payload['user_id'],
+                'user_id'    => $user_id,
                 'phone'      => $phone,
                 'event'      => $payload['event'],
                 'context'    => $payload['context'] ?? [],
@@ -59,7 +84,22 @@ class Listener {
                 'message_id' => $message->ID,
                 'event'      => $payload['event'],
                 'phone'      => $phone,
+                'user_name'  => $user->display_name,
             ]);
         }
+    }
+    
+    /**
+     * Valida formato do telefone
+     * 
+     * @param string $phone Telefone formatado
+     * @return bool
+     */
+    private static function is_valid_phone($phone) {
+        // Remove tudo exceto números
+        $digits = preg_replace('/[^0-9]/', '', $phone);
+        
+        // Telefone deve ter pelo menos 10 dígitos (incluindo DDD)
+        return strlen($digits) >= 10;
     }
 }

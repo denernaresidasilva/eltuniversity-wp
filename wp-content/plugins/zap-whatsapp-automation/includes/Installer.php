@@ -51,6 +51,11 @@ class Installer {
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta($sql_logs);
         dbDelta($sql_queue);
+        
+        // Criar tabela de eventos processados
+        if (class_exists('\ZapWA\EventLogReader')) {
+            \ZapWA\EventLogReader::create_table();
+        }
 
         // Set default options with standardized names
         if (get_option('zapwa_api_url') === false) {
@@ -91,6 +96,7 @@ class Installer {
     public static function deactivate() {
         // Clear scheduled cron hooks
         wp_clear_scheduled_hook('zapwa_process_queue');
+        wp_clear_scheduled_hook('zapwa_process_event_logs');
         
         // Flush rewrite rules
         flush_rewrite_rules();
