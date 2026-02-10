@@ -26,11 +26,16 @@ class Dispatcher {
 
         // ✅ LOG INTERNO (AGORA VAI APARECER)
         if (class_exists(__NAMESPACE__ . '\\Logger')) {
-            Logger::log(
-                $event_key,
-                $user_id,
-                $context
-            );
+            try {
+                Logger::log(
+                    $event_key,
+                    $user_id,
+                    $context
+                );
+            } catch (\Exception $e) {
+                // Silenciosamente falha para não quebrar o site
+                error_log('ZAP Events Logger Error: ' . $e->getMessage());
+            }
         }
 
         // 🔥 DISPARA PARA PLUGINS OUVINTES

@@ -11,7 +11,15 @@ class Logger {
 
         $table = $wpdb->prefix . 'zap_event_logs';
 
-        $wpdb->insert(
+        // Verificar se a tabela existe antes de tentar inserir
+        $table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table'") === $table;
+        
+        if (!$table_exists) {
+            error_log('ZAP Events Logger: Tabela ' . $table . ' não existe');
+            return false;
+        }
+
+        $result = $wpdb->insert(
             $table,
             [
                 'event_key'  => sanitize_text_field($event_key),
@@ -26,5 +34,12 @@ class Logger {
                 '%s',
             ]
         );
+
+        if ($result === false) {
+            error_log('ZAP Events Logger: Erro ao inserir evento - ' . $wpdb->last_error);
+            return false;
+        }
+
+        return true;
     }
 }

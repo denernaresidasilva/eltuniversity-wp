@@ -58,4 +58,15 @@ if (file_exists(ZAP_EVENTS_PATH . 'includes/class-plugin.php')) {
 /**
  * Inicialização (COM NAMESPACE CORRETO)
  */
-add_action('plugins_loaded', ['ZapTutorEvents\\Plugin', 'init']);
+add_action('plugins_loaded', function() {
+    // Verificar se Tutor LMS está ativo
+    if (!function_exists('tutor')) {
+        add_action('admin_notices', function() {
+            echo '<div class="notice notice-error"><p><strong>ZAP Tutor Events:</strong> Requer o plugin Tutor LMS ativo.</p></div>';
+        });
+        return;
+    }
+    
+    // Inicializar plugin
+    \ZapTutorEvents\Plugin::init();
+});
