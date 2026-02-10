@@ -75,7 +75,7 @@ class Admin {
     public static function logs_page() {
         global $wpdb;
 
-        // Get filters
+        // Read and sanitize filter parameters (used by both display and export)
         $event_filter = isset($_GET['event_filter']) ? sanitize_text_field($_GET['event_filter']) : '';
         $user_filter = isset($_GET['user_filter']) ? absint($_GET['user_filter']) : 0;
         $date_from = isset($_GET['date_from']) ? sanitize_text_field($_GET['date_from']) : '';
@@ -83,8 +83,9 @@ class Admin {
         $per_page = isset($_GET['per_page']) ? absint($_GET['per_page']) : 50;
         $paged = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
 
-        // Handle CSV export
+        // Handle CSV export with CSRF protection
         if (isset($_GET['export_csv'])) {
+            check_admin_referer('zap_export_logs', 'zap_export_nonce');
             self::export_logs_csv($event_filter, $user_filter, $date_from, $date_to);
             return;
         }
@@ -109,6 +110,7 @@ class Admin {
             <div class="tablenav top">
                 <form method="get" style="display: inline-block;">
                     <input type="hidden" name="page" value="zap-tutor-events-logs">
+                    <?php wp_nonce_field('zap_export_logs', 'zap_export_nonce'); ?>
                     
                     <select name="event_filter">
                         <option value="">Todos os eventos</option>
