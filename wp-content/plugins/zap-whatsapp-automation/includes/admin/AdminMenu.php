@@ -19,7 +19,6 @@ class AdminMenu {
 
         $files = [
             'Connection.php',
-            'Settings.php',
             'Messages.php',
             'Logs.php',
             'History.php',
@@ -36,36 +35,14 @@ class AdminMenu {
 
     public static function register_menu() {
 
-        if (!class_exists('ZapWA\\Admin\\Pages\\Settings')) {
-            return;
-        }
-
         add_menu_page(
             'Zap WhatsApp Automation',
             'Zap WhatsApp',
             'manage_options',
             'zap-wa',
-            ['ZapWA\\Admin\\Pages\\Settings', 'render'],
+            ['ZapWA\\Admin\\Pages\\Connection', 'render'],
             'dashicons-whatsapp',
             57
-        );
-
-        add_submenu_page(
-            'zap-wa',
-            'Conexão',
-            'Conexão WhatsApp',
-            'manage_options',
-            'zap-wa-connection',
-            ['ZapWA\\Admin\\Pages\\Connection', 'render']
-        );
-
-        add_submenu_page(
-            'zap-wa',
-            'Configurações',
-            'Configurações',
-            'manage_options',
-            'zap-wa',
-            ['ZapWA\\Admin\\Pages\\Settings', 'render']
         );
 
         add_submenu_page(
