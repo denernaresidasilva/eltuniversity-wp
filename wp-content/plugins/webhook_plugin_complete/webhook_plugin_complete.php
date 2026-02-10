@@ -571,14 +571,12 @@ class Webhook_Receiver {
      * Formatar telefone para WhatsApp
      */
     private function format_phone_whatsapp($phone) {
-        $clean = $this->remove_ddi($phone);
-        
-        // Adicionar DDI 55
-        if (strlen($clean) === 10 || strlen($clean) === 11) {
-            return '55' . $clean;
+        if (!$this->is_valid_phone($phone)) {
+            return '';
         }
         
-        return '';
+        $clean = $this->remove_ddi($phone);
+        return '55' . $clean;
     }
 
     /**
