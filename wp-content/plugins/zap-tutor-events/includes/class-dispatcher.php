@@ -25,7 +25,7 @@ class Dispatcher {
      * @return void
      */
     public static function dispatch($event_key, $user_id, $context = []) {
-
+        
         if (empty($event_key) || empty($user_id)) {
             self::debug("Dispatch skipped: empty event_key or user_id", [
                 'event_key' => $event_key,
