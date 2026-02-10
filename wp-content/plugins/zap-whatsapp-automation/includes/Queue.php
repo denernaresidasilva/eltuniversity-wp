@@ -7,10 +7,6 @@ if (!defined('ABSPATH')) {
 
 class Queue {
 
-    public static function init() {
-        add_action('zapwa_process_queue', [self::class, 'process']);
-    }
-
     /**
      * Get next pending item from queue
      * @return object|null
@@ -117,13 +113,5 @@ class Queue {
         if (!wp_next_scheduled('zapwa_process_queue')) {
             wp_schedule_single_event(time() + 5, 'zapwa_process_queue');
         }
-    }
-
-    /**
-     * Process queue (legacy method for backward compatibility)
-     */
-    public static function process() {
-        // This method exists for backward compatibility
-        // The actual processing is done by Cron::process()
     }
 }

@@ -29,8 +29,8 @@ class Ajax {
             wp_send_json_error('Dados inválidos');
         }
 
-        $api    = new EvolutionAPI();
-        $result = $api->send_message($phone, $message);
+        // Call static method directly instead of instantiating
+        $result = EvolutionAPI::send_message($phone, $message);
 
         if (!$result['success']) {
             wp_send_json_error($result['error']);
