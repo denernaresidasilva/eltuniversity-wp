@@ -9,6 +9,7 @@ class Metrics {
         global $wpdb;
         $table = $wpdb->prefix . 'zap_wa_logs';
 
+        // Safe: No user input in these queries
         return [
             'total'     => (int) $wpdb->get_var("SELECT COUNT(*) FROM $table"),
             'sent'      => (int) $wpdb->get_var("SELECT COUNT(*) FROM $table WHERE status='enviado'"),
@@ -21,6 +22,7 @@ class Metrics {
         global $wpdb;
         $table = $wpdb->prefix . 'zap_wa_logs';
 
+        // Safe: No user input in this query
         return $wpdb->get_results("
             SELECT event, COUNT(*) as total
             FROM $table

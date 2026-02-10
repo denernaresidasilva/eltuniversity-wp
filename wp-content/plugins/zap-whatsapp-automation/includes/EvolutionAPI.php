@@ -47,6 +47,19 @@ class EvolutionAPI {
             'event'   => $payload['event'] ?? '',
             'status'  => is_wp_error($response) ? 'erro' : 'enviado'
         ]);
+
+        // Registrar também no banco de dados
+        $status = is_wp_error($response) ? 'erro' : 'enviado';
+        $error = is_wp_error($response) ? $response->get_error_message() : null;
+
+        Logger::log_send(
+            $user_id,
+            $payload['event'] ?? 'manual',
+            $phone,
+            $message,
+            $status,
+            $error
+        );
     }
 
     /**
