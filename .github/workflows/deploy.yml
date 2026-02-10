@@ -22,6 +22,17 @@ jobs:
             echo "Entrando na pasta do site..."
             cd /home/adminsite/htdocs/www.eltuniversity.com
 
+            echo "Verificando alterações locais..."
+            git fetch origin main
+
+            # Se houver alterações locais, resetar
+            if [ -n "$(git status --porcelain)" ]; then
+              echo "Alterações locais encontradas. Resetando..."
+              git reset --hard origin/main
+            else
+              echo "Nenhuma alteração local."
+            fi
+
             echo "Atualizando código..."
             git pull --ff-only origin main
 
@@ -29,7 +40,7 @@ jobs:
             find . -type d -exec chmod 755 {} \;
             find . -type f -exec chmod 644 {} \;
 
-            echo "Limpando cache WordPress (se existir WP-CLI)..."
+            echo "Limpando cache WordPress (se WP-CLI existir)..."
             if command -v wp > /dev/null; then
               wp cache flush --allow-root
             fi
