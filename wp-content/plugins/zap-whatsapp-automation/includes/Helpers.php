@@ -241,16 +241,19 @@ class Helpers {
         
         // Buscar usuários que receberam eventos mas não têm telefone
         $table_name = $wpdb->prefix . 'zap_wa_logs';
-        $query = $wpdb->prepare(
-            "SELECT DISTINCT user_id 
-            FROM {$table_name}
-            WHERE phone IS NULL OR phone = %s
-            ORDER BY created_at DESC
-            LIMIT %d",
-            '',
-            50
+        
+        $results = $wpdb->get_col(
+            $wpdb->prepare(
+                "SELECT DISTINCT user_id 
+                FROM `{$table_name}`
+                WHERE phone IS NULL OR phone = %s
+                ORDER BY created_at DESC
+                LIMIT %d",
+                '',
+                50
+            )
         );
         
-        return $wpdb->get_col($query);
+        return $results ?: [];
     }
 }

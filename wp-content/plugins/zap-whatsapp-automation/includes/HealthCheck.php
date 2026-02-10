@@ -50,9 +50,12 @@ class HealthCheck {
         }
 
         // 3. Verificar fila pendente
-        $pending_count = $wpdb->get_var(
-            "SELECT COUNT(*) FROM {$wpdb->prefix}zapwa_queue WHERE status = 'pending'"
+        $table_name = $wpdb->prefix . 'zapwa_queue';
+        $query = $wpdb->prepare(
+            "SELECT COUNT(*) FROM {$table_name} WHERE status = %s",
+            'pending'
         );
+        $pending_count = $wpdb->get_var($query);
         $status['checks']['pending_queue'] = (int) $pending_count;
 
         // 4. Verificar Evolution API configurada
