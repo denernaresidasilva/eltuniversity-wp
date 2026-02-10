@@ -35,6 +35,10 @@ class AdminMenu {
 
     public static function register_menu() {
 
+        if (!class_exists('ZapWA\\Admin\\Pages\\Connection')) {
+            return;
+        }
+
         add_menu_page(
             'Zap WhatsApp Automation',
             'Zap WhatsApp',
