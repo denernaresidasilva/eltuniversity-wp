@@ -519,15 +519,24 @@ class Webhook_Receiver {
     }
 
     /**
-     * Validar telefone brasileiro
+     * Remover DDI brasileiro (55) se presente
      */
-    private function is_valid_phone($phone) {
+    private function remove_ddi($phone) {
         $clean = $this->clean_phone($phone);
         
         // Remover DDI se houver
         if (strlen($clean) > 11 && substr($clean, 0, 2) === '55') {
-            $clean = substr($clean, 2);
+            return substr($clean, 2);
         }
+        
+        return $clean;
+    }
+
+    /**
+     * Validar telefone brasileiro
+     */
+    private function is_valid_phone($phone) {
+        $clean = $this->remove_ddi($phone);
         
         // Validar tamanho (10 ou 11 dígitos)
         return (strlen($clean) === 10 || strlen($clean) === 11);
@@ -537,12 +546,7 @@ class Webhook_Receiver {
      * Formatar telefone com máscara brasileira
      */
     private function format_phone_mask($phone) {
-        $clean = $this->clean_phone($phone);
-        
-        // Remover DDI
-        if (strlen($clean) > 11 && substr($clean, 0, 2) === '55') {
-            $clean = substr($clean, 2);
-        }
+        $clean = $this->remove_ddi($phone);
         
         if (strlen($clean) === 11) {
             // Celular: (11) 99988-7766
@@ -567,12 +571,7 @@ class Webhook_Receiver {
      * Formatar telefone para WhatsApp
      */
     private function format_phone_whatsapp($phone) {
-        $clean = $this->clean_phone($phone);
-        
-        // Remover DDI se já houver
-        if (strlen($clean) > 11 && substr($clean, 0, 2) === '55') {
-            $clean = substr($clean, 2);
-        }
+        $clean = $this->remove_ddi($phone);
         
         // Adicionar DDI 55
         if (strlen($clean) === 10 || strlen($clean) === 11) {
@@ -592,24 +591,17 @@ class Webhook_Receiver {
         
         // Validar
         if (!$this->is_valid_phone($phone_raw)) {
-            $this->log_webhook("AVISO: Telefone inválido recebido: $phone_raw");
+            $this->log_webhook("AVISO: Telefone inválido recebido: $phone_raw (deve ter 10 ou 11 dígitos após remover código do país)");
             return;
         }
         
-        // Limpar
-        $clean = $this->clean_phone($phone_raw);
-        
         // Remover DDI para formato BR
-        if (strlen($clean) > 11 && substr($clean, 0, 2) === '55') {
-            $phone_br = substr($clean, 2);
-        } else {
-            $phone_br = $clean;
-        }
+        $phone_br = $this->remove_ddi($phone_raw);
         
         // Salvar múltiplos formatos
         update_user_meta($user_id, 'telefone_original', $phone_raw);
         update_user_meta($user_id, 'telefone_limpo', $phone_br);
-        update_user_meta($user_id, 'telefone_whatsapp', '55' . $phone_br);
+        update_user_meta($user_id, 'telefone_whatsapp', $this->format_phone_whatsapp($phone_raw));
         update_user_meta($user_id, 'telefone_formatado', $this->format_phone_mask($phone_br));
         
         // Backward compatibility (campo antigo)
