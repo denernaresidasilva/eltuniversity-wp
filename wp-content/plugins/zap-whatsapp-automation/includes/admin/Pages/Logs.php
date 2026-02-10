@@ -37,7 +37,8 @@ class Logs {
                 ...$where_values
             );
         } else {
-            $query = "SELECT * FROM $table WHERE 1=1 ORDER BY created_at DESC LIMIT 100";
+            // No filters applied, query without WHERE clause
+            $query = "SELECT * FROM $table ORDER BY created_at DESC LIMIT 100";
         }
 
         $logs = $wpdb->get_results($query);
