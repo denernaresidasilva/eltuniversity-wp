@@ -5,16 +5,33 @@ if (!defined('ABSPATH')) exit;
 
 class QRCodeGenerator {
     
+    private static $autoloader_loaded = false;
+    
+    /**
+     * Load composer autoloader once
+     */
+    private static function load_autoloader() {
+        if (self::$autoloader_loaded) {
+            return true;
+        }
+        
+        $autoload = plugin_dir_path(__FILE__) . '../vendor/autoload.php';
+        if (!file_exists($autoload)) {
+            return false;
+        }
+        
+        require_once $autoload;
+        self::$autoloader_loaded = true;
+        return true;
+    }
+    
     /**
      * Generate QR Code as Base64 PNG using chillerlan/php-qrcode
      */
     public static function generate_base64($data) {
-        // Load composer autoloader
-        $autoload = plugin_dir_path(__FILE__) . '../vendor/autoload.php';
-        if (!file_exists($autoload)) {
+        if (!self::load_autoloader()) {
             return null;
         }
-        require_once $autoload;
         
         $options = new \chillerlan\QRCode\QROptions([
             'version'      => 5,

@@ -45,13 +45,13 @@
                     nonce: zapwaConfig.nonce
                 },
                 success: function(response) {
-                    if (response.success && response.qrcode_base64) {
-                        self.displayQRCode(response.qrcode_base64);
-                        self.startTimer(response.expires_in || 120);
+                    if (response.success && response.data && response.data.qrcode_base64) {
+                        self.displayQRCode(response.data.qrcode_base64);
+                        self.startTimer(response.data.expires_in || 120);
                         self.startConnectionCheck();
                         self.showStatus('Escaneie o QR Code com seu WhatsApp', 'info');
                     } else {
-                        self.showError(response.error || 'Erro ao carregar QR Code');
+                        self.showError(response.data && response.data.error ? response.data.error : 'Erro ao carregar QR Code');
                     }
                 },
                 error: function(xhr, status, error) {

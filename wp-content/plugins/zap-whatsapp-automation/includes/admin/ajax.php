@@ -48,13 +48,13 @@ class Ajax {
         check_ajax_referer('zapwa_qrcode', 'nonce');
 
         if (!current_user_can('manage_options')) {
-            wp_send_json_error('Permissão negada');
+            wp_send_json_error(['error' => 'Permissão negada']);
         }
 
         $instance = sanitize_text_field($_POST['instance'] ?? '');
 
         if (!$instance) {
-            wp_send_json_error('Nome da instância não informado');
+            wp_send_json_error(['error' => 'Nome da instância não informado']);
         }
 
         $result = QRCodeGenerator::fetch_and_generate($instance);
@@ -62,7 +62,7 @@ class Ajax {
         if ($result['success']) {
             wp_send_json_success($result);
         } else {
-            wp_send_json_error($result['error']);
+            wp_send_json_error(['error' => $result['error']]);
         }
     }
 
