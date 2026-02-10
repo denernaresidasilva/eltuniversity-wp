@@ -14,7 +14,7 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
+          username: adminsite
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           timeout: 60s
