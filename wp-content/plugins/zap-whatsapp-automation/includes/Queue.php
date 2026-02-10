@@ -8,6 +8,13 @@ if (!defined('ABSPATH')) {
 class Queue {
 
     /**
+     * Initialize hooks
+     */
+    public static function init() {
+        // No hooks needed for Queue
+    }
+
+    /**
      * Get next pending item from queue
      * @return object|null
      */
@@ -24,6 +31,24 @@ class Queue {
                 ORDER BY run_at ASC 
                 LIMIT 1",
                 current_time('mysql')
+            )
+        );
+    }
+
+    /**
+     * Get item by ID
+     * @param int $id
+     * @return object|null
+     */
+    public static function get_by_id($id) {
+        global $wpdb;
+        
+        $table = $wpdb->prefix . 'zapwa_queue';
+        
+        return $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM $table WHERE id = %d",
+                $id
             )
         );
     }

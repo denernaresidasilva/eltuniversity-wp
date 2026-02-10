@@ -54,6 +54,18 @@ class Cron {
 
         // Verificar anti-spam
         if (!AntiSpam::can_send($item->phone)) {
+            // Incrementar tentativas para evitar loop infinito
+            Queue::attempt($item->id);
+            
+            // Recarregar item para obter attempts atualizado
+            $item = Queue::get_by_id($item->id);
+            
+            // Verificar se item ainda existe
+            if (!$item) {
+                Logger::debug('Item removido durante processamento anti-spam');
+                return;
+            }
+            
             // Se já tentou 10 vezes, considerar como falha
             if ($item->attempts >= 10) {
                 Queue::fail($item->id);
