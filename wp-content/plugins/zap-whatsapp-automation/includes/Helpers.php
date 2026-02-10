@@ -156,6 +156,7 @@ class Helpers {
         // 11 dígitos: DDD + 9 dígitos (móvel)
         // 12 dígitos: DDI (55) + DDD + 8 dígitos
         // 13 dígitos: DDI (55) + DDD + 9 dígitos
+        // 14 dígitos: DDI + DDD + 9 dígitos (outros países)
         
         return $length >= 10 && $length <= 14;
     }
@@ -239,13 +240,16 @@ class Helpers {
         global $wpdb;
         
         // Buscar usuários que receberam eventos mas não têm telefone
-        $query = "
-            SELECT DISTINCT user_id 
-            FROM {$wpdb->prefix}zap_wa_logs 
-            WHERE phone IS NULL OR phone = ''
+        $table_name = $wpdb->prefix . 'zap_wa_logs';
+        $query = $wpdb->prepare(
+            "SELECT DISTINCT user_id 
+            FROM {$table_name}
+            WHERE phone IS NULL OR phone = %s
             ORDER BY created_at DESC
-            LIMIT 50
-        ";
+            LIMIT %d",
+            '',
+            50
+        );
         
         return $wpdb->get_col($query);
     }

@@ -32,7 +32,7 @@ class HealthCheck {
         
         foreach ($tables as $table) {
             $table_name = $wpdb->prefix . $table;
-            $exists = $wpdb->get_var("SHOW TABLES LIKE '$table_name'") === $table_name;
+            $exists = $wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table_name)) === $table_name;
             
             $status['checks']['table_' . $table] = $exists;
             
