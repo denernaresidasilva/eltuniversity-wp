@@ -56,6 +56,18 @@ define( 'AI1WM_BACKUPS_URL', content_url( 'ai1wm-backups', AI1WM_PLUGIN_BASENAME
 // Themes Absolute Path
 define( 'AI1WM_THEMES_PATH', get_theme_root() );
 
+/**
+ * Load plugin textdomain correctly on init action
+ */
+function ai1wm_load_textdomain() {
+    load_plugin_textdomain(
+        'all-in-one-wp-migration',
+        false,
+        dirname(plugin_basename(__FILE__)) . '/languages'
+    );
+}
+add_action('init', 'ai1wm_load_textdomain');
+
 // Include constants
 require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'constants.php';
 

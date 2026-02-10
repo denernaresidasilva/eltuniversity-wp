@@ -24,8 +24,17 @@ public static function dispatch($event_key, $user_id, $context = []) {
         try {
             // 1. Log to database
             if (class_exists(__NAMESPACE__ . '\\Logger')) {
-                Logger::log($event_key, $user_id, $context);
-                self::debug("Event logged to database");
+                $result = Logger::log($event_key, $user_id, $context);
+                if ($result === false) {
+                    self::debug_error("Logger failed to insert event", [
+                        'event_key' => $event_key,
+                        'user_id' => $user_id,
+                    ]);
+                } else {
+                    self::debug("Event logged to database with ID: {$result}");
+                }
+            } else {
+                self::debug_error("Logger class not found");
             }
 
             // 2. Send to webhook (async via WP Cron if Queue enabled)
@@ -33,12 +42,25 @@ public static function dispatch($event_key, $user_id, $context = []) {
                 $use_queue = get_option('zap_events_use_queue', false);
                 
                 if ($use_queue && class_exists(__NAMESPACE__ . '\\Queue')) {
-                    Queue::enqueue($event_key, $user_id, $context);
-                    self::debug("Event queued for webhook processing");
+                    $queued = Queue::enqueue($event_key, $user_id, $context);
+                    if ($queued) {
+                        self::debug("Event queued for webhook processing");
+                    } else {
+                        self::debug_error("Failed to queue event");
+                    }
                 } else {
-                    Webhook::send($event_key, $user_id, $context);
-                    self::debug("Event sent to webhook");
+                    if ($use_queue && !class_exists(__NAMESPACE__ . '\\Queue')) {
+                        self::debug_error("Queue class not found, falling back to direct webhook");
+                    }
+                    $sent = Webhook::send($event_key, $user_id, $context);
+                    if ($sent) {
+                        self::debug("Event sent to webhook successfully");
+                    } else {
+                        self::debug_error("Webhook send failed or no URL configured");
+                    }
                 }
+            } else {
+                self::debug_error("Webhook class not found");
             }
 
             // 3. Trigger global WordPress action for other plugins
@@ -51,6 +73,11 @@ public static function dispatch($event_key, $user_id, $context = []) {
                 'user_id'   => $user_id,
                 'trace'     => $e->getTraceAsString(),
             ]);
+            
+            // Re-lançar exceção crítica se for erro fatal
+            if ($e instanceof \Error) {
+                throw $e;
+            }
         }
     }
 
@@ -70,16 +97,20 @@ public static function dispatch($event_key, $user_id, $context = []) {
     }
 
     /**
-     * Log debug error
+     * Log debug error - SEMPRE loga erros críticos
      */
     private static function debug_error($message, $context = []) {
-        if (!defined('ZAP_EVENTS_DEBUG') || !ZAP_EVENTS_DEBUG) {
-            return;
-        }
-
+        // SEMPRE loga erros, independente do modo DEBUG
         $log_message = '[ZAP Events ERROR] ' . $message;
         if (!empty($context)) {
             $log_message .= ' | Context: ' . wp_json_encode($context);
         }
         error_log($log_message);
+        
+        // Se debug estiver ativo, loga também detalhes adicionais
+        if (defined('ZAP_EVENTS_DEBUG') && ZAP_EVENTS_DEBUG) {
+            if (!empty($context['trace'])) {
+                error_log('[ZAP Events TRACE] ' . $context['trace']);
+            }
+        }
     }

@@ -32,11 +32,11 @@ class Logger {
         global $wpdb;
         $table = $wpdb->prefix . 'zap_event_logs';
 
-        // Verifica se a tabela existe antes de tentar inserir (Segurança adicional)
+        // Verifica se a tabela existe antes de tentar inserir
         $table_exists = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $table)) === $table;
         
         if (!$table_exists) {
-            error_log('ZAP Events Logger: Database table does not exist');
+            error_log('[ZAP Events Logger ERROR] Database table does not exist: ' . $table);
             return false;
         }
 
@@ -57,11 +57,14 @@ class Logger {
         );
 
         if ($result === false) {
-            error_log('ZAP Events Logger: Erro ao inserir evento - ' . $wpdb->last_error);
+            error_log('[ZAP Events Logger ERROR] Failed to insert event - ' . $wpdb->last_error);
+            error_log('[ZAP Events Logger ERROR] Event data: ' . wp_json_encode([
+                'event_key' => $event_key,
+                'user_id' => $user_id,
+            ]));
             return false;
         }
 
-        // Retorna o ID da inserção conforme a branch main original
         return $wpdb->insert_id;
     }
 
