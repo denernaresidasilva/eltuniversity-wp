@@ -16,7 +16,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
+          port: 22
           timeout: 60s
           script: |
             cd /home/adminsite/htdocs/www.eltuniversity.com
