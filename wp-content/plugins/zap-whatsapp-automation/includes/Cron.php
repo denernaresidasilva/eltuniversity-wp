@@ -41,42 +41,53 @@ class Cron {
             return;
         }
 
+        // Decodificar payload
         $payload = json_decode($item->payload, true);
+        if (!$payload) {
+            Queue::fail($item->id);
+            Logger::debug('Payload inválido na fila', ['item_id' => $item->id]);
+            return;
+        }
 
-        $text = Variables::parse(
-            $message->post_content,
-            array_merge($payload, ['phone' => $item->phone])
+        // Processar variáveis no texto
+        $text = Variables::parse($message->post_content, $payload);
+
+        // Verificar anti-spam
+        if (!AntiSpam::can_send($item->phone)) {
+            Logger::debug('Mensagem bloqueada por anti-spam', ['phone' => $item->phone]);
+            return;
+        }
+
+        // Enviar mensagem usando método estático
+        $result = EvolutionAPI::send_message($item->phone, $text);
+
+        // Registrar no log
+        Logger::log_send(
+            $item->user_id,
+            $item->event,
+            $item->phone,
+            $text,
+            $result['success'] ? 'enviado' : 'erro',
+            $result['error'] ?? null
         );
 
-        if (!AntiSpam::can_send($item->phone)) return;
-
-        $api = new EvolutionAPI();
-        $result = $api->send_message($item->phone, $text);
-
+        // Atualizar status na fila
         if ($result['success']) {
-
             Queue::done($item->id);
-
-            Logger::log_send(
-                $item->user_id,
-                $item->event,
-                $item->phone,
-                $text,
-                'enviado'
-            );
-
+            Logger::debug('Mensagem processada com sucesso', ['item_id' => $item->id]);
         } else {
-
+            // Verificar número de tentativas
             if ($item->attempts >= 3) {
                 Queue::fail($item->id);
-                
-                Logger::log_send(
-                    $item->user_id,
-                    $item->event,
-                    $item->phone,
-                    $text,
-                    'erro'
-                );
+                Logger::debug('Mensagem falhou após 3 tentativas', [
+                    'item_id' => $item->id,
+                    'error' => $result['error']
+                ]);
+            } else {
+                Logger::debug('Mensagem falhada, será reprocessada', [
+                    'item_id' => $item->id,
+                    'attempts' => $item->attempts
+                ]);
             }
         }
     }

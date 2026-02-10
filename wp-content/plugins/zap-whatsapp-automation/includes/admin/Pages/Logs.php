@@ -10,24 +10,37 @@ class Logs {
 
         $table = $wpdb->prefix . 'zap_wa_logs';
 
-        // Filtros
-        $where = 'WHERE 1=1';
+        // Filtros - Fixed SQL injection vulnerability by using complete prepared statement
+        $where_conditions = ['1=1'];
+        $where_values = [];
 
         if (!empty($_GET['status'])) {
-            $where .= $wpdb->prepare(' AND status = %s', $_GET['status']);
+            $where_conditions[] = 'status = %s';
+            $where_values[] = sanitize_text_field($_GET['status']);
         }
 
         if (!empty($_GET['event'])) {
-            $where .= $wpdb->prepare(' AND event = %s', $_GET['event']);
+            $where_conditions[] = 'event = %s';
+            $where_values[] = sanitize_text_field($_GET['event']);
         }
 
         if (!empty($_GET['user_id'])) {
-            $where .= $wpdb->prepare(' AND user_id = %d', $_GET['user_id']);
+            $where_conditions[] = 'user_id = %d';
+            $where_values[] = intval($_GET['user_id']);
         }
 
-        $logs = $wpdb->get_results(
-            "SELECT * FROM $table $where ORDER BY created_at DESC LIMIT 100"
-        );
+        $where_clause = implode(' AND ', $where_conditions);
+
+        if (!empty($where_values)) {
+            $query = $wpdb->prepare(
+                "SELECT * FROM $table WHERE $where_clause ORDER BY created_at DESC LIMIT 100",
+                ...$where_values
+            );
+        } else {
+            $query = "SELECT * FROM $table WHERE 1=1 ORDER BY created_at DESC LIMIT 100";
+        }
+
+        $logs = $wpdb->get_results($query);
         ?>
         <div class="wrap">
             <h1>Logs de Envio</h1>
