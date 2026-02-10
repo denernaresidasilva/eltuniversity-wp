@@ -88,7 +88,7 @@ class Connection {
         
         ?>
         <div class="wrap">
-            <h1>🔌 Conexão WhatsApp</h1>
+            <h1>⚡ Zap WhatsApp Automation - Configuração e Conexão</h1>
 
             <div class="card" style="max-width: 800px; margin-top: 20px;">
                 <h2>Status da Conexão</h2>
