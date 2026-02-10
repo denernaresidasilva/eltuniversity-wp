@@ -25,6 +25,13 @@ class Cron {
             'interval' => 60,
             'display'  => __('Every Minute (ZapWA)')
         ];
+        
+        // Adicionar intervalo customizado de 5 minutos
+        $schedules['five_minutes'] = [
+            'interval' => 300,
+            'display'  => __('A cada 5 minutos')
+        ];
+        
         return $schedules;
     }
 
