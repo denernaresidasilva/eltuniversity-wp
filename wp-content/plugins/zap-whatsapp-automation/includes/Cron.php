@@ -54,7 +54,18 @@ class Cron {
 
         // Verificar anti-spam
         if (!AntiSpam::can_send($item->phone)) {
-            // Reschedule for 30 seconds later
+            // Se já tentou 10 vezes, considerar como falha
+            if ($item->attempts >= 10) {
+                Queue::fail($item->id);
+                Logger::debug('Mensagem falhou por excesso de reagendamentos anti-spam', [
+                    'item_id' => $item->id,
+                    'phone' => $item->phone,
+                    'attempts' => $item->attempts
+                ]);
+                return;
+            }
+            
+            // Reagendar para 30 segundos depois
             global $wpdb;
             $table = $wpdb->prefix . 'zapwa_queue';
             $wpdb->update(
@@ -64,9 +75,11 @@ class Cron {
                 ['%s'],
                 ['%d']
             );
+            
             Logger::debug('Mensagem reagendada por anti-spam', [
                 'queue_id' => $item->id,
                 'phone' => $item->phone,
+                'attempts' => $item->attempts,
                 'new_run_at' => date('Y-m-d H:i:s', time() + 30)
             ]);
             return;
@@ -98,9 +111,25 @@ class Cron {
                     'error' => $result['error']
                 ]);
             } else {
-                Logger::debug('Mensagem falhada, será reprocessada', [
+                // Backoff exponencial: 1min, 5min, 15min
+                $retry_delays = [60, 300, 900];
+                $delay = $retry_delays[$item->attempts] ?? 900;
+                
+                global $wpdb;
+                $table = $wpdb->prefix . 'zapwa_queue';
+                $wpdb->update(
+                    $table,
+                    ['run_at' => date('Y-m-d H:i:s', time() + $delay)],
+                    ['id' => $item->id],
+                    ['%s'],
+                    ['%d']
+                );
+                
+                Logger::debug('Mensagem reagendada com backoff exponencial', [
                     'item_id' => $item->id,
-                    'attempts' => $item->attempts
+                    'attempts' => $item->attempts,
+                    'next_run' => date('Y-m-d H:i:s', time() + $delay),
+                    'delay_seconds' => $delay
                 ]);
             }
         }
