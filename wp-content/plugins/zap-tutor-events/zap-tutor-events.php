@@ -20,6 +20,14 @@ define('ZAP_EVENTS_URL', plugin_dir_url(__FILE__));
 define('ZAP_EVENTS_VERSION', '1.1.0');
 
 /**
+ * Enable debug mode
+ * Set to true to enable detailed logging
+ */
+if (!defined('ZAP_EVENTS_DEBUG')) {
+    define('ZAP_EVENTS_DEBUG', true); // Mudar para false em produção
+}
+
+/**
  * Check minimum requirements
  */
 function zap_events_check_requirements() {
