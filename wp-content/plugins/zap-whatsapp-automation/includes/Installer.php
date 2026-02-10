@@ -61,6 +61,22 @@ class Installer {
             add_option('zapwa_api_token', '');
         }
 
+        if (get_option('zapwa_connection_type') === false) {
+            add_option('zapwa_connection_type', 'evolution');
+        }
+
+        if (get_option('zapwa_instance_name') === false) {
+            add_option('zapwa_instance_name', '');
+        }
+
+        if (get_option('zapwa_official_phone_id') === false) {
+            add_option('zapwa_official_phone_id', '');
+        }
+
+        if (get_option('zapwa_official_access_token') === false) {
+            add_option('zapwa_official_access_token', '');
+        }
+
         // Register CPT and flush rewrite rules
         $cpt_file = plugin_dir_path(__FILE__) . 'PostTypes/Message.php';
         if (file_exists($cpt_file)) {

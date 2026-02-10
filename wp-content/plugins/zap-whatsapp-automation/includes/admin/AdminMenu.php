@@ -18,6 +18,7 @@ class AdminMenu {
         $base = plugin_dir_path(__FILE__) . 'Pages/';
 
         $files = [
+            'Connection.php',
             'Settings.php',
             'Messages.php',
             'Logs.php',
@@ -47,6 +48,15 @@ class AdminMenu {
             ['ZapWA\\Admin\\Pages\\Settings', 'render'],
             'dashicons-whatsapp',
             57
+        );
+
+        add_submenu_page(
+            'zap-wa',
+            'Conexão',
+            'Conexão WhatsApp',
+            'manage_options',
+            'zap-wa-connection',
+            ['ZapWA\\Admin\\Pages\\Connection', 'render']
         );
 
         add_submenu_page(

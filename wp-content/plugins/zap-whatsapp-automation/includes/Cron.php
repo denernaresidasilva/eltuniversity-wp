@@ -54,11 +54,20 @@ class Cron {
 
         // Verificar anti-spam
         if (!AntiSpam::can_send($item->phone)) {
-            // Marcar como falhado para não bloquear a fila
-            Queue::fail($item->id);
-            Logger::debug('Mensagem bloqueada por anti-spam', [
+            // Reschedule for 30 seconds later
+            global $wpdb;
+            $table = $wpdb->prefix . 'zapwa_queue';
+            $wpdb->update(
+                $table,
+                ['run_at' => date('Y-m-d H:i:s', time() + 30)],
+                ['id' => $item->id],
+                ['%s'],
+                ['%d']
+            );
+            Logger::debug('Mensagem reagendada por anti-spam', [
+                'queue_id' => $item->id,
                 'phone' => $item->phone,
-                'item_id' => $item->id
+                'new_run_at' => date('Y-m-d H:i:s', time() + 30)
             ]);
             return;
         }
