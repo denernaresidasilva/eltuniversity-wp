@@ -17,6 +17,8 @@ class Events {
             'tutor_enrol_status_changed'     => 'Status da matrícula alterado',
             'tutor_lesson_completed'         => 'Aula concluída',
             'tutor_course_progress_50'       => 'Curso 50% concluído',
+            'tutor_course_completed'         => 'Curso 100% concluído',
+            'tutor_assignment_submitted'     => 'Trabalho enviado',
             'tutor_quiz_started'             => 'Quiz iniciado',
             'tutor_quiz_finished'            => 'Quiz finalizado',
             'tutor_order_payment_status_changed' => 'Status do pagamento alterado',
@@ -41,6 +43,8 @@ class Events {
         add_action('tutor/course/enrol_status_change/after', [self::class, 'enrol_status_changed'], 10, 2);
 
         add_action('tutor_lesson_completed_after', [self::class, 'lesson_completed'], 10, 3);
+        add_action('tutor_course_complete_after', [self::class, 'course_completed'], 10, 2);
+        add_action('tutor_assignment_after_submitted', [self::class, 'assignment_submitted'], 10, 2);
 
         add_action('tutor_quiz/start/after', [self::class, 'quiz_started'], 10, 3);
         add_action('tutor_quiz_finished', [self::class, 'quiz_finished'], 10, 3);
@@ -124,6 +128,47 @@ class Events {
             [
                 'course_id' => $course_id,
                 'progress'  => $progress,
+            ]
+        );
+    }
+
+    /**
+     * Course 100% completed
+     * 
+     * @param int $course_id Course ID
+     * @param int $user_id User ID
+     */
+    public static function course_completed($course_id, $user_id) {
+        Dispatcher::dispatch(
+            'tutor_course_completed',
+            $user_id,
+            [
+                'course_id' => $course_id,
+                'progress'  => 100,
+            ]
+        );
+    }
+
+    /**
+     * Assignment submitted
+     * 
+     * @param int $assignment_id Assignment ID
+     * @param int $user_id User ID (may not be passed by hook, use get_current_user_id())
+     */
+    public static function assignment_submitted($assignment_id, $user_id = null) {
+        if (empty($user_id)) {
+            $user_id = get_current_user_id();
+        }
+        
+        // Get course ID from assignment
+        $course_id = get_post_meta($assignment_id, '_tutor_course_id_for_assignments', true);
+        
+        Dispatcher::dispatch(
+            'tutor_assignment_submitted',
+            $user_id,
+            [
+                'assignment_id' => $assignment_id,
+                'course_id'     => $course_id,
             ]
         );
     }
