@@ -1,0 +1,14 @@
+{
+    "name": "zapwa/zap-whatsapp-automation",
+    "description": "WhatsApp Automation Plugin for WordPress",
+    "type": "wordpress-plugin",
+    "require": {
+        "php": ">=7.4",
+        "chillerlan/php-qrcode": "^4.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "ZapWA\\": "includes/"
+        }
+    }
+}

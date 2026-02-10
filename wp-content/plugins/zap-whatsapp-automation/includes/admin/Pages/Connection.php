@@ -9,6 +9,22 @@ class Connection {
 
     public static function render() {
         
+        // Enqueue assets
+        wp_enqueue_style('zapwa-qrcode', plugins_url('../../../assets/css/qrcode.css', __FILE__));
+        wp_enqueue_script('zapwa-qrcode-handler', plugins_url('../../../assets/js/qrcode-handler.js', __FILE__), ['jquery'], null, true);
+
+        // Get instance name for localization
+        $instance_name = get_option('zapwa_evolution_instance');
+        $api_url = get_option('zapwa_evolution_url');
+        $api_token = get_option('zapwa_evolution_token');
+
+        wp_localize_script('zapwa-qrcode-handler', 'zapwaConfig', [
+            'instanceName' => $instance_name,
+            'apiUrl' => $api_url,
+            'apiToken' => $api_token,
+            'nonce' => wp_create_nonce('zapwa_qrcode'),
+        ]);
+        
         // Handle form submissions
         if (isset($_POST['zapwa_save_connection'])) {
             if (!isset($_POST['zapwa_connection_nonce']) || 
@@ -19,9 +35,9 @@ class Connection {
             update_option('zapwa_connection_type', sanitize_text_field($_POST['zapwa_connection_type']));
             
             if ($_POST['zapwa_connection_type'] === 'evolution') {
-                update_option('zapwa_api_url', sanitize_text_field($_POST['zapwa_api_url']));
-                update_option('zapwa_api_token', sanitize_text_field($_POST['zapwa_api_token']));
-                update_option('zapwa_instance_name', sanitize_text_field($_POST['zapwa_instance_name']));
+                update_option('zapwa_evolution_url', sanitize_text_field($_POST['zapwa_evolution_url']));
+                update_option('zapwa_evolution_token', sanitize_text_field($_POST['zapwa_evolution_token']));
+                update_option('zapwa_evolution_instance', sanitize_text_field($_POST['zapwa_evolution_instance']));
             } else {
                 update_option('zapwa_official_phone_id', sanitize_text_field($_POST['zapwa_official_phone_id']));
                 update_option('zapwa_official_access_token', sanitize_text_field($_POST['zapwa_official_access_token']));
@@ -37,7 +53,7 @@ class Connection {
                 wp_die('Invalid security token');
             }
 
-            $instance_name = sanitize_text_field($_POST['zapwa_instance_name']);
+            $instance_name = sanitize_text_field($_POST['zapwa_evolution_instance']);
             $result = ConnectionManager::create_instance($instance_name);
             
             if ($result['success']) {
@@ -54,7 +70,7 @@ class Connection {
                 wp_die('Invalid security token');
             }
 
-            $instance_name = get_option('zapwa_instance_name');
+            $instance_name = get_option('zapwa_evolution_instance');
             $result = ConnectionManager::disconnect_instance($instance_name);
             
             if ($result['success']) {
@@ -63,9 +79,9 @@ class Connection {
         }
 
         $connection_type = get_option('zapwa_connection_type', 'evolution');
-        $api_url = get_option('zapwa_api_url');
-        $api_token = get_option('zapwa_api_token');
-        $instance_name = get_option('zapwa_instance_name');
+        $api_url = get_option('zapwa_evolution_url');
+        $api_token = get_option('zapwa_evolution_token');
+        $instance_name = get_option('zapwa_evolution_instance');
         $phone_id = get_option('zapwa_official_phone_id');
         $access_token = get_option('zapwa_official_access_token');
         $is_connected = ConnectionManager::is_connected();
@@ -116,7 +132,7 @@ class Connection {
                         <tr>
                             <th>URL da Evolution API</th>
                             <td>
-                                <input type="text" name="zapwa_api_url" 
+                                <input type="text" name="zapwa_evolution_url" 
                                     value="<?php echo esc_attr($api_url); ?>" 
                                     class="regular-text" 
                                     placeholder="https://evolution.seudominio.com">
@@ -126,7 +142,7 @@ class Connection {
                         <tr>
                             <th>API Key</th>
                             <td>
-                                <input type="password" name="zapwa_api_token" 
+                                <input type="password" name="zapwa_evolution_token" 
                                     value="<?php echo esc_attr($api_token); ?>" 
                                     class="regular-text">
                                 <p class="description">Token de autenticação (apikey)</p>
@@ -135,7 +151,7 @@ class Connection {
                         <tr>
                             <th>Nome da Instância</th>
                             <td>
-                                <input type="text" name="zapwa_instance_name" 
+                                <input type="text" name="zapwa_evolution_instance" 
                                     value="<?php echo esc_attr($instance_name); ?>" 
                                     class="regular-text" 
                                     placeholder="minha-instancia">
@@ -194,18 +210,46 @@ class Connection {
                 <?php if (!$is_connected && $instance_name): ?>
                     <form method="post" id="create-instance-form">
                         <?php wp_nonce_field('zapwa_create_instance', 'zapwa_instance_nonce'); ?>
-                        <input type="hidden" name="zapwa_instance_name" value="<?php echo esc_attr($instance_name); ?>">
+                        <input type="hidden" name="zapwa_evolution_instance" value="<?php echo esc_attr($instance_name); ?>">
                         <button type="submit" name="zapwa_create_instance" class="button button-primary button-hero">
                             🚀 Criar Instância e Gerar QR Code
                         </button>
                     </form>
 
-                    <div id="qrcode-container" style="margin-top: 20px; display: none;">
-                        <div class="card" style="max-width: 400px; text-align: center;">
-                            <h3>📱 Escaneie o QR Code</h3>
-                            <div id="qrcode-image"></div>
-                            <p>Abra o WhatsApp > Aparelhos conectados > Conectar aparelho</p>
-                            <button type="button" class="button" onclick="refreshQRCode()">🔄 Atualizar QR Code</button>
+                    <div id="zapwa-qrcode-display" class="zapwa-qrcode-container" style="<?php echo isset($_POST['zapwa_create_instance']) && isset($result) && $result['success'] ? '' : 'display: none;'; ?>">
+                        <h3>📱 Escaneie o QR Code com WhatsApp</h3>
+                        
+                        <div class="zapwa-qrcode-instructions">
+                            <h4>📖 Como conectar:</h4>
+                            <ol>
+                                <li>Abra o WhatsApp no seu celular</li>
+                                <li>Toque em <strong>Menu</strong> ou <strong>Configurações</strong></li>
+                                <li>Selecione <strong>Aparelhos conectados</strong></li>
+                                <li>Toque em <strong>Conectar um aparelho</strong></li>
+                                <li>Aponte o celular para esta tela para escanear o código</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="zapwa-qrcode-image">
+                            <div class="zapwa-loading-spinner"></div>
+                            <p>Carregando QR Code...</p>
+                        </div>
+                        
+                        <div id="zapwa-qrcode-timer" class="zapwa-qrcode-timer" style="display: none;">
+                            ⏱️ Expira em: 2:00
+                        </div>
+                        
+                        <div id="zapwa-qrcode-status" class="zapwa-qrcode-status info" style="display: none;">
+                            Aguardando QR Code...
+                        </div>
+                        
+                        <div class="zapwa-qrcode-actions">
+                            <button type="button" id="zapwa-refresh-qrcode" class="button button-primary">
+                                🔄 Atualizar QR Code
+                            </button>
+                            <button type="button" id="zapwa-download-qrcode" class="button button-secondary">
+                                💾 Baixar QR Code
+                            </button>
                         </div>
                     </div>
                 <?php elseif ($is_connected): ?>
@@ -235,42 +279,6 @@ class Connection {
                 document.getElementById('official-config').style.display = 'block';
             }
         }
-
-        function refreshQRCode() {
-            const instanceName = '<?php echo esc_js($instance_name); ?>';
-            const apiUrl = '<?php echo esc_js($api_url); ?>';
-            const apiToken = '<?php echo esc_js($api_token); ?>';
-            
-            document.getElementById('qrcode-image').innerHTML = '<p>Carregando QR Code...</p>';
-            
-            fetch(apiUrl + '/instance/connect/' + instanceName, {
-                headers: {
-                    'apikey': apiToken
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.qrcode && data.qrcode.base64) {
-                    document.getElementById('qrcode-image').innerHTML = 
-                        '<img src="' + data.qrcode.base64 + '" style="max-width: 300px;">';
-                } else {
-                    document.getElementById('qrcode-image').innerHTML = 
-                        '<p style="color:red;">❌ Erro ao gerar QR Code</p>';
-                }
-            })
-            .catch(error => {
-                document.getElementById('qrcode-image').innerHTML = 
-                    '<p style="color:red;">❌ Erro: ' + error.message + '</p>';
-            });
-        }
-
-        // Auto-load QR code after instance creation
-        <?php if (isset($_POST['zapwa_create_instance']) && isset($result) && $result['success']): ?>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('qrcode-container').style.display = 'block';
-            refreshQRCode();
-        });
-        <?php endif; ?>
         </script>
 
         <style>

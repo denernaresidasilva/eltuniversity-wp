@@ -1,0 +1,195 @@
+/* QR Code Container Styles */
+.zapwa-qrcode-container {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 30px;
+    background: #fff;
+    border: 2px solid #0073aa;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.zapwa-qrcode-container.loading {
+    opacity: 0.6;
+}
+
+.zapwa-qrcode-container.connected {
+    border-color: #46b450;
+    background: #f0f9f1;
+}
+
+.zapwa-qrcode-container.expired {
+    border-color: #dc3232;
+    background: #fcf0f1;
+}
+
+/* QR Code Image */
+.zapwa-qrcode-image {
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.zapwa-qrcode-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* Timer Display */
+.zapwa-qrcode-timer {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 15px 0;
+    padding: 10px;
+    background: #e3f2fd;
+    border-radius: 6px;
+    color: #0073aa;
+}
+
+.zapwa-qrcode-timer.warning {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.zapwa-qrcode-timer.expired {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* Status Messages */
+.zapwa-qrcode-status {
+    margin: 15px 0;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.zapwa-qrcode-status.info {
+    background: #e3f2fd;
+    color: #1565c0;
+    border-left: 4px solid #0073aa;
+}
+
+.zapwa-qrcode-status.success {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border-left: 4px solid #46b450;
+}
+
+.zapwa-qrcode-status.error {
+    background: #ffebee;
+    color: #c62828;
+    border-left: 4px solid #dc3232;
+}
+
+/* Instructions */
+.zapwa-qrcode-instructions {
+    text-align: left;
+    margin: 20px 0;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.zapwa-qrcode-instructions h4 {
+    margin-top: 0;
+    color: #0073aa;
+}
+
+.zapwa-qrcode-instructions ol {
+    margin: 10px 0;
+    padding-left: 25px;
+}
+
+.zapwa-qrcode-instructions li {
+    margin: 8px 0;
+    line-height: 1.6;
+}
+
+/* Action Buttons */
+.zapwa-qrcode-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.zapwa-qrcode-actions .button {
+    min-width: 120px;
+}
+
+/* Loading Spinner */
+.zapwa-loading-spinner {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #0073aa;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Connection Status Badge */
+.zapwa-connection-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 14px;
+    margin: 10px 0;
+}
+
+.zapwa-connection-badge.connected {
+    background: #46b450;
+    color: white;
+}
+
+.zapwa-connection-badge.disconnected {
+    background: #dc3232;
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .zapwa-qrcode-container {
+        padding: 20px;
+        margin: 10px;
+    }
+    
+    .zapwa-qrcode-actions {
+        flex-direction: column;
+    }
+    
+    .zapwa-qrcode-actions .button {
+        width: 100%;
+    }
+}
+
+/* Pulse Animation for Active State */
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 4px 12px rgba(0,115,170,0.2);
+    }
+    50% {
+        box-shadow: 0 4px 20px rgba(0,115,170,0.4);
+    }
+}
+
+.zapwa-qrcode-container.active {
+    animation: pulse 2s ease-in-out infinite;
+}
