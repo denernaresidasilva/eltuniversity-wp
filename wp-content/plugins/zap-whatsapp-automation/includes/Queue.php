@@ -7,104 +7,146 @@ if (!defined('ABSPATH')) {
 
 class Queue {
 
+    /**
+     * Initialize hooks
+     */
     public static function init() {
-        add_action('zap_wa_process_queue', [self::class, 'process']);
+        // No hooks needed for Queue
     }
 
     /**
-     * Adiciona item na fila
+     * Get next pending item from queue
+     * @return object|null
+     */
+    public static function next() {
+        global $wpdb;
+        
+        $table = $wpdb->prefix . 'zapwa_queue';
+        
+        return $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM $table 
+                WHERE status = 'pending' 
+                AND run_at <= %s 
+                ORDER BY run_at ASC 
+                LIMIT 1",
+                current_time('mysql')
+            )
+        );
+    }
+
+    /**
+     * Get item by ID
+     * @param int $id
+     * @return object|null
+     */
+    public static function get_by_id($id) {
+        global $wpdb;
+        
+        $table = $wpdb->prefix . 'zapwa_queue';
+        
+        return $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM $table WHERE id = %d",
+                $id
+            )
+        );
+    }
+
+    /**
+     * Increment attempt counter for an item
+     * @param int $id
+     */
+    public static function attempt($id) {
+        global $wpdb;
+        
+        $table = $wpdb->prefix . 'zapwa_queue';
+        
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE $table SET attempts = attempts + 1 WHERE id = %d",
+                $id
+            )
+        );
+    }
+
+    /**
+     * Mark item as completed
+     * @param int $id
+     */
+    public static function done($id) {
+        global $wpdb;
+        
+        $table = $wpdb->prefix . 'zapwa_queue';
+        
+        $wpdb->update(
+            $table,
+            ['status' => 'completed'],
+            ['id' => $id],
+            ['%s'],
+            ['%d']
+        );
+    }
+
+    /**
+     * Mark item as failed
+     * @param int $id
+     */
+    public static function fail($id) {
+        global $wpdb;
+        
+        $table = $wpdb->prefix . 'zapwa_queue';
+        
+        $wpdb->update(
+            $table,
+            ['status' => 'failed'],
+            ['id' => $id],
+            ['%s'],
+            ['%d']
+        );
+    }
+
+    /**
+     * Add item to queue
+     * @param array $payload
      */
     public static function add($payload) {
+        global $wpdb;
+        
+        $table = $wpdb->prefix . 'zapwa_queue';
+        
+        $delay = (int) ($payload['delay'] ?? 0);
+        $run_at = date('Y-m-d H:i:s', time() + $delay);
+        
+        $wpdb->insert(
+            $table,
+            [
+                'message_id' => absint($payload['message_id'] ?? 0),
+                'user_id' => absint($payload['user_id'] ?? 0),
+                'phone' => sanitize_text_field($payload['phone'] ?? ''),
+                'event' => sanitize_text_field($payload['event'] ?? ''),
+                'payload' => wp_json_encode($payload),
+                'attempts' => 0,
+                'status' => 'pending',
+                'run_at' => $run_at,
+                'created_at' => current_time('mysql')
+            ],
+            ['%d', '%d', '%s', '%s', '%s', '%d', '%s', '%s', '%s']
+        );
 
-        $queue = get_option('zap_wa_queue', []);
-
-        $payload['run_at'] = time() + (int) ($payload['delay'] ?? 0);
-        $payload['attempts'] = $payload['attempts'] ?? 0;
-
-        $queue[] = $payload;
-        update_option('zap_wa_queue', $queue);
-
-        if (!wp_next_scheduled('zap_wa_process_queue')) {
-            wp_schedule_single_event(time() + 5, 'zap_wa_process_queue');
+        // Schedule cron if not already scheduled
+        if (!wp_next_scheduled('zapwa_process_queue')) {
+            wp_schedule_single_event(time() + 5, 'zapwa_process_queue');
         }
     }
 
     /**
-     * Processa fila
+     * Process queue via Cron for backward compatibility
      */
     public static function process() {
-
-        $queue = get_option('zap_wa_queue', []);
-        if (empty($queue)) {
-            return;
+        // Process queue via Cron for backward compatibility
+        if (class_exists('\ZapWA\Cron')) {
+            \ZapWA\Cron::process();
         }
-
-        usort($queue, function ($a, $b) {
-            return $a['run_at'] <=> $b['run_at'];
-        });
-
-        $item = $queue[0];
-
-        if ($item['run_at'] > time()) {
-            wp_schedule_single_event($item['run_at'], 'zap_wa_process_queue');
-            return;
-        }
-
-        array_shift($queue);
-        update_option('zap_wa_queue', $queue);
-
-        self::send($item);
-
-        if (!empty($queue)) {
-            wp_schedule_single_event(time() + 5, 'zap_wa_process_queue');
-        }
-    }
-
-    /**
-     * Envio real da mensagem
-     */
-    private static function send($item) {
-
-        $message = get_post($item['message_id']);
-        if (!$message) {
-            return;
-        }
-
-        $text = Variables::parse($message->post_content, $item);
-
-        $api = new EvolutionAPI();
-
-        $response = $api->send_message(
-            $item['phone'],
-            $text
-        );
-
-        // Retry automático (até 3 tentativas)
-        if (!$response['success'] && $item['attempts'] < 3) {
-
-            $item['attempts']++;
-            $item['run_at'] = time() + 60;
-
-            self::add($item);
-
-            Logger::log(
-                $item['user_id'],
-                $item['event'],
-                $item['phone'],
-                $text,
-                'retry'
-            );
-
-            return;
-        }
-
-        Logger::log(
-            $item['user_id'],
-            $item['event'],
-            $item['phone'],
-            $text,
-            $response['success'] ? 'enviado' : 'erro',
-            $response
-        );
     }
 }

@@ -13,9 +13,8 @@ class Broadcast {
         }
 
         $users = get_users([
-            'meta_key'     => 'zap_phone',
-            'meta_compare' => '!=',
-            'meta_value'   => '',
+            'meta_key'     => 'billing_phone',
+            'meta_compare' => 'EXISTS',
             'fields'       => ['ID']
         ]);
 
@@ -23,7 +22,7 @@ class Broadcast {
 
         foreach ($users as $user) {
 
-            $phone = get_user_meta($user->ID, 'zap_phone', true);
+            $phone = Helpers::get_user_phone($user->ID);
             if (!$phone) continue;
 
             Queue::add([

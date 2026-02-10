@@ -1,0 +1,163 @@
+/* ZAP Tutor Events - Admin Styles */
+
+/* Dashboard Stats Grid */
+.zap-dashboard-filters {
+    margin: 20px 0;
+    padding: 15px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.zap-dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.zap-stats-card {
+    background: white;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.zap-stats-card h2 {
+    margin-top: 0;
+    font-size: 16px;
+    border-bottom: 2px solid #2271b1;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+/* Timeline Chart */
+.zap-timeline-chart {
+    display: flex;
+    align-items: flex-end;
+    height: 200px;
+    gap: 4px;
+    padding: 20px 0;
+    border-bottom: 2px solid #333;
+}
+
+.zap-timeline-bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.zap-timeline-bar-fill {
+    width: 100%;
+    background: #2271b1;
+    min-height: 2px;
+    transition: all 0.3s;
+    border-radius: 4px 4px 0 0;
+}
+
+.zap-timeline-bar:hover .zap-timeline-bar-fill {
+    background: #135e96;
+}
+
+.zap-timeline-label {
+    font-size: 10px;
+    margin-top: 5px;
+    transform: rotate(-45deg);
+    white-space: nowrap;
+}
+
+/* Settings Page */
+.zap-settings-section {
+    margin-bottom: 30px;
+}
+
+.zap-api-key-display {
+    background: #f0f0f1;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: monospace;
+    word-break: break-all;
+}
+
+/* Logs Page Filters */
+.zap-logs-filters {
+    background: #f9f9f9;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.zap-logs-filters input,
+.zap-logs-filters select {
+    margin-right: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .zap-dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .zap-timeline-label {
+        font-size: 8px;
+    }
+}
+
+/* Status Indicators */
+.zap-status-success {
+    color: #00a32a;
+    font-weight: bold;
+}
+
+.zap-status-error {
+    color: #d63638;
+    font-weight: bold;
+}
+
+.zap-status-warning {
+    color: #dba617;
+    font-weight: bold;
+}
+
+/* Tables */
+.zap-event-table {
+    width: 100%;
+}
+
+.zap-event-table code {
+    background: #f0f0f1;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+}
+
+/* Buttons */
+.zap-button-export {
+    margin-left: 10px;
+}
+
+/* Admin Notice Enhancements */
+.notice.zap-notice {
+    border-left-width: 4px;
+    padding: 12px;
+}
+
+.zap-notice-info {
+    border-left-color: #2271b1;
+}
+
+.zap-notice-success {
+    border-left-color: #00a32a;
+}
+
+.zap-notice-warning {
+    border-left-color: #dba617;
+}
+
+.zap-notice-error {
+    border-left-color: #d63638;
+}

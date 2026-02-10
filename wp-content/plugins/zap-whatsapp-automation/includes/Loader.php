@@ -25,6 +25,10 @@ class Loader {
             \ZapWA\PostTypes\Message::register();
         }
 
+        if (class_exists('\ZapWA\Helpers')) {
+            \ZapWA\Helpers::init();
+        }
+
         if (class_exists('\ZapWA\Listener')) {
             \ZapWA\Listener::init();
         }
@@ -35,6 +39,10 @@ class Loader {
 
         if (class_exists('\ZapWA\Cron')) {
             \ZapWA\Cron::init();
+        }
+
+        if (class_exists('\ZapWA\HealthCheck')) {
+            \ZapWA\HealthCheck::init();
         }
     }
 
@@ -56,9 +64,11 @@ class Loader {
             'AntiSpam.php',
             'Broadcast.php',
             'Listener.php',
+            'ConnectionManager.php',
             'EvolutionAPI.php',
             'Cron.php',
             'Metrics.php', // ✅ MÉTRICAS
+            'HealthCheck.php', // ✅ HEALTH CHECK
         ];
 
         foreach ($core_files as $file) {
@@ -87,6 +97,10 @@ class Loader {
 
         if (class_exists('\ZapWA\Admin\AdminMenu')) {
             \ZapWA\Admin\AdminMenu::init();
+        }
+
+        if (class_exists('\ZapWA\Admin\Actions')) {
+            \ZapWA\Admin\Actions::init();
         }
 
         if (class_exists('\ZapWA\Admin\Ajax')) {
