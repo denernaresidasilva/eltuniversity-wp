@@ -87,7 +87,8 @@ class AdminMenu {
             ['ZapWA\\Admin\\Pages\\History', 'render']
         );
 
-        // Remover o primeiro submenu duplicado (Métricas aparece duas vezes)
+        // Remover o primeiro submenu duplicado (WordPress adiciona automaticamente o primeiro item)
+        // Este submenu "Métricas" substitui o primeiro item automático
         add_submenu_page(
             'zap-wa-metrics',
             'Métricas',

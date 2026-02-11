@@ -93,7 +93,8 @@ class ConnectionManager {
         
         if (isset($body) && is_array($body)) {
             foreach ($body as $instance) {
-                if (isset($instance['instance']['instanceName']) && $instance['instance']['instanceName'] === $instance_name) {
+                if (isset($instance['instance']['instanceName']) && 
+                    $instance['instance']['instanceName'] === $instance_name) {
                     return true;
                 }
             }
