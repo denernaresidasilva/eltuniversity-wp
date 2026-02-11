@@ -206,7 +206,6 @@ class ConnectionManager {
         error_log('[ZapWA] Tentando criar instância...');
         error_log('[ZapWA] URL: ' . $full_url);
         error_log('[ZapWA] Instance Name: ' . $instance_name);
-        error_log('[ZapWA] API Key: [REDACTED]');
 
         // Verificar se já existe
         if (self::instance_exists($instance_name)) {
@@ -270,7 +269,7 @@ class ConnectionManager {
                 'success' => false,
                 'error' => 'Endpoint não encontrado (404). Verifique se a versão da Evolution API está correta.',
                 'url_testada' => $full_url,
-                'sugestao' => 'Teste acessar: ' . $api_url . '/instance/fetchInstances no navegador'
+                'sugestao' => 'Acesse no navegador: ' . $api_url . '/instance/fetchInstances'
             ];
         }
         
@@ -286,8 +285,7 @@ class ConnectionManager {
             return [
                 'success' => false, 
                 'error' => $error_msg,
-                'status_code' => $status_code,
-                'response_body' => $response_body
+                'status_code' => $status_code
             ];
         }
         

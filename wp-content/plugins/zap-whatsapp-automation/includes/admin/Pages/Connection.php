@@ -263,11 +263,13 @@ class Connection {
                                 echo '<div style="padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724;">';
                                 echo '<strong>✅ Sucesso!</strong><br>';
                                 echo 'Versão da API: ' . esc_html($test_result['version']) . '<br>';
-                                if (!empty($test_result['api_info'])) {
+                                if (!empty($test_result['api_info']) && is_array($test_result['api_info'])) {
                                     echo '<pre style="background: white; padding: 10px; margin-top: 10px; overflow: auto;">';
-                                    // Mostrar apenas informações seguras
+                                    // Mostrar apenas informações seguras como strings
                                     foreach ($test_result['api_info'] as $key => $value) {
-                                        echo esc_html($key) . ': ' . esc_html($value) . "\n";
+                                        if (is_scalar($value)) {
+                                            echo esc_html($key) . ': ' . esc_html($value) . "\n";
+                                        }
                                     }
                                     echo '</pre>';
                                 }
