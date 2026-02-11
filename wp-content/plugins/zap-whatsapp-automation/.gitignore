@@ -1,2 +1,9 @@
-/vendor/
-/composer.lock
+# Composer
+# Mantemos vendor/ no Git para distribuição comercial
+# Clientes não precisam rodar composer install
+# /vendor/
+# /composer.lock
+
+# Ignorar apenas arquivos temporários do Composer
+composer.phar
+.composer/

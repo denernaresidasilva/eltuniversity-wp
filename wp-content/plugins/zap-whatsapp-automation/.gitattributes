@@ -1,0 +1,18 @@
+# Configurações Git para otimizar vendor/
+
+# Marcar vendor/ como código de terceiros
+vendor/ linguist-vendored
+
+# Tratar vendor/ como binário (melhor compressão)
+vendor/* binary
+
+# Não incluir vendor/ em archives export
+# vendor/* export-ignore  (comentado - queremos incluir)
+
+# Normalizar line endings
+* text=auto
+*.php text eol=lf
+*.js text eol=lf
+*.css text eol=lf
+*.json text eol=lf
+*.md text eol=lf
