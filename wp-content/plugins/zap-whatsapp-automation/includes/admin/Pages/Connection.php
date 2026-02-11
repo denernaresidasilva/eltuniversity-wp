@@ -69,10 +69,23 @@ class Connection {
                     $error_detail = isset($result['error']) ? $result['error'] : 'Erro desconhecido';
                     error_log('[ZapWA] Instance creation failed: ' . $error_detail);
                     echo '<div class="error"><p>❌ Erro ao criar instância: ' . esc_html($error_detail) . '</p></div>';
+                    
+                    // Mostrar informações adicionais de debug se disponíveis
+                    if (isset($result['url_testada'])) {
+                        echo '<div class="notice notice-warning"><p><strong>URL testada:</strong> ' . esc_html($result['url_testada']) . '</p></div>';
+                    }
+                    if (isset($result['sugestao'])) {
+                        echo '<div class="notice notice-info"><p><strong>💡 Sugestão:</strong> ' . esc_html($result['sugestao']) . '</p></div>';
+                    }
+                    if (isset($result['status_code'])) {
+                        echo '<div class="notice notice-warning"><p><strong>Status Code:</strong> ' . esc_html($result['status_code']) . '</p></div>';
+                    }
+                    
                     echo '<div class="notice notice-info"><p>💡 <strong>Dicas:</strong><br>';
                     echo '• Verifique se a URL da Evolution API está correta e acessível<br>';
                     echo '• Verifique se o Token (apikey) está correto<br>';
-                    echo '• Certifique-se de que a Evolution API está rodando</p></div>';
+                    echo '• Certifique-se de que a Evolution API está rodando<br>';
+                    echo '• Use o botão "🧪 Testar Conexão" acima para diagnóstico detalhado</p></div>';
                 }
             }
         }
@@ -220,6 +233,56 @@ class Connection {
                 <hr style="margin: 40px 0;">
                 
                 <h2>📲 Gerenciar Instância Evolution</h2>
+                
+                <!-- NOVO: Botão de Teste -->
+                <div class="card" style="max-width: 800px; margin-bottom: 20px;">
+                    <h3>🔍 Teste de Conexão</h3>
+                    <p>Clique no botão abaixo para testar se a Evolution API está configurada corretamente.</p>
+                    
+                    <form method="post">
+                        <?php wp_nonce_field('zapwa_test_connection', 'zapwa_test_nonce'); ?>
+                        <button type="submit" name="zapwa_test_connection" class="button button-secondary">
+                            🧪 Testar Conexão com Evolution API
+                        </button>
+                    </form>
+                    
+                    <?php
+                    if (isset($_POST['zapwa_test_connection'])) {
+                        if (isset($_POST['zapwa_test_nonce']) && 
+                            wp_verify_nonce($_POST['zapwa_test_nonce'], 'zapwa_test_connection')) {
+                            
+                            echo '<div style="margin-top: 15px; padding: 15px; background: #f0f0f0; border-radius: 4px;">';
+                            echo '<h4>📊 Resultado do Teste:</h4>';
+                            
+                            $test_result = ConnectionManager::test_api_connection();
+                            
+                            if ($test_result['success']) {
+                                echo '<div style="padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724;">';
+                                echo '<strong>✅ Sucesso!</strong><br>';
+                                echo 'Versão da API: ' . esc_html($test_result['version']) . '<br>';
+                                echo '<pre style="background: white; padding: 10px; margin-top: 10px; overflow: auto;">';
+                                echo esc_html(print_r($test_result['api_info'], true));
+                                echo '</pre>';
+                                echo '</div>';
+                            } else {
+                                echo '<div style="padding: 10px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; color: #721c24;">';
+                                echo '<strong>❌ Erro:</strong><br>';
+                                echo esc_html($test_result['error']);
+                                if (isset($test_result['details'])) {
+                                    echo '<br><br><strong>Detalhes:</strong><br>';
+                                    echo '<pre style="background: white; padding: 10px;">';
+                                    echo esc_html($test_result['details']);
+                                    echo '</pre>';
+                                }
+                                echo '</div>';
+                            }
+                            
+                            echo '</div>';
+                        }
+                    }
+                    ?>
+                </div>
+                <!-- FIM NOVO -->
                 
                 <?php if (!$is_connected && $instance_name): ?>
                     <form method="post" id="create-instance-form">
