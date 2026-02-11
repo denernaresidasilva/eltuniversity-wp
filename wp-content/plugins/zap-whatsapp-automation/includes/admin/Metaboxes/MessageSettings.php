@@ -182,6 +182,7 @@ class MessageSettings {
             <span class="zapwa-var" data-var="{course_url}">{course_url}</span>
             <span class="zapwa-var" data-var="{site_name}">{site_name}</span>
             <span class="zapwa-var" data-var="{site_url}">{site_url}</span>
+            <span class="zapwa-var" data-var="{current_date}">{current_date}</span>
         </div>
 
         <p style="margin-top:8px;">
