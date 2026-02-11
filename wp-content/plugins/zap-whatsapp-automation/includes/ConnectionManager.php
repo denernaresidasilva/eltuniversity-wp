@@ -214,6 +214,7 @@ class ConnectionManager {
 
         $request_body = [
             'instanceName' => $instance_name,
+            'integration' => 'WHATSAPP-BAILEYS',
             'qrcode' => true,
         ];
         
