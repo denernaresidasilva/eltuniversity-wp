@@ -178,6 +178,10 @@ class MessageSettings {
             <span class="zapwa-var" data-var="{user_phone}">{user_phone}</span>
             <span class="zapwa-var" data-var="{course_name}">{course_name}</span>
             <span class="zapwa-var" data-var="{course_progress}">{course_progress}</span>
+            <span class="zapwa-var" data-var="{course_author}">{course_author}</span>
+            <span class="zapwa-var" data-var="{course_url}">{course_url}</span>
+            <span class="zapwa-var" data-var="{site_name}">{site_name}</span>
+            <span class="zapwa-var" data-var="{site_url}">{site_url}</span>
         </div>
 
         <p style="margin-top:8px;">
