@@ -66,6 +66,43 @@ class ConnectionManager {
     }
 
     /**
+     * Check if instance exists
+     */
+    public static function instance_exists($instance_name) {
+        $api_url = get_option('zapwa_evolution_url');
+        $api_token = get_option('zapwa_evolution_token');
+        
+        if (!$api_url || !$api_token || !$instance_name) {
+            return false;
+        }
+        
+        $response = wp_remote_get(
+            rtrim($api_url, '/') . '/instance/fetchInstances',
+            [
+                'headers' => ['apikey' => $api_token],
+                'timeout' => 10,
+            ]
+        );
+        
+        if (is_wp_error($response)) {
+            error_log('[ZapWA] Error checking instance: ' . $response->get_error_message());
+            return false;
+        }
+        
+        $body = json_decode(wp_remote_retrieve_body($response), true);
+        
+        if (isset($body) && is_array($body)) {
+            foreach ($body as $instance) {
+                if (isset($instance['instance']['instanceName']) && $instance['instance']['instanceName'] === $instance_name) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+
+    /**
      * Create Evolution API instance
      */
     public static function create_instance($instance_name) {
@@ -73,7 +110,12 @@ class ConnectionManager {
         $api_token = get_option('zapwa_evolution_token');
 
         if (!$api_url || !$api_token || !$instance_name) {
-            return ['success' => false, 'error' => 'Missing configuration'];
+            return ['success' => false, 'error' => 'Configuração incompleta: URL, Token ou Nome da instância faltando'];
+        }
+
+        // Verificar se já existe
+        if (self::instance_exists($instance_name)) {
+            return ['success' => true, 'message' => 'Instância já existe e está pronta'];
         }
 
         $response = wp_remote_post(
@@ -92,10 +134,24 @@ class ConnectionManager {
         );
 
         if (is_wp_error($response)) {
-            return ['success' => false, 'error' => $response->get_error_message()];
+            return ['success' => false, 'error' => 'Erro de conexão: ' . $response->get_error_message()];
         }
 
+        $status_code = wp_remote_retrieve_response_code($response);
         $body = json_decode(wp_remote_retrieve_body($response), true);
+        
+        // Log para debug
+        error_log('[ZapWA] Create Instance Response: ' . print_r($body, true));
+        
+        if ($status_code === 409) {
+            // Instância já existe
+            return ['success' => true, 'message' => 'Instância já existe'];
+        }
+        
+        if ($status_code >= 400) {
+            $error_msg = isset($body['message']) ? $body['message'] : 'Erro HTTP ' . $status_code;
+            return ['success' => false, 'error' => $error_msg];
+        }
         
         if (isset($body['error'])) {
             return ['success' => false, 'error' => $body['error']];
