@@ -21,7 +21,7 @@ class Variables {
             '{course_url}'      => $course_id ? get_permalink($course_id) : '',
             '{site_name}'       => get_bloginfo('name'),
             '{site_url}'        => get_home_url(),
-            '{current_date}'    => date('d/m/Y'),
+            '{current_date}'    => current_time('d/m/Y'),
         ];
 
         return str_replace(array_keys($vars), array_values($vars), $text);
