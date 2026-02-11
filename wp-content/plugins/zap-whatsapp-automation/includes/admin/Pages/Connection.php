@@ -248,9 +248,12 @@ class Connection {
                     
                     <?php
                     if (isset($_POST['zapwa_test_connection'])) {
-                        if (isset($_POST['zapwa_test_nonce']) && 
-                            wp_verify_nonce($_POST['zapwa_test_nonce'], 'zapwa_test_connection')) {
-                            
+                        if (!isset($_POST['zapwa_test_nonce']) || 
+                            !wp_verify_nonce($_POST['zapwa_test_nonce'], 'zapwa_test_connection')) {
+                            echo '<div style="margin-top: 15px; padding: 15px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; color: #721c24;">';
+                            echo '<strong>❌ Erro de Segurança:</strong> Token de verificação inválido.';
+                            echo '</div>';
+                        } else {
                             echo '<div style="margin-top: 15px; padding: 15px; background: #f0f0f0; border-radius: 4px;">';
                             echo '<h4>📊 Resultado do Teste:</h4>';
                             
@@ -260,9 +263,14 @@ class Connection {
                                 echo '<div style="padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724;">';
                                 echo '<strong>✅ Sucesso!</strong><br>';
                                 echo 'Versão da API: ' . esc_html($test_result['version']) . '<br>';
-                                echo '<pre style="background: white; padding: 10px; margin-top: 10px; overflow: auto;">';
-                                echo esc_html(print_r($test_result['api_info'], true));
-                                echo '</pre>';
+                                if (!empty($test_result['api_info'])) {
+                                    echo '<pre style="background: white; padding: 10px; margin-top: 10px; overflow: auto;">';
+                                    // Mostrar apenas informações seguras
+                                    foreach ($test_result['api_info'] as $key => $value) {
+                                        echo esc_html($key) . ': ' . esc_html($value) . "\n";
+                                    }
+                                    echo '</pre>';
+                                }
                                 echo '</div>';
                             } else {
                                 echo '<div style="padding: 10px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; color: #721c24;">';

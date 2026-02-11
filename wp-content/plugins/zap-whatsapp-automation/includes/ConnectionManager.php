@@ -33,10 +33,21 @@ class ConnectionManager {
         $body = json_decode(wp_remote_retrieve_body($response), true);
         
         if ($status_code !== 200) {
+            $error_msg = 'API retornou status ' . $status_code;
+            if (is_array($body) && isset($body['message'])) {
+                $error_msg .= ': ' . $body['message'];
+            }
             return [
                 'success' => false,
-                'error' => 'API retornou status ' . $status_code,
-                'body' => $body
+                'error' => $error_msg
+            ];
+        }
+        
+        // Validar se body é um array válido
+        if (!is_array($body)) {
+            return [
+                'success' => false,
+                'error' => 'Resposta inválida da API'
             ];
         }
         
@@ -69,8 +80,8 @@ class ConnectionManager {
         return [
             'success' => true,
             'message' => 'API funcionando corretamente!',
-            'version' => $body['version'] ?? 'desconhecida',
-            'api_info' => $body
+            'version' => isset($body['version']) ? $body['version'] : 'desconhecida',
+            'api_info' => is_array($body) ? array_intersect_key($body, array_flip(['status', 'message', 'version', 'clientName', 'documentation'])) : []
         ];
     }
 
@@ -195,7 +206,7 @@ class ConnectionManager {
         error_log('[ZapWA] Tentando criar instância...');
         error_log('[ZapWA] URL: ' . $full_url);
         error_log('[ZapWA] Instance Name: ' . $instance_name);
-        error_log('[ZapWA] API Key (primeiros 8 chars): ' . substr($api_token, 0, 8) . '...');
+        error_log('[ZapWA] API Key: [REDACTED]');
 
         // Verificar se já existe
         if (self::instance_exists($instance_name)) {
@@ -231,6 +242,15 @@ class ConnectionManager {
         $status_code = wp_remote_retrieve_response_code($response);
         $response_body = wp_remote_retrieve_body($response);
         $body = json_decode($response_body, true);
+        
+        // Validar se JSON é válido
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            error_log('[ZapWA] Invalid JSON response: ' . json_last_error_msg());
+            return [
+                'success' => false,
+                'error' => 'Resposta inválida da API (JSON malformado)'
+            ];
+        }
         
         // Log completo da resposta
         error_log('[ZapWA] Status Code: ' . $status_code);
