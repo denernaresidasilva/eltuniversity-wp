@@ -214,7 +214,7 @@ class ConnectionManager {
 
         $request_body = [
             'instanceName' => $instance_name,
-            'integration' => 'WHATSAPP-BAILEYS',
+            'integration' => 'WHATSAPP-BAILEYS', // Required by Evolution API v2.x - specifies WhatsApp connection type
             'qrcode' => true,
         ];
         
