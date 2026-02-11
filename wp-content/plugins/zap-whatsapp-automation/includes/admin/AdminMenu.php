@@ -39,27 +39,38 @@ class AdminMenu {
             return;
         }
 
+        // MENU PRINCIPAL - Deve abrir MÉTRICAS (dashboard)
         add_menu_page(
             'Zap WhatsApp Automation',
             'Zap WhatsApp',
             'manage_options',
-            'zap-wa',
-            ['ZapWA\\Admin\\Pages\\Connection', 'render'],
+            'zap-wa-metrics',
+            ['ZapWA\\Admin\\Pages\\Metrics', 'render'],
             'dashicons-whatsapp',
             57
         );
 
+        // SUBMENU MENSAGENS - Link direto para lista de mensagens
         add_submenu_page(
-            'zap-wa',
+            'zap-wa-metrics',
             'Mensagens',
             'Mensagens',
             'manage_options',
-            'zap-wa-messages',
-            ['ZapWA\\Admin\\Pages\\Messages', 'render']
+            'edit.php?post_type=zapwa_message'
+        );
+
+        // SUBMENU CONEXÃO
+        add_submenu_page(
+            'zap-wa-metrics',
+            'Conexão',
+            'Conexão',
+            'manage_options',
+            'zap-wa-connection',
+            ['ZapWA\\Admin\\Pages\\Connection', 'render']
         );
 
         add_submenu_page(
-            'zap-wa',
+            'zap-wa-metrics',
             'Logs',
             'Logs',
             'manage_options',
@@ -68,7 +79,7 @@ class AdminMenu {
         );
 
         add_submenu_page(
-            'zap-wa',
+            'zap-wa-metrics',
             'Histórico',
             'Histórico',
             'manage_options',
@@ -76,8 +87,10 @@ class AdminMenu {
             ['ZapWA\\Admin\\Pages\\History', 'render']
         );
 
+        // Remover o primeiro submenu duplicado (WordPress adiciona automaticamente o primeiro item)
+        // Este submenu "Métricas" substitui o primeiro item automático
         add_submenu_page(
-            'zap-wa',
+            'zap-wa-metrics',
             'Métricas',
             'Métricas',
             'manage_options',

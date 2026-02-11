@@ -54,12 +54,26 @@ class Connection {
             }
 
             $instance_name = sanitize_text_field($_POST['zapwa_evolution_instance']);
-            $result = ConnectionManager::create_instance($instance_name);
             
-            if ($result['success']) {
-                echo '<div class="updated"><p>✅ Instância criada com sucesso! Escaneie o QR Code abaixo.</p></div>';
+            // Validação adicional
+            if (empty($instance_name)) {
+                echo '<div class="error"><p>❌ Erro: Nome da instância não pode estar vazio.</p></div>';
             } else {
-                echo '<div class="error"><p>❌ Erro: ' . esc_html($result['error']) . '</p></div>';
+                error_log('[ZapWA] Creating instance: ' . $instance_name);
+                $result = ConnectionManager::create_instance($instance_name);
+                
+                if ($result['success']) {
+                    $message = isset($result['message']) ? $result['message'] : 'Instância criada com sucesso! Escaneie o QR Code abaixo.';
+                    echo '<div class="updated"><p>✅ ' . esc_html($message) . '</p></div>';
+                } else {
+                    $error_detail = isset($result['error']) ? $result['error'] : 'Erro desconhecido';
+                    error_log('[ZapWA] Instance creation failed: ' . $error_detail);
+                    echo '<div class="error"><p>❌ Erro ao criar instância: ' . esc_html($error_detail) . '</p></div>';
+                    echo '<div class="notice notice-info"><p>💡 <strong>Dicas:</strong><br>';
+                    echo '• Verifique se a URL da Evolution API está correta e acessível<br>';
+                    echo '• Verifique se o Token (apikey) está correto<br>';
+                    echo '• Certifique-se de que a Evolution API está rodando</p></div>';
+                }
             }
         }
 
