@@ -3,5 +3,8 @@
  * Other code...
  */
 
+// Definir sempre a variável antes de usar
+$instance_name = get_option('zapwa_evolution_instance', '');
+
 // Update style attribute
-"style=\"<?php echo $instance_name ? \"\" : \"display: none;\"; ?>\"";
+echo "style=\"" . ($instance_name ? "" : "display: none;") . "\"";
