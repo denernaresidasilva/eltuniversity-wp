@@ -118,7 +118,7 @@ class Queue {
         $delay = (int) ($payload['delay'] ?? 0);
         $run_at = date('Y-m-d H:i:s', time() + $delay);
         
-        $wpdb->insert(
+        $inserted = $wpdb->insert(
             $table,
             [
                 'message_id' => absint($payload['message_id'] ?? 0),
@@ -134,10 +134,26 @@ class Queue {
             ['%d', '%d', '%s', '%s', '%s', '%d', '%s', '%s', '%s']
         );
 
+        if ($inserted === false) {
+            Logger::debug('Erro ao inserir item na fila', [
+                'db_error' => $wpdb->last_error,
+                'payload'  => $payload,
+            ]);
+            return false;
+        }
+
+        Logger::debug('Item inserido na fila com sucesso', [
+            'queue_id' => (int) $wpdb->insert_id,
+            'event'    => sanitize_text_field($payload['event'] ?? ''),
+            'user_id'  => absint($payload['user_id'] ?? 0),
+        ]);
+
         // Schedule cron if not already scheduled
         if (!wp_next_scheduled('zapwa_process_queue')) {
             wp_schedule_single_event(time() + 5, 'zapwa_process_queue');
         }
+
+        return true;
     }
 
     /**
