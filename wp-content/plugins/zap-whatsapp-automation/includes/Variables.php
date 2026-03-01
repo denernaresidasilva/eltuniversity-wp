@@ -22,6 +22,12 @@ class Variables {
             '{site_name}'       => get_bloginfo('name'),
             '{site_url}'        => get_home_url(),
             '{current_date}'    => current_time('d/m/Y'),
+            '{last_login}'      => isset($payload['context']['last_login'])
+                                    ? (($ts = strtotime($payload['context']['last_login'])) !== false
+                                        ? date_i18n('d/m/Y H:i', $ts)
+                                        : '')
+                                    : '',
+            '{days_inactive}'   => $payload['context']['days_inactive'] ?? '',
         ];
 
         return str_replace(array_keys($vars), array_values($vars), $text);

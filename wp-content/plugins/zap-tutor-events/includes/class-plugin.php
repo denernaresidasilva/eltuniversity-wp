@@ -127,6 +127,22 @@ class Plugin {
         }
 
         add_action('zap_events_daily_cleanup', [self::class, 'run_daily_cleanup']);
+
+        // Schedule inactive student check (twice daily)
+        if (!wp_next_scheduled('zap_events_inactive_check')) {
+            wp_schedule_event(time(), 'twicedaily', 'zap_events_inactive_check');
+        }
+
+        add_action('zap_events_inactive_check', [self::class, 'run_inactive_check']);
+    }
+
+    /**
+     * Run inactive student check
+     */
+    public static function run_inactive_check() {
+        if (class_exists(__NAMESPACE__ . '\\Events')) {
+            Events::check_inactive_students();
+        }
     }
 
     /**

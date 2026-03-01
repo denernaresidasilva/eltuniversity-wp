@@ -47,8 +47,12 @@ class Dispatcher {
 
         self::debug("Dispatching event: {$event_key}", $payload);
 
+        // 1. Trigger global WordPress action for other plugins (always runs first)
+        do_action('zap_evento', $payload);
+        self::debug("WordPress action 'zap_evento' triggered");
+
         try {
-            // 1. Log to database
+            // 2. Log to database
             if (class_exists(__NAMESPACE__ . '\\Logger')) {
                 $result = Logger::log($event_key, $user_id, $context);
                 if ($result === false) {
@@ -63,7 +67,7 @@ class Dispatcher {
                 self::debug_error("Logger class not found");
             }
 
-            // 2. Send to webhook: always try immediate dispatch first, fallback to queue on failure
+            // 3. Send to webhook: always try immediate dispatch first, fallback to queue on failure
             if (class_exists(__NAMESPACE__ . '\\Webhook')) {
                 $sent = Webhook::send($event_key, $user_id, $context);
                 if ($sent) {
@@ -83,10 +87,6 @@ class Dispatcher {
             } else {
                 self::debug_error("Webhook class not found");
             }
-
-            // 3. Trigger global WordPress action for other plugins
-            do_action('zap_evento', $payload);
-            self::debug("WordPress action 'zap_evento' triggered");
 
         } catch (\Exception $e) {
             self::debug_error("Error dispatching event: " . $e->getMessage(), [
