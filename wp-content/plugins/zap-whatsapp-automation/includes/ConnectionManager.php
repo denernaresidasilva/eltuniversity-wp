@@ -190,7 +190,7 @@ class ConnectionManager {
      * @return string Empty string when input is empty or whitespace-only.
      */
     private static function normalize_api_url(string $api_url) {
-        $api_url = trim((string) $api_url);
+        $api_url = trim($api_url);
         if ($api_url === '') {
             return '';
         }
@@ -275,9 +275,12 @@ class ConnectionManager {
         /**
          * Filters whether to persist the normalized Evolution API URL.
          *
+         * @since 1.0.0
+         *
          * @param bool $should_persist
          * @param string $original_url
          * @param string $normalized_url
+         * @example add_filter('zapwa_persist_normalized_api_url', '__return_false');
          */
         $should_persist = apply_filters(
             'zapwa_persist_normalized_api_url',
