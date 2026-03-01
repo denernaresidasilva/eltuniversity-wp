@@ -4029,11 +4029,22 @@ class Webhook_Receiver {
         $details[] = '🔗 Webhook simulado: ' . $webhook->webhook_name;
         $details[] = '📦 Payload: ' . json_encode($fake_payload);
         
-        // Buscar cursos do webhook
+        // Buscar cursos do webhook (tabela nova)
         $course_ids = $wpdb->get_col($wpdb->prepare(
             "SELECT course_id FROM $webhook_courses_table WHERE webhook_id = %s",
             $webhook_id
         ));
+
+        // Fallback: usar course_id legado da tabela de endpoints
+        if (empty($course_ids) && !empty($webhook->course_id)) {
+            $course_ids = array($webhook->course_id);
+        }
+
+        // Sem cursos configurados: retornar erro
+        if (empty($course_ids)) {
+            wp_send_json_error(array('message' => 'Nenhum curso configurado para este webhook.'));
+            return;
+        }
         
         // Buscar order bumps
         $order_bumps_table = $wpdb->prefix . 'webhook_receiver_order_bumps';

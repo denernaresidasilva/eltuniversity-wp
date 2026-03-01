@@ -42,7 +42,7 @@ class Events {
         add_action('tutor_after_enrolled', [self::class, 'course_enrolled'], 10, 3);
         add_action('tutor/course/enrol_status_change/after', [self::class, 'enrol_status_changed'], 10, 2);
 
-        add_action('tutor_lesson_completed_after', [self::class, 'lesson_completed'], 10, 3);
+        add_action('tutor_lesson_completed_after', [self::class, 'lesson_completed'], 10, 2);
         add_action('tutor_course_complete_after', [self::class, 'course_completed'], 10, 2);
         add_action('tutor_assignment_after_submitted', [self::class, 'assignment_submitted'], 10, 2);
 
@@ -98,7 +98,11 @@ class Events {
 
     /* ================= AULAS ================= */
 
-    public static function lesson_completed($lesson_id, $course_id, $user_id) {
+    public static function lesson_completed($lesson_id, $user_id) {
+
+        // Resolve course_id using Tutor LMS utility (handles all hierarchy edge cases)
+        $course_id = tutor_utils()->get_course_id_by_lesson($lesson_id);
+        $course_id = $course_id ? (int) $course_id : 0;
 
         Dispatcher::dispatch(
             'tutor_lesson_completed',
@@ -109,7 +113,9 @@ class Events {
             ]
         );
 
-        self::check_course_50($course_id, $user_id);
+        if ($course_id) {
+            self::check_course_50($course_id, $user_id);
+        }
     }
 
     private static function check_course_50($course_id, $user_id) {
