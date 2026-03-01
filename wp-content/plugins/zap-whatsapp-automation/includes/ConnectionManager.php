@@ -231,10 +231,9 @@ class ConnectionManager {
         $normalized_api_url = self::normalize_api_url($api_url);
         if ($normalized_api_url !== $api_url) {
             update_option('zapwa_evolution_url', $normalized_api_url);
-            $api_url = $normalized_api_url;
         }
 
-        $api_candidates = self::get_api_url_candidates($api_url);
+        $api_candidates = self::get_api_url_candidates($normalized_api_url);
         
         error_log('[ZapWA] Tentando criar instância...');
         error_log('[ZapWA] Instance Name: ' . $instance_name);
@@ -255,7 +254,7 @@ class ConnectionManager {
         $response = null;
         $full_url = null;
         $status_code = null;
-        $resolved_api_url = $api_url;
+        $resolved_api_url = $normalized_api_url;
         $should_update_api_url = false;
         $last_candidate_index = count($api_candidates) - 1;
 
