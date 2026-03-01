@@ -184,10 +184,76 @@ class ConnectionManager {
     }
 
     /**
+     * Normalize Evolution API URL by removing trailing instance endpoints.
+     *
+     * @since 1.1.0
+     *
+     * @param string $api_url
+     * @return string Normalized URL or empty string when input is empty or whitespace-only.
+     */
+    private static function normalize_api_url(string $api_url): string {
+        $api_url = trim($api_url);
+        if ($api_url === '') {
+            return '';
+        }
+
+        $normalized_url = rtrim($api_url, '/');
+        $endpoint_suffixes = [
+            '/instance/create',
+            '/instance/fetchInstances',
+            '/instance/connect',
+            '/instance/logout',
+        ];
+
+        if (preg_match('~/api(?:/v\\d+)?(?:/|$)~', $normalized_url)) {
+            // Only strip bare /instance when the URL already targets the Evolution API base path.
+            // This avoids removing legitimate /instance path segments on unrelated URLs.
+            $endpoint_suffixes[] = '/instance';
+        }
+
+        $pattern = '#(?:' . implode('|', array_map(function($suffix) {
+            return preg_quote($suffix, '#');
+        }, $endpoint_suffixes)) . ')$#';
+        $normalized_url = preg_replace($pattern, '', $normalized_url);
+        $normalized_url = rtrim($normalized_url, '/');
+
+        return $normalized_url;
+    }
+
+    /**
+     * Build a log-safe URL without credentials or query strings.
+     *
+     * @since 1.1.0
+     *
+     * @param string $api_url
+     * @return string
+     */
+    private static function get_log_safe_url(string $api_url): string {
+        $parts = wp_parse_url($api_url);
+        if (!is_array($parts) || empty($parts['host'])) {
+            return '[invalid-url]';
+        }
+
+        $safe_url = '';
+        if (!empty($parts['scheme'])) {
+            $safe_url .= $parts['scheme'] . '://';
+        }
+        $safe_url .= $parts['host'];
+        if (!empty($parts['port'])) {
+            $safe_url .= ':' . $parts['port'];
+        }
+        if (!empty($parts['path'])) {
+            $safe_url .= $parts['path'];
+        }
+
+        return $safe_url;
+    }
+
+    /**
      * Build Evolution API base URL candidates for compatibility.
      */
     private static function get_api_url_candidates($api_url) {
-        $api_url = rtrim($api_url, '/');
+        $api_url = self::normalize_api_url($api_url);
         $candidates = [$api_url];
         $root_url = rtrim(preg_replace('~/api(?:/v\\d+)?$~', '', $api_url), '/');
 
@@ -213,10 +279,40 @@ class ConnectionManager {
             ];
         }
 
-        // Limpar URL (remover barras extras)
-        $api_url = rtrim($api_url, '/');
+        $normalized_api_url = self::normalize_api_url($api_url);
+        /**
+         * Filters whether to persist the normalized Evolution API URL.
+         *
+         * Example:
+         * add_filter(
+         *   'zapwa_persist_normalized_api_url',
+         *   function($should_persist, $original_url, $normalized_url) {
+         *     return $should_persist && $original_url !== $normalized_url;
+         *   },
+         *   10,
+         *   3
+         * );
+         *
+         * @since 1.1.0
+         *
+         * @param bool $should_persist
+         * @param string $original_url
+         * @param string $normalized_url
+         */
+        $should_persist = apply_filters(
+            'zapwa_persist_normalized_api_url',
+            true,
+            $api_url,
+            $normalized_api_url
+        );
+        if ($normalized_api_url !== $api_url && $should_persist) {
+            update_option('zapwa_evolution_url', $normalized_api_url);
+            $log_before = self::get_log_safe_url($api_url);
+            $log_after = self::get_log_safe_url($normalized_api_url);
+            error_log(sprintf('[ZapWA] Normalized Evolution API URL: %s -> %s', $log_before, $log_after));
+        }
 
-        $api_candidates = self::get_api_url_candidates($api_url);
+        $api_candidates = self::get_api_url_candidates($normalized_api_url);
         
         error_log('[ZapWA] Tentando criar instância...');
         error_log('[ZapWA] Instance Name: ' . $instance_name);
@@ -237,7 +333,7 @@ class ConnectionManager {
         $response = null;
         $full_url = null;
         $status_code = null;
-        $resolved_api_url = $api_url;
+        $resolved_api_url = $normalized_api_url;
         $should_update_api_url = false;
         $last_candidate_index = count($api_candidates) - 1;
 
