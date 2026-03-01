@@ -24,6 +24,98 @@ class QRCodeGenerator {
         self::$autoloader_loaded = true;
         return true;
     }
+
+    /**
+     * Ensure base64 image has a valid data URI prefix.
+     */
+    private static function normalize_base64_image($base64) {
+        if (!is_string($base64) || $base64 === '') {
+            return null;
+        }
+
+        if (strpos($base64, 'data:image') === 0) {
+            return $base64;
+        }
+
+        return 'data:image/png;base64,' . $base64;
+    }
+
+    /**
+     * Try extracting a QR payload from several Evolution API response formats.
+     */
+    private static function extract_qr_payload($body) {
+        if (!is_array($body)) {
+            return null;
+        }
+
+        if (!empty($body['code']) && is_string($body['code'])) {
+            return ['type' => 'code', 'value' => $body['code']];
+        }
+
+        $candidate_paths = [
+            ['qrcode', 'base64'],
+            ['qrcode', 'code'],
+            ['base64'],
+            ['qr'],
+            ['qrCode'],
+            ['qrcode'],
+        ];
+
+        foreach ($candidate_paths as $path) {
+            $value = $body;
+            foreach ($path as $segment) {
+                if (!is_array($value) || !array_key_exists($segment, $value)) {
+                    $value = null;
+                    break;
+                }
+                $value = $value[$segment];
+            }
+
+            if (is_string($value) && $value !== '') {
+                return ['type' => 'base64', 'value' => $value];
+            }
+        }
+
+        return null;
+    }
+
+
+    /**
+     * Build API URL candidates for Evolution variants.
+     */
+    private static function get_api_url_candidates($api_url) {
+        $api_url = rtrim((string) $api_url, '/');
+        if ($api_url === '') {
+            return [];
+        }
+
+        $candidates = [$api_url];
+        $root_url = rtrim(preg_replace('~/api(?:/v\d+)?$~', '', $api_url), '/');
+
+        foreach (['/api', '/api/v1', '/api/v2'] as $suffix) {
+            $candidates[] = $root_url . $suffix;
+        }
+
+        return array_values(array_unique($candidates));
+    }
+
+    /**
+     * Call connect endpoint with GET and fallback to POST for compatibility.
+     */
+    private static function request_connect_endpoint($full_url, $api_token) {
+        $request_options = [
+            'headers' => ['apikey' => $api_token],
+            'timeout' => 20,
+        ];
+
+        $response = wp_remote_get($full_url, $request_options);
+
+        if (!is_wp_error($response) && wp_remote_retrieve_response_code($response) !== 405) {
+            return $response;
+        }
+
+        return wp_remote_post($full_url, $request_options);
+    }
     
     /**
      * Generate QR Code as Base64 PNG using chillerlan/php-qrcode
@@ -56,79 +148,83 @@ class QRCodeGenerator {
             error_log('[ZapWA] QR Code fetch failed: Configuração incompleta');
             return ['success' => false, 'error' => 'Configuração incompleta'];
         }
-        
-        // Retry logic - tentar até 3 vezes
-        $max_retries = 3;
-        $retry_delay = 2; // segundos
-        
+
+        $api_candidates = self::get_api_url_candidates($api_url);
+        $max_retries = 6;
+        $retry_delay = 2;
+        $last_error = 'QR Code não disponível';
+
         for ($attempt = 1; $attempt <= $max_retries; $attempt++) {
-            error_log('[ZapWA] Fetching QR Code - Attempt ' . $attempt . '/' . $max_retries);
-            
-            $response = wp_remote_get(
-                rtrim($api_url, '/') . '/instance/connect/' . $instance_name,
-                [
-                    'headers' => ['apikey' => $api_token],
-                    'timeout' => 15,
-                ]
-            );
-            
-            if (is_wp_error($response)) {
-                error_log('[ZapWA] QR Code fetch error: ' . $response->get_error_message());
-                if ($attempt < $max_retries) {
-                    sleep($retry_delay);
+            foreach ($api_candidates as $candidate_url) {
+                $full_url = rtrim($candidate_url, '/') . '/instance/connect/' . rawurlencode($instance_name);
+                error_log('[ZapWA] Fetching QR Code - Attempt ' . $attempt . '/' . $max_retries . ' URL: ' . $full_url);
+
+                $response = self::request_connect_endpoint($full_url, $api_token);
+
+                if (is_wp_error($response)) {
+                    $last_error = 'Erro de conexão: ' . $response->get_error_message();
+                    error_log('[ZapWA] QR Code fetch error: ' . $last_error);
                     continue;
                 }
-                return ['success' => false, 'error' => 'Erro de conexão: ' . $response->get_error_message()];
-            }
-            
-            $status_code = wp_remote_retrieve_response_code($response);
-            $body = json_decode(wp_remote_retrieve_body($response), true);
-            
-            error_log('[ZapWA] QR Code Response (Status ' . $status_code . '): ' . print_r($body, true));
-            
-            if ($status_code === 404) {
-                return ['success' => false, 'error' => 'Instância não encontrada. Por favor, crie a instância primeiro.'];
-            }
-            
-            if ($status_code >= 400) {
-                $error_msg = isset($body['message']) ? $body['message'] : 'Erro HTTP ' . $status_code;
-                if ($attempt < $max_retries) {
-                    sleep($retry_delay);
+
+                $status_code = wp_remote_retrieve_response_code($response);
+                $response_body = wp_remote_retrieve_body($response);
+                $body = json_decode($response_body, true);
+
+                error_log('[ZapWA] QR Code response status=' . $status_code . ' body=' . $response_body);
+
+                if ($status_code === 404) {
+                    $last_error = 'Instância/endpoint não encontrado. Verifique URL da Evolution API.';
                     continue;
                 }
-                return ['success' => false, 'error' => $error_msg];
-            }
-            
-            if (isset($body['code'])) {
-                // Gerar QR Code localmente
-                $qr_base64 = self::generate_base64($body['code']);
-                
-                error_log('[ZapWA] QR Code generated successfully');
-                
+
+                if ($status_code === 401 || $status_code === 403) {
+                    return ['success' => false, 'error' => 'API Key inválida (HTTP ' . $status_code . ')'];
+                }
+
+                if ($status_code >= 400) {
+                    $last_error = isset($body['message']) ? $body['message'] : ('Erro HTTP ' . $status_code);
+                    continue;
+                }
+
+                $payload = self::extract_qr_payload($body);
+                if (!$payload) {
+                    $last_error = 'Resposta sem QR Code. Aguarde alguns segundos e tente novamente.';
+                    continue;
+                }
+
+                if ($payload['type'] === 'code') {
+                    $qr_base64 = self::generate_base64($payload['value']);
+                    if (!$qr_base64) {
+                        return ['success' => false, 'error' => 'Falha ao gerar QR Code localmente (dependência ausente).'];
+                    }
+
+                    return [
+                        'success' => true,
+                        'qrcode_base64' => $qr_base64,
+                        'code' => $payload['value'],
+                        'expires_in' => 120,
+                    ];
+                }
+
+                $normalized_base64 = self::normalize_base64_image($payload['value']);
+                if (!$normalized_base64) {
+                    $last_error = 'QR Code retornado em formato inválido.';
+                    continue;
+                }
+
                 return [
                     'success' => true,
-                    'qrcode_base64' => $qr_base64,
-                    'code' => $body['code'],
+                    'qrcode_base64' => $normalized_base64,
                     'expires_in' => 120,
                 ];
             }
-            
-            if (isset($body['qrcode']['base64'])) {
-                error_log('[ZapWA] QR Code fetched successfully');
-                
-                return [
-                    'success' => true,
-                    'qrcode_base64' => $body['qrcode']['base64'],
-                    'expires_in' => 120,
-                ];
-            }
-            
+
             if ($attempt < $max_retries) {
-                error_log('[ZapWA] QR Code not ready yet, retrying...');
                 sleep($retry_delay);
             }
         }
         
-        return ['success' => false, 'error' => 'QR Code não disponível após ' . $max_retries . ' tentativas'];
+        return ['success' => false, 'error' => $last_error . ' (após ' . $max_retries . ' tentativas)'];
     }
 }

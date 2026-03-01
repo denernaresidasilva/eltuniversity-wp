@@ -82,6 +82,78 @@ git commit -m "chore: update dependencies"
 
 ---
 
+
+## 🧪 Troubleshooting: QR Code não carrega
+
+Se a instância é criada, mas o QR Code não aparece automaticamente, siga este passo a passo:
+
+1. **Confirmar URL base da Evolution API**
+   - No plugin, teste uma destas bases:
+     - `https://seu-dominio/api`
+     - `https://seu-dominio/api/v1`
+     - `https://seu-dominio/api/v2`
+
+2. **Validar autenticação (API Key)**
+   - Execute no terminal (troque URL e TOKEN):
+
+   ```bash
+   curl -s -H "apikey: SEU_TOKEN" "https://seu-dominio/api/instance/fetchInstances"
+   ```
+
+   - Se retornar `401`/`403`, a chave está inválida ou sem permissão.
+
+3. **Validar se a instância existe**
+   - Use o nome configurado no plugin em `zapwa_evolution_instance`:
+
+   ```bash
+   curl -s -H "apikey: SEU_TOKEN" "https://seu-dominio/api/instance/fetchInstances"
+   ```
+
+4. **Validar endpoint de conexão/QR**
+   - Algumas instalações aceitam `GET`, outras `POST`:
+
+   ```bash
+   # GET
+   curl -s -X GET -H "apikey: SEU_TOKEN" "https://seu-dominio/api/instance/connect/NOME_INSTANCIA"
+
+   # POST
+   curl -s -X POST -H "apikey: SEU_TOKEN" "https://seu-dominio/api/instance/connect/NOME_INSTANCIA"
+   ```
+
+   - O retorno pode vir como:
+     - `code` (texto para gerar QR local), ou
+     - `qrcode.base64` / `base64` / `qr` / `qrCode`.
+
+5. **Validar estado da conexão**
+
+   ```bash
+   curl -s -H "apikey: SEU_TOKEN" "https://seu-dominio/api/instance/connectionState/NOME_INSTANCIA"
+   ```
+
+   - Quando conectado, o estado esperado geralmente é `open`.
+
+6. **Ativar logs do WordPress**
+   - Em `wp-config.php`, confirme:
+
+   ```php
+   define('WP_DEBUG', true);
+   define('WP_DEBUG_LOG', true);
+   define('WP_DEBUG_DISPLAY', false);
+   ```
+
+   - Depois confira `wp-content/debug.log` e procure por linhas iniciadas com `[ZapWA]`.
+
+7. **Checklist rápido de ambiente**
+   - PHP 8.2 ✅ (compatível)
+   - Plugin ativo
+   - Usuário admin com permissão `manage_options`
+   - Sem bloqueio de firewall entre WordPress e Evolution API
+   - SSL válido no domínio da Evolution API
+
+Se ainda não funcionar, compartilhe os retornos dos endpoints dos passos 2, 4 e 5 (removendo tokens) para diagnóstico exato.
+
+---
+
 ## 📚 Dependências
 
 Este plugin utiliza as seguintes bibliotecas open-source:
