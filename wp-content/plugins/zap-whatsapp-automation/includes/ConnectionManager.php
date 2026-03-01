@@ -193,7 +193,20 @@ class ConnectionManager {
         }
 
         $api_url = rtrim($api_url, '/');
-        $api_url = preg_replace('~/(?:instance(?:/(?:create|fetchInstances|connect|logout))?)$~', '', $api_url);
+        $endpoint_suffixes = [
+            '/instance/create',
+            '/instance/fetchInstances',
+            '/instance/connect',
+            '/instance/logout',
+            '/instance',
+        ];
+
+        foreach ($endpoint_suffixes as $suffix) {
+            if (substr_compare($api_url, $suffix, -strlen($suffix)) === 0) {
+                $api_url = rtrim(substr($api_url, 0, -strlen($suffix)), '/');
+                break;
+            }
+        }
 
         return rtrim($api_url, '/');
     }
@@ -231,6 +244,7 @@ class ConnectionManager {
         $normalized_api_url = self::normalize_api_url($api_url);
         if ($normalized_api_url !== $api_url) {
             update_option('zapwa_evolution_url', $normalized_api_url);
+            error_log('[ZapWA] URL da Evolution API normalizada: ' . $api_url . ' -> ' . $normalized_api_url);
         }
 
         $api_candidates = self::get_api_url_candidates($normalized_api_url);
