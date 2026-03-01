@@ -7,14 +7,17 @@ class Cron {
 
     public static function init() {
 
+        // Register custom cron interval antes de agendar eventos
+        add_filter('cron_schedules', [__CLASS__, 'add_cron_interval']);
+
         add_action('zapwa_process_queue', [__CLASS__, 'process']);
 
         if (!wp_next_scheduled('zapwa_process_queue')) {
             wp_schedule_event(time(), 'zapwa_every_minute', 'zapwa_process_queue');
+            Logger::debug('Cron zapwa_process_queue agendado', [
+                'recurrence' => 'zapwa_every_minute',
+            ]);
         }
-
-        // Register custom cron interval
-        add_filter('cron_schedules', [__CLASS__, 'add_cron_interval']);
     }
 
     /**
@@ -38,13 +41,27 @@ class Cron {
     public static function process() {
 
         $item = Queue::next();
-        if (!$item) return;
+        if (!$item) {
+            Logger::debug('Fila vazia: nenhum item pendente para processar');
+            return;
+        }
+
+        Logger::debug('Iniciando processamento de item da fila', [
+            'item_id' => (int) $item->id,
+            'event' => $item->event,
+            'user_id' => (int) $item->user_id,
+            'attempts' => (int) $item->attempts,
+        ]);
 
         Queue::attempt($item->id);
 
         $message = get_post($item->message_id);
         if (!$message) {
             Queue::fail($item->id);
+            Logger::debug('Erro na fila: mensagem não encontrada para item', [
+                'item_id' => (int) $item->id,
+                'message_id' => (int) $item->message_id,
+            ]);
             return;
         }
 
@@ -106,6 +123,16 @@ class Cron {
 
         // Enviar mensagem usando método estático
         $result = EvolutionAPI::send_message($item->phone, $text);
+
+        if (!$result['success']) {
+            Logger::debug('Erro no envio da mensagem', [
+                'item_id' => (int) $item->id,
+                'event' => $item->event,
+                'user_id' => (int) $item->user_id,
+                'phone' => $item->phone,
+                'error' => $result['error'] ?? 'erro desconhecido',
+            ]);
+        }
 
         // Registrar no log
         Logger::log_send(
