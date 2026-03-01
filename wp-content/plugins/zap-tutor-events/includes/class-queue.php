@@ -31,13 +31,14 @@ class Queue {
      * Initialize queue system
      */
     public static function init() {
+        add_filter('cron_schedules', [self::class, 'add_cron_interval']);
+
         // Schedule cron if not already scheduled
         if (!wp_next_scheduled('zap_events_process_queue')) {
             wp_schedule_event(time(), 'every_minute', 'zap_events_process_queue');
         }
 
         add_action('zap_events_process_queue', [self::class, 'process_queue']);
-        add_filter('cron_schedules', [self::class, 'add_cron_interval']);
     }
 
     /**
@@ -82,7 +83,15 @@ class Queue {
             return $a['priority'] - $b['priority'];
         });
 
-        return update_option(self::QUEUE_OPTION, $queue);
+        $updated = update_option(self::QUEUE_OPTION, $queue);
+
+        // Guarantee that a queue worker run is scheduled shortly after enqueue.
+        // This avoids relying only on plugin boot timing for the recurring cron.
+        if (!wp_next_scheduled('zap_events_process_queue')) {
+            wp_schedule_single_event(time() + 5, 'zap_events_process_queue');
+        }
+
+        return $updated;
     }
 
     /**
