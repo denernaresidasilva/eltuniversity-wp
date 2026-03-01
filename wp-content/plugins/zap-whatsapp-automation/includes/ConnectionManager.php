@@ -184,10 +184,10 @@ class ConnectionManager {
     }
 
     /**
-     * Normalize Evolution API URL removing trailing instance endpoints.
+     * Normalize Evolution API URL by removing trailing instance endpoints.
      *
      * @param string $api_url
-     * @return string Empty string when input is empty or whitespace-only.
+     * @return string Normalized URL or empty string when input is empty or whitespace-only.
      */
     private static function normalize_api_url(string $api_url) {
         $api_url = trim($api_url);
@@ -205,8 +205,9 @@ class ConnectionManager {
         ];
 
         foreach ($endpoint_suffixes as $suffix) {
-            if (substr_compare($normalized_url, $suffix, -strlen($suffix)) === 0) {
-                $normalized_url = rtrim(substr($normalized_url, 0, -strlen($suffix)), '/');
+            $suffix_length = strlen($suffix);
+            if (substr_compare($normalized_url, $suffix, -$suffix_length) === 0) {
+                $normalized_url = rtrim(substr($normalized_url, 0, -$suffix_length), '/');
                 break;
             }
         }
