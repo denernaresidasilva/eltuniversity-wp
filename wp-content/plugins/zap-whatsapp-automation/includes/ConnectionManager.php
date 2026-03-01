@@ -203,20 +203,15 @@ class ConnectionManager {
             '/instance/fetchInstances',
             '/instance/connect',
             '/instance/logout',
-            '/instance',
         ];
 
-        do {
-            $made_change = false;
-            foreach ($endpoint_suffixes as $suffix) {
-                $suffix_length = strlen($suffix);
-                if (substr_compare($normalized_url, $suffix, -$suffix_length) === 0) {
-                    $normalized_url = rtrim(substr($normalized_url, 0, -$suffix_length), '/');
-                    $made_change = true;
-                    break;
-                }
-            }
-        } while ($made_change);
+        if (preg_match('~/api(?:/v\\d+)?(?:/|$)~', $normalized_url)) {
+            $endpoint_suffixes[] = '/instance';
+        }
+
+        $pattern = '~(?:' . implode('|', array_map('preg_quote', $endpoint_suffixes)) . ')+$~';
+        $normalized_url = preg_replace($pattern, '', $normalized_url);
+        $normalized_url = rtrim($normalized_url, '/');
 
         return $normalized_url;
     }
