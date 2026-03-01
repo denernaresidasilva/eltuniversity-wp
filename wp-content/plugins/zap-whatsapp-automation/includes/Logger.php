@@ -57,4 +57,25 @@ class Logger {
             ]
         );
     }
+
+    /**
+     * LOG DE ETAPAS DO FLUXO (RECEPÇÃO/FILA)
+     */
+    public static function log_stage($status, $event = '', $user_id = 0, $phone = '', $message = '') {
+        global $wpdb;
+
+        $table = $wpdb->prefix . 'zap_wa_logs';
+
+        $wpdb->insert(
+            $table,
+            [
+                'user_id' => absint($user_id),
+                'phone'   => sanitize_text_field($phone),
+                'event'   => sanitize_text_field($event),
+                'message' => sanitize_textarea_field($message),
+                'status'  => sanitize_text_field($status),
+                'created_at' => current_time('mysql'),
+            ]
+        );
+    }
 }

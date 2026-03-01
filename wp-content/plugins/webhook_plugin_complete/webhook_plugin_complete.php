@@ -56,7 +56,7 @@ class Webhook_Receiver {
         // AJAX para obter dados do webhook
         add_action('wp_ajax_webhook_receiver_get_webhook_data', array($this, 'ajax_get_webhook_data'));
         
-        // AJAX para testar webhook
+        // AJAX para matricular aluno manualmente
         add_action('wp_ajax_webhook_receiver_test_webhook', array($this, 'ajax_test_webhook'));
         
         add_option('webhook_receiver_user_email_subject', 'Bem-vindo! Seus dados de acesso');
@@ -1540,11 +1540,11 @@ class Webhook_Receiver {
             26
         );
         
-        // Adicionar submenu de teste
+        // Adicionar submenu de matrícula manual
         add_submenu_page(
             'webhook-receiver-endpoints',
-            'Testar Webhook',
-            '🧪 Testar Webhook',
+            'Matricular Aluno',
+            '🎓 Matricular Aluno',
             'manage_options',
             'webhook-receiver-test',
             array($this, 'test_webhook_page')
@@ -1553,7 +1553,7 @@ class Webhook_Receiver {
     
     /**
      * ========================================
-     * PÁGINA DE TESTE DE WEBHOOK
+     * PÁGINA DE MATRÍCULA MANUAL
      * ========================================
      */
     public function test_webhook_page() {
@@ -1571,14 +1571,14 @@ class Webhook_Receiver {
         
         ?>
         <div class="wrap webhook-test-page">
-            <h1>🧪 Testar Webhook</h1>
-            <p class="description">Simule uma compra e teste o fluxo completo de matrícula sem precisar enviar webhooks reais.</p>
+            <h1>🎓 Matricular Aluno</h1>
+            <p class="description">Execute a matrícula/desmatrícula manual usando os dados configurados no webhook selecionado.</p>
             
             <div class="webhook-test-card">
                 <form id="webhook-test-form" method="post">
                     <?php wp_nonce_field('webhook_test_action', 'webhook_test_nonce'); ?>
                     
-                    <h2>📝 Dados da Simulação</h2>
+                    <h2>📝 Dados da Matrícula</h2>
                     
                     <!-- Seleção de Webhook -->
                     <div class="form-group">
@@ -1598,7 +1598,7 @@ class Webhook_Receiver {
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                        <p class="form-description">Selecione o webhook que deseja testar</p>
+                        <p class="form-description">Selecione o webhook que deseja executar</p>
                     </div>
                     
                     <!-- Seleção de Usuário -->
@@ -1624,7 +1624,7 @@ class Webhook_Receiver {
                                     <span class="option-icon">➕</span>
                                     <span class="option-text">
                                         <strong>Novo Usuário</strong>
-                                        <small>Criar novo usuário para teste</small>
+                                        <small>Criar novo usuário para matrícula</small>
                                     </span>
                                 </span>
                             </label>
@@ -1924,7 +1924,7 @@ class Webhook_Receiver {
                         } else {
                             $('#test-result').html(
                                 '<div class="notice notice-error is-dismissible">' +
-                                '<p><strong>❌ Erro ao processar teste:</strong></p>' +
+                                '<p><strong>❌ Erro ao processar matrícula:</strong></p>' +
                                 '<p>' + response.data.message + '</p>' +
                                 '</div>'
                             ).show();
@@ -1933,7 +1933,7 @@ class Webhook_Receiver {
                     error: function() {
                         $('#test-result').html(
                             '<div class="notice notice-error is-dismissible">' +
-                            '<p><strong>❌ Erro de conexão ao processar teste.</strong></p>' +
+                            '<p><strong>❌ Erro de conexão ao processar matrícula.</strong></p>' +
                             '</div>'
                         ).show();
                     },

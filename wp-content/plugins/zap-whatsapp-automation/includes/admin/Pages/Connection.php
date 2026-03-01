@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
 class Connection {
 
     public static function render() {
+        global $wpdb;
 
         // Save settings
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['zapwa_save_settings']) && check_admin_referer('zapwa_settings')) {
@@ -39,6 +40,11 @@ class Connection {
         $evolution_token = get_option('zapwa_evolution_token', '');
         $instance_name   = get_option('zapwa_evolution_instance', '');
         $is_connected    = ConnectionManager::is_connected();
+        $next_cron       = wp_next_scheduled('zapwa_process_queue');
+        $wp_cron_disabled = defined('DISABLE_WP_CRON') && DISABLE_WP_CRON;
+        $queue_table     = $wpdb->prefix . 'zapwa_queue';
+        $pending_queue   = (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$queue_table} WHERE status = %s", 'pending'));
+        $debug_log_file  = WP_CONTENT_DIR . '/zapwa-logs/debug-' . date('Y-m-d') . '.log';
 
         // Enqueue assets
         $plugin_url = ZAP_WA_URL;
@@ -60,6 +66,20 @@ class Connection {
                     <span class="zapwa-connection-badge disconnected">🔴 Desconectado</span>
                 <?php endif; ?>
             </p>
+
+            <div class="notice notice-info" style="padding:10px 14px;">
+                <p><strong>Diagnóstico do processamento</strong></p>
+                <ul style="margin-left:20px;list-style:disc;">
+                    <li><strong>WP-Cron:</strong> <?php echo $wp_cron_disabled ? '❌ Desabilitado (DISABLE_WP_CRON=true)' : '✅ Habilitado'; ?></li>
+                    <li><strong>Próxima execução da fila:</strong> <?php echo $next_cron ? esc_html(date('Y-m-d H:i:s', $next_cron)) : '❌ Não agendado'; ?></li>
+                    <li><strong>Itens pendentes na fila:</strong> <?php echo esc_html((string) $pending_queue); ?></li>
+                    <li><strong>Arquivo de debug:</strong> <code><?php echo esc_html($debug_log_file); ?></code></li>
+                </ul>
+                <p>
+                    <button id="zapwa-process-queue-now" class="button">⚡ Processar fila agora</button>
+                    <span id="zapwa-process-queue-status" style="margin-left:10px;"></span>
+                </p>
+            </div>
 
             <form method="post">
                 <?php wp_nonce_field('zapwa_settings'); ?>
@@ -162,7 +182,35 @@ class Connection {
             </div>
             <?php endif; ?>
         </div>
+        <script>
+        (function($){
+            $(document).ready(function(){
+                $('#zapwa-process-queue-now').on('click', function(e){
+                    e.preventDefault();
+                    var $btn = $(this);
+                    var $status = $('#zapwa-process-queue-status');
+                    $btn.prop('disabled', true).text('⏳ Processando...');
+                    $status.text('');
+
+                    $.post(ajaxurl, {
+                        action: 'zapwa_process_queue_now',
+                        nonce: '<?php echo esc_js(wp_create_nonce('zapwa_qrcode')); ?>'
+                    }, function(resp){
+                        if (resp.success) {
+                            $status.text('✅ Fila processada').css('color', '#46b450');
+                        } else {
+                            var err = (resp.data && resp.data.error) ? resp.data.error : 'Erro ao processar fila';
+                            $status.text('❌ ' + err).css('color', '#dc3232');
+                        }
+                    }).fail(function(){
+                        $status.text('❌ Falha de conexão AJAX').css('color', '#dc3232');
+                    }).always(function(){
+                        $btn.prop('disabled', false).text('⚡ Processar fila agora');
+                    });
+                });
+            });
+        })(jQuery);
+        </script>
         <?php
     }
 }
-
