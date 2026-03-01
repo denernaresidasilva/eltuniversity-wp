@@ -184,7 +184,10 @@ class ConnectionManager {
     }
 
     /**
-     * Normalize Evolution API URL removing trailing endpoints.
+     * Normalize Evolution API URL removing trailing instance endpoints.
+     *
+     * @param string $api_url
+     * @return string
      */
     private static function normalize_api_url($api_url) {
         $api_url = trim((string) $api_url);
@@ -192,7 +195,7 @@ class ConnectionManager {
             return '';
         }
 
-        $api_url = rtrim($api_url, '/');
+        $normalized_url = rtrim($api_url, '/');
         $endpoint_suffixes = [
             '/instance/create',
             '/instance/fetchInstances',
@@ -202,17 +205,43 @@ class ConnectionManager {
         ];
 
         do {
-            $normalized = false;
+            $current_url = $normalized_url;
             foreach ($endpoint_suffixes as $suffix) {
-                if (substr_compare($api_url, $suffix, -strlen($suffix)) === 0) {
-                    $api_url = rtrim(substr($api_url, 0, -strlen($suffix)), '/');
-                    $normalized = true;
+                if (substr_compare($normalized_url, $suffix, -strlen($suffix)) === 0) {
+                    $normalized_url = rtrim(substr($normalized_url, 0, -strlen($suffix)), '/');
                     break;
                 }
             }
-        } while ($normalized);
+        } while ($current_url !== $normalized_url);
 
-        return rtrim($api_url, '/');
+        return rtrim($normalized_url, '/');
+    }
+
+    /**
+     * Build a log-safe URL without credentials or query strings.
+     *
+     * @param string $api_url
+     * @return string
+     */
+    private static function get_log_safe_url($api_url) {
+        $parts = wp_parse_url($api_url);
+        if (!is_array($parts) || empty($parts['host'])) {
+            return '[redacted]';
+        }
+
+        $safe_url = '';
+        if (!empty($parts['scheme'])) {
+            $safe_url .= $parts['scheme'] . '://';
+        }
+        $safe_url .= $parts['host'];
+        if (!empty($parts['port'])) {
+            $safe_url .= ':' . $parts['port'];
+        }
+        if (!empty($parts['path'])) {
+            $safe_url .= $parts['path'];
+        }
+
+        return $safe_url;
     }
 
     /**
@@ -248,7 +277,9 @@ class ConnectionManager {
         $normalized_api_url = self::normalize_api_url($api_url);
         if ($normalized_api_url !== $api_url) {
             update_option('zapwa_evolution_url', $normalized_api_url);
-            error_log('[ZapWA] Normalized Evolution API URL: ' . $api_url . ' -> ' . $normalized_api_url);
+            $log_before = self::get_log_safe_url($api_url);
+            $log_after = self::get_log_safe_url($normalized_api_url);
+            error_log('[ZapWA] Normalized Evolution API URL: ' . $log_before . ' -> ' . $log_after);
         }
 
         $api_candidates = self::get_api_url_candidates($normalized_api_url);
