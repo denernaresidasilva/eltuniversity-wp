@@ -43,14 +43,24 @@ class Admin {
             return;
         }
 
+        // Main menu opens Dashboard first
         add_menu_page(
             'ZAP Tutor Events',
             'ZAP Tutor Events',
             'manage_options',
             'zap-tutor-events',
-            [Admin_Test::class, 'render'],
+            [Dashboard::class, 'render_dashboard'],
             'dashicons-megaphone',
             56
+        );
+
+        add_submenu_page(
+            'zap-tutor-events',
+            'Dashboard',
+            'Dashboard',
+            'manage_options',
+            'zap-tutor-events',
+            [Dashboard::class, 'render_dashboard']
         );
 
         add_submenu_page(
@@ -58,7 +68,7 @@ class Admin {
             'Teste de Eventos',
             'Teste de Eventos',
             'manage_options',
-            'zap-tutor-events',
+            'zap-tutor-events-test',
             [Admin_Test::class, 'render']
         );
 

@@ -63,26 +63,21 @@ class Dispatcher {
                 self::debug_error("Logger class not found");
             }
 
-            // 2. Send to webhook (async via WP Cron if Queue enabled)
+            // 2. Send to webhook: always try immediate dispatch first, fallback to queue on failure
             if (class_exists(__NAMESPACE__ . '\\Webhook')) {
-                $use_queue = get_option('zap_events_use_queue', false);
-                
-                if ($use_queue && class_exists(__NAMESPACE__ . '\\Queue')) {
-                    $queued = Queue::enqueue($event_key, $user_id, $context);
-                    if ($queued) {
-                        self::debug("Event queued for webhook processing");
-                    } else {
-                        self::debug_error("Failed to queue event");
-                    }
+                $sent = Webhook::send($event_key, $user_id, $context);
+                if ($sent) {
+                    self::debug("Event sent to webhook successfully (immediate dispatch)");
                 } else {
-                    if ($use_queue && !class_exists(__NAMESPACE__ . '\\Queue')) {
-                        self::debug_error("Queue class not found, falling back to direct webhook");
-                    }
-                    $sent = Webhook::send($event_key, $user_id, $context);
-                    if ($sent) {
-                        self::debug("Event sent to webhook successfully");
-                    } else {
-                        self::debug_error("Webhook send failed or no URL configured");
+                    self::debug_error("Immediate webhook dispatch failed, falling back to queue");
+                    // Fallback: enqueue for retry if Queue class is available
+                    if (class_exists(__NAMESPACE__ . '\\Queue')) {
+                        $queued = Queue::enqueue($event_key, $user_id, $context);
+                        if ($queued) {
+                            self::debug("Event queued for retry after immediate dispatch failure");
+                        } else {
+                            self::debug_error("Failed to queue event after dispatch failure");
+                        }
                     }
                 }
             } else {
