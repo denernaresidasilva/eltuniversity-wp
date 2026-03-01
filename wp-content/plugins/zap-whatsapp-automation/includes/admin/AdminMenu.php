@@ -23,6 +23,7 @@ class AdminMenu {
             'Logs.php',
             'QueuePage.php', // ✅ FILA
             'Metrics.php', // ✅ MÉTRICAS
+            'Settings.php', // ✅ CONFIGURAÇÕES
         ];
 
         foreach ($files as $file) {
@@ -87,8 +88,6 @@ class AdminMenu {
             ['ZapWA\\Admin\\Pages\\QueuePage', 'render']
         );
 
-        // Remover o primeiro submenu duplicado (WordPress adiciona automaticamente o primeiro item)
-        // Este submenu "Métricas" substitui o primeiro item automático
         add_submenu_page(
             'zap-wa-metrics',
             'Métricas',
@@ -96,6 +95,15 @@ class AdminMenu {
             'manage_options',
             'zap-wa-metrics',
             ['ZapWA\\Admin\\Pages\\Metrics', 'render']
+        );
+
+        add_submenu_page(
+            'zap-wa-metrics',
+            'Configurações',
+            'Configurações',
+            'manage_options',
+            'zap-wa-settings',
+            ['ZapWA\\Admin\\Pages\\Settings', 'render']
         );
     }
 }

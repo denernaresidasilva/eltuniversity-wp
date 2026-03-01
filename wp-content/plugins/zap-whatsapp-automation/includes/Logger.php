@@ -10,6 +10,10 @@ class Logger {
      */
     public static function debug($message, $context = []) {
 
+        if (!get_option('zapwa_logging_enabled', true)) {
+            return;
+        }
+
         $dir = WP_CONTENT_DIR . '/zapwa-logs';
 
         if (!file_exists($dir)) {
@@ -41,6 +45,10 @@ class Logger {
         $response = null
     ) {
 
+        if (!get_option('zapwa_logging_enabled', true)) {
+            return;
+        }
+
         global $wpdb;
 
         $table = $wpdb->prefix . 'zap_wa_logs';
@@ -62,6 +70,11 @@ class Logger {
      * LOG DE ETAPAS DO FLUXO (RECEPÇÃO/FILA)
      */
     public static function log_stage($status, $event = '', $user_id = 0, $phone = '', $message = '') {
+
+        if (!get_option('zapwa_logging_enabled', true)) {
+            return;
+        }
+
         global $wpdb;
 
         $table = $wpdb->prefix . 'zap_wa_logs';

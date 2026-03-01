@@ -9,12 +9,6 @@ class Admin {
 
     public static function init() {
 
-        // Garante que a classe de teste esteja carregada
-        $test_file = ZAP_EVENTS_PATH . 'includes/class-admin-test.php';
-        if (file_exists($test_file)) {
-            require_once $test_file;
-        }
-
         add_action('admin_menu', [self::class, 'menu']);
         add_action('admin_enqueue_scripts', [self::class, 'enqueue_assets']);
         add_action('admin_post_zap_events_delete_all_logs', [self::class, 'handle_delete_all_logs']);
@@ -40,11 +34,6 @@ class Admin {
 
     public static function menu() {
 
-        // Fallback de segurança
-        if (!class_exists(__NAMESPACE__ . '\\Admin_Test')) {
-            return;
-        }
-
         // Main menu opens Dashboard first
         add_menu_page(
             'ZAP Tutor Events',
@@ -63,15 +52,6 @@ class Admin {
             'manage_options',
             'zap-tutor-events',
             [Dashboard::class, 'render_dashboard']
-        );
-
-        add_submenu_page(
-            'zap-tutor-events',
-            'Teste de Eventos',
-            'Teste de Eventos',
-            'manage_options',
-            'zap-tutor-events-test',
-            [Admin_Test::class, 'render']
         );
 
         add_submenu_page(
