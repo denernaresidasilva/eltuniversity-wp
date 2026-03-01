@@ -55,7 +55,7 @@ class ConnectionManager {
         $response2 = wp_remote_get(
             rtrim($api_url, '/') . '/instance/fetchInstances',
             [
-                'headers' => ['apikey' => $api_token],
+                'headers' => self::get_auth_headers($api_token),
                 'timeout' => 10,
             ]
         );
@@ -120,9 +120,7 @@ class ConnectionManager {
         $response = wp_remote_get(
             rtrim($api_url, '/') . '/instance/connectionState/' . $instance_name,
             [
-                'headers' => [
-                    'apikey' => $api_token,
-                ],
+                'headers' => self::get_auth_headers($api_token),
                 'timeout' => 10,
             ]
         );
@@ -159,7 +157,7 @@ class ConnectionManager {
         $response = wp_remote_get(
             rtrim($api_url, '/') . '/instance/fetchInstances',
             [
-                'headers' => ['apikey' => $api_token],
+                'headers' => self::get_auth_headers($api_token),
                 'timeout' => 10,
             ]
         );
@@ -250,6 +248,21 @@ class ConnectionManager {
     }
 
     /**
+     * Build Evolution API authentication headers.
+     *
+     * @since 1.1.1
+     *
+     * @param string $api_token
+     * @return array
+     */
+    private static function get_auth_headers(string $api_token): array {
+        return [
+            'apikey' => $api_token,
+            'Authorization' => 'Bearer ' . $api_token,
+        ];
+    }
+
+    /**
      * Build Evolution API base URL candidates for compatibility.
      */
     private static function get_api_url_candidates($api_url) {
@@ -257,7 +270,7 @@ class ConnectionManager {
         $candidates = [$api_url];
         $root_url = rtrim(preg_replace('~/api(?:/v\\d+)?$~', '', $api_url), '/');
 
-        foreach (['/api', '/api/v1', '/api/v2'] as $suffix) {
+        foreach (['/api', '/api/v1', '/api/v2', '/api/v3'] as $suffix) {
             $candidate = $root_url . $suffix;
             $candidates[] = $candidate;
         }
@@ -346,8 +359,7 @@ class ConnectionManager {
                 [
                     'headers' => [
                         'Content-Type' => 'application/json',
-                        'apikey' => $api_token,
-                    ],
+                    ] + self::get_auth_headers($api_token),
                     'body' => wp_json_encode($request_body),
                     'timeout' => 20,
                     'sslverify' => true, // Importante para HTTPS
@@ -447,9 +459,7 @@ class ConnectionManager {
         $response = wp_remote_get(
             rtrim($api_url, '/') . '/instance/connect/' . $instance_name,
             [
-                'headers' => [
-                    'apikey' => $api_token,
-                ],
+                'headers' => self::get_auth_headers($api_token),
                 'timeout' => 15,
             ]
         );
@@ -482,9 +492,7 @@ class ConnectionManager {
             rtrim($api_url, '/') . '/instance/logout/' . $instance_name,
             [
                 'method' => 'DELETE',
-                'headers' => [
-                    'apikey' => $api_token,
-                ],
+                'headers' => self::get_auth_headers($api_token),
                 'timeout' => 15,
             ]
         );

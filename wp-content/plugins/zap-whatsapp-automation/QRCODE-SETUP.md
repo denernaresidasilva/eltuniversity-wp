@@ -90,6 +90,23 @@ ls -la vendor/
 3. Ensure instance name doesn't contain special characters
 4. Check PHP error logs for more details
 
+### Instance Creation Endpoint (Passo a Passo)
+
+**Problem**: Erro ao criar instância (404 / endpoint não encontrado)
+
+**Steps**:
+1. Confirme que a URL base aponta para a API (ex.: `https://evolution.seudominio.com/api/v2`).
+2. Teste manualmente o endpoint de criação:
+   ```bash
+   curl -X POST "https://evolution.seudominio.com/api/v2/instance/create" \
+     -H "Content-Type: application/json" \
+     -H "apikey: SUA_API_KEY" \
+     -H "Authorization: Bearer SUA_API_KEY" \
+     -d '{"instanceName":"minha-instancia","integration":"WHATSAPP-BAILEYS","qrcode":true}'
+   ```
+3. Se retornar 404, ajuste a URL para `/api`, `/api/v1`, `/api/v2` ou `/api/v3` e repita o teste.
+4. Verifique o log do servidor da Evolution API para confirmar a rota disponível.
+
 ### Composer Dependencies Not Installed
 
 **Problem**: "Class 'chillerlan\QRCode\QRCode' not found"
