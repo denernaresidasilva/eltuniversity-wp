@@ -191,7 +191,7 @@ class ConnectionManager {
      * @param string $api_url
      * @return string Normalized URL or empty string when input is empty or whitespace-only.
      */
-    private static function normalize_api_url(string $api_url) {
+    private static function normalize_api_url(string $api_url): string {
         $api_url = trim($api_url);
         if ($api_url === '') {
             return '';
@@ -206,10 +206,11 @@ class ConnectionManager {
         ];
 
         if (preg_match('~/api(?:/v\\d+)?(?:/|$)~', $normalized_url)) {
+            // Strip bare /instance only when the URL already targets an Evolution API base path.
             $endpoint_suffixes[] = '/instance';
         }
 
-        $pattern = '~(?:' . implode('|', array_map('preg_quote', $endpoint_suffixes)) . ')+$~';
+        $pattern = '~(?:' . implode('|', array_map('preg_quote', $endpoint_suffixes)) . ')$~';
         $normalized_url = preg_replace($pattern, '', $normalized_url);
         $normalized_url = rtrim($normalized_url, '/');
 
@@ -224,7 +225,7 @@ class ConnectionManager {
      * @param string $api_url
      * @return string
      */
-    private static function get_log_safe_url(string $api_url) {
+    private static function get_log_safe_url(string $api_url): string {
         $parts = wp_parse_url($api_url);
         if (!is_array($parts) || empty($parts['host'])) {
             return '[redacted]';
