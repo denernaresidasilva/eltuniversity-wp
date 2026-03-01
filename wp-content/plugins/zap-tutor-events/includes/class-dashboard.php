@@ -20,21 +20,8 @@ class Dashboard {
      * Initialize dashboard
      */
     public static function init() {
-        add_action('admin_menu', [self::class, 'add_dashboard_page'], 15);
-    }
-
-    /**
-     * Add dashboard page to menu
-     */
-    public static function add_dashboard_page() {
-        add_submenu_page(
-            'zap-tutor-events',
-            'Dashboard',
-            'Dashboard',
-            'manage_options',
-            'zap-tutor-events-dashboard',
-            [self::class, 'render_dashboard']
-        );
+        // Dashboard page is registered by Admin::menu() as the main landing page.
+        // No additional submenu registration needed here.
     }
 
     /**

@@ -79,6 +79,20 @@ class Webhook_Receiver {
         // Adicionar coluna personalizada na lista de usuários
         add_filter('manage_users_columns', array($this, 'custom_user_courses_column'));
         add_action('manage_users_custom_column', array($this, 'custom_user_courses_column_content'), 10, 3);
+
+        // Elementor widget registration
+        add_action('elementor/widgets/register', array($this, 'register_elementor_widgets'));
+    }
+
+    /**
+     * Register Elementor widget for student enrollment
+     */
+    public function register_elementor_widgets($widgets_manager) {
+        $widget_file = WEBHOOK_RECEIVER_PATH . 'includes/class-elementor-widget.php';
+        if (file_exists($widget_file)) {
+            require_once $widget_file;
+            $widgets_manager->register(new Webhook_Enroll_Elementor_Widget());
+        }
     }
 
     /**
@@ -92,7 +106,7 @@ class Webhook_Receiver {
      */
     public function custom_user_courses_field($user) {
         // Obtenha todos os cursos disponíveis
-        $courses = get_posts(array('post_type' => 'courses', 'numberposts' => -1));
+        $courses = get_posts(array('post_type' => 'courses', 'numberposts' => -1, 'post_status' => 'publish'));
 
         // Obtenha os cursos nos quais o usuário está matriculado via Tutor LMS
         $tutor_courses = function_exists('tutor_utils') ? tutor_utils()->get_enrolled_courses_ids_by_user($user->ID) : array();
@@ -171,7 +185,7 @@ class Webhook_Receiver {
      */
     public function custom_user_courses_field_new_user($user) {
         // Obtenha todos os cursos disponíveis
-        $courses = get_posts(array('post_type' => 'courses', 'numberposts' => -1));
+        $courses = get_posts(array('post_type' => 'courses', 'numberposts' => -1, 'post_status' => 'publish'));
 
         // Nonce de segurança
         wp_nonce_field('save_custom_user_courses', '_custom_user_courses_nonce');
@@ -2010,7 +2024,7 @@ class Webhook_Receiver {
                             </label>
                             <div class="courses-container">
                                 <?php
-                                $courses = get_posts(array('post_type' => 'courses', 'numberposts' => -1));
+                                $courses = get_posts(array('post_type' => 'courses', 'numberposts' => -1, 'post_status' => 'publish'));
                                 if (!empty($courses)) {
                                     foreach ($courses as $course) {
                                         echo '<label class="course-checkbox">';
@@ -4331,6 +4345,9 @@ class Webhook_Receiver {
         register_setting('webhook_receiver_settings', 'webhook_receiver_notify_user');
         register_setting('webhook_receiver_settings', 'webhook_receiver_auto_enroll_courses');
         register_setting('webhook_receiver_settings', 'webhook_receiver_default_password');
+        register_setting('webhook_receiver_settings', 'webhook_receiver_from_email', array(
+            'sanitize_callback' => 'sanitize_email'
+        ));
         
         add_settings_section(
             'webhook_receiver_general_section',
@@ -4375,6 +4392,14 @@ class Webhook_Receiver {
             'webhook_receiver_notify_user',
             'Notificar Usuário',
             array($this, 'notify_user_callback'),
+            'webhook_receiver_settings',
+            'webhook_receiver_general_section'
+        );
+        
+        add_settings_field(
+            'webhook_receiver_from_email',
+            'E-mail de Envio (From)',
+            array($this, 'from_email_callback'),
             'webhook_receiver_settings',
             'webhook_receiver_general_section'
         );
@@ -4435,6 +4460,12 @@ class Webhook_Receiver {
         echo '<option value="yes"' . selected($value, 'yes', false) . '>Sim</option>';
         echo '<option value="no"' . selected($value, 'no', false) . '>Não</option>';
         echo '</select>';
+    }
+    
+    public function from_email_callback() {
+        $value = get_option('webhook_receiver_from_email', get_option('admin_email'));
+        echo '<input type="email" name="webhook_receiver_from_email" value="' . esc_attr($value) . '" class="regular-text" />';
+        echo '<p class="description">E-mail que aparecerá como remetente nos e-mails enviados aos alunos.</p>';
     }
     
     public function user_email_subject_callback() {
@@ -4520,7 +4551,8 @@ Ou clique no link mágico: <a href="(link-magico)">Entrar sem senha</a> <br>
         $subject = str_replace(array_keys($vars), array_values($vars), $subject);
         $message = str_replace(array_keys($vars), array_values($vars), $message);
 
-        $headers = array('Content-Type: text/html; charset=UTF-8','From: '.$site_name.' <'.get_option('admin_email').'>');
+        $from_email = get_option('webhook_receiver_from_email', get_option('admin_email'));
+        $headers = array('Content-Type: text/html; charset=UTF-8', 'From: ' . $site_name . ' <' . $from_email . '>');
         wp_mail($user->user_email, $subject, $message, $headers);
     }
 }

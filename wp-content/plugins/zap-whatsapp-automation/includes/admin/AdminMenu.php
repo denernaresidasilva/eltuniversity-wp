@@ -21,7 +21,7 @@ class AdminMenu {
             'Connection.php',
             'Messages.php',
             'Logs.php',
-            'History.php',
+            'QueuePage.php', // ✅ FILA
             'Metrics.php', // ✅ MÉTRICAS
         ];
 
@@ -80,11 +80,11 @@ class AdminMenu {
 
         add_submenu_page(
             'zap-wa-metrics',
-            'Histórico',
-            'Histórico',
+            'Fila',
+            'Fila',
             'manage_options',
-            'zap-wa-history',
-            ['ZapWA\\Admin\\Pages\\History', 'render']
+            'zap-wa-queue',
+            ['ZapWA\\Admin\\Pages\\QueuePage', 'render']
         );
 
         // Remover o primeiro submenu duplicado (WordPress adiciona automaticamente o primeiro item)
