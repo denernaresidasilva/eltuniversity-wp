@@ -184,10 +184,25 @@ class ConnectionManager {
     }
 
     /**
+     * Normalize Evolution API URL removing trailing endpoints.
+     */
+    private static function normalize_api_url($api_url) {
+        $api_url = trim((string) $api_url);
+        if ($api_url === '') {
+            return '';
+        }
+
+        $api_url = rtrim($api_url, '/');
+        $api_url = preg_replace('~/(?:instance(?:/(?:create|fetchInstances|connect|logout))?)$~', '', $api_url);
+
+        return rtrim($api_url, '/');
+    }
+
+    /**
      * Build Evolution API base URL candidates for compatibility.
      */
     private static function get_api_url_candidates($api_url) {
-        $api_url = rtrim($api_url, '/');
+        $api_url = self::normalize_api_url($api_url);
         $candidates = [$api_url];
         $root_url = rtrim(preg_replace('~/api(?:/v\\d+)?$~', '', $api_url), '/');
 
@@ -213,8 +228,11 @@ class ConnectionManager {
             ];
         }
 
-        // Limpar URL (remover barras extras)
-        $api_url = rtrim($api_url, '/');
+        $normalized_api_url = self::normalize_api_url($api_url);
+        if ($normalized_api_url !== $api_url) {
+            update_option('zapwa_evolution_url', $normalized_api_url);
+            $api_url = $normalized_api_url;
+        }
 
         $api_candidates = self::get_api_url_candidates($api_url);
         
