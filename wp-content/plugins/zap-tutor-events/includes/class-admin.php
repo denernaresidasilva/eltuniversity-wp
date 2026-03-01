@@ -54,23 +54,25 @@ class Admin {
             [Dashboard::class, 'render_dashboard']
         );
 
-        add_submenu_page(
-            'zap-tutor-events',
-            'Logs',
-            'Logs',
-            'manage_options',
-            'zap-tutor-events-logs',
-            [self::class, 'logs_page']
-        );
+        if (get_option('zap_events_log_enabled', true)) {
+            add_submenu_page(
+                'zap-tutor-events',
+                'Logs',
+                'Logs',
+                'manage_options',
+                'zap-tutor-events-logs',
+                [self::class, 'logs_page']
+            );
 
-        add_submenu_page(
-            'zap-tutor-events',
-            'Logs de Webhook',
-            'Logs de Webhook',
-            'manage_options',
-            'zap-tutor-events-webhook-logs',
-            [self::class, 'webhook_logs_page']
-        );
+            add_submenu_page(
+                'zap-tutor-events',
+                'Logs de Webhook',
+                'Logs de Webhook',
+                'manage_options',
+                'zap-tutor-events-webhook-logs',
+                [self::class, 'webhook_logs_page']
+            );
+        }
     }
 
     public static function logs_page() {

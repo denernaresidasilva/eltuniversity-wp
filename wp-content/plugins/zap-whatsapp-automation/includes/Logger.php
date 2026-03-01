@@ -45,11 +45,9 @@ class Logger {
         $response = null
     ) {
 
-        if (!get_option('zapwa_logging_enabled', true)) {
-            return;
-        }
-
         global $wpdb;
+
+        $log_enabled = get_option('zapwa_logging_enabled', true);
 
         $table = $wpdb->prefix . 'zap_wa_logs';
 
@@ -59,7 +57,7 @@ class Logger {
                 'user_id' => absint($user_id),
                 'phone'   => sanitize_text_field($phone),
                 'event'   => sanitize_text_field($event),
-                'message' => wp_kses_post($message),
+                'message' => $log_enabled ? wp_kses_post($message) : '',
                 'status'  => sanitize_text_field($status),
                 'created_at' => current_time('mysql'),
             ]
@@ -71,11 +69,9 @@ class Logger {
      */
     public static function log_stage($status, $event = '', $user_id = 0, $phone = '', $message = '') {
 
-        if (!get_option('zapwa_logging_enabled', true)) {
-            return;
-        }
-
         global $wpdb;
+
+        $log_enabled = get_option('zapwa_logging_enabled', true);
 
         $table = $wpdb->prefix . 'zap_wa_logs';
 
@@ -85,7 +81,7 @@ class Logger {
                 'user_id' => absint($user_id),
                 'phone'   => sanitize_text_field($phone),
                 'event'   => sanitize_text_field($event),
-                'message' => sanitize_textarea_field($message),
+                'message' => $log_enabled ? sanitize_textarea_field($message) : '',
                 'status'  => sanitize_text_field($status),
                 'created_at' => current_time('mysql'),
             ]

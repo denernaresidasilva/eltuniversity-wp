@@ -24,10 +24,7 @@ class Logger {
      */
     public static function log($event_key, $user_id, $context = []) {
 
-        // Check if logging is enabled
-        if (!get_option('zap_events_log_enabled', true)) {
-            return false;
-        }
+        $log_enabled = get_option('zap_events_log_enabled', true);
 
         global $wpdb;
         $table = $wpdb->prefix . 'zap_event_logs';
@@ -45,7 +42,7 @@ class Logger {
             [
                 'event_key'  => sanitize_text_field($event_key),
                 'user_id'    => absint($user_id),
-                'context'    => wp_json_encode($context),
+                'context'    => $log_enabled ? wp_json_encode($context) : '',
                 'created_at' => current_time('mysql'),
             ],
             [

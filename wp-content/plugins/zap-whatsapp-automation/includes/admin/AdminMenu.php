@@ -70,14 +70,16 @@ class AdminMenu {
             ['ZapWA\\Admin\\Pages\\Connection', 'render']
         );
 
-        add_submenu_page(
-            'zap-wa-metrics',
-            'Logs',
-            'Logs',
-            'manage_options',
-            'zap-wa-logs',
-            ['ZapWA\\Admin\\Pages\\Logs', 'render']
-        );
+        if (get_option('zapwa_logging_enabled', true)) {
+            add_submenu_page(
+                'zap-wa-metrics',
+                'Logs',
+                'Logs',
+                'manage_options',
+                'zap-wa-logs',
+                ['ZapWA\\Admin\\Pages\\Logs', 'render']
+            );
+        }
 
         add_submenu_page(
             'zap-wa-metrics',
