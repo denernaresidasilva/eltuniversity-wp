@@ -17,6 +17,13 @@ class Listener {
         Logger::debug('Evento recebido no Listener', [
             'payload' => $payload,
         ]);
+        Logger::log_stage(
+            'evento_recebido',
+            sanitize_text_field($payload['event'] ?? ''),
+            absint($payload['user_id'] ?? 0),
+            '',
+            'Evento recebido pelo listener zap_evento'
+        );
 
         // 1. Validar user_id
         if (empty($payload['user_id'])) {
@@ -24,6 +31,7 @@ class Listener {
             Logger::debug('Falha no evento: user_id ausente', [
                 'payload' => $payload,
             ]);
+            Logger::log_stage('evento_erro', sanitize_text_field($payload['event'] ?? ''), 0, '', 'Evento sem user_id');
             return;
         }
         
@@ -36,6 +44,7 @@ class Listener {
             Logger::debug('Falha no evento: usuário inexistente', [
                 'user_id' => $user_id,
             ]);
+            Logger::log_stage('evento_erro', sanitize_text_field($payload['event'] ?? ''), $user_id, '', 'Usuário não encontrado');
             return;
         }
         
@@ -46,6 +55,7 @@ class Listener {
                 'user_id' => $user_id,
                 'payload' => $payload,
             ]);
+            Logger::log_stage('evento_erro', '', $user_id, '', 'Evento sem tipo');
             return;
         }
 
@@ -59,6 +69,7 @@ class Listener {
             Logger::debug('Nenhuma mensagem configurada para evento', [
                 'event' => $payload['event']
             ]);
+            Logger::log_stage('evento_sem_mensagem', $payload['event'], $user_id, '', 'Nenhuma automação ativa para este evento');
             return;
         }
 
@@ -71,6 +82,7 @@ class Listener {
                 'user_id' => $user_id,
                 'user_email' => $user->user_email
             ]);
+            Logger::log_stage('evento_erro', $payload['event'], $user_id, '', 'Usuário sem telefone válido');
             return;
         }
         
@@ -81,6 +93,7 @@ class Listener {
                 'user_id' => $user_id,
                 'phone' => $phone,
             ]);
+            Logger::log_stage('evento_erro', $payload['event'], $user_id, $phone, 'Telefone inválido');
             return;
         }
         
@@ -105,6 +118,7 @@ class Listener {
                     'phone'      => $phone,
                     'user_name'  => $user->display_name,
                 ]);
+                Logger::log_stage('fila_ok', $payload['event'], $user_id, $phone, 'Mensagem enfileirada com sucesso');
             } else {
                 Logger::debug('Erro ao enfileirar mensagem', [
                     'message_id' => $message->ID,
@@ -113,6 +127,7 @@ class Listener {
                     'user_name'  => $user->display_name,
                 ]);
                 error_log("[ZAP WhatsApp] Falha ao enfileirar mensagem para user {$user_id} no evento {$payload['event']}");
+                Logger::log_stage('fila_erro', $payload['event'], $user_id, $phone, 'Falha ao enfileirar mensagem');
             }
         }
     }
