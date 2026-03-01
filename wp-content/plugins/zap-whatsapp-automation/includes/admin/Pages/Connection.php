@@ -41,7 +41,7 @@ class Connection {
         $is_connected    = ConnectionManager::is_connected();
 
         // Enqueue assets
-        $plugin_url = plugin_dir_url(dirname(dirname(dirname(__FILE__))));
+        $plugin_url = ZAP_WA_URL;
         wp_enqueue_style('zapwa-qrcode', $plugin_url . 'assets/css/qrcode.css', [], '1.0.0');
         wp_enqueue_script('zapwa-qrcode-handler', $plugin_url . 'assets/js/qrcode-handler.js', ['jquery'], '1.0.0', true);
         wp_localize_script('zapwa-qrcode-handler', 'zapwaConfig', [

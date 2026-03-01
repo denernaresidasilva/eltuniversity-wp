@@ -151,35 +151,56 @@ class ConnectionManager {
     public static function instance_exists($instance_name) {
         $api_url = get_option('zapwa_evolution_url');
         $api_token = get_option('zapwa_evolution_token');
-        
+
         if (!$api_url || !$api_token || !$instance_name) {
             return false;
         }
-        
-        $response = wp_remote_get(
-            rtrim($api_url, '/') . '/instance/fetchInstances',
-            [
-                'headers' => ['apikey' => $api_token],
-                'timeout' => 10,
-            ]
-        );
-        
-        if (is_wp_error($response)) {
-            error_log('[ZapWA] Error checking instance: ' . $response->get_error_message());
-            return false;
-        }
-        
-        $body = json_decode(wp_remote_retrieve_body($response), true);
-        
-        if (isset($body) && is_array($body)) {
-            foreach ($body as $instance) {
-                if (isset($instance['instance']['instanceName']) && 
-                    $instance['instance']['instanceName'] === $instance_name) {
+
+        $api_candidates = self::get_api_url_candidates($api_url);
+
+        foreach ($api_candidates as $candidate_url) {
+            $response = wp_remote_get(
+                rtrim($candidate_url, '/') . '/instance/fetchInstances',
+                [
+                    'headers' => ['apikey' => $api_token],
+                    'timeout' => 10,
+                ]
+            );
+
+            if (is_wp_error($response)) {
+                error_log('[ZapWA] Error checking instance: ' . $response->get_error_message());
+                continue;
+            }
+
+            $status_code = wp_remote_retrieve_response_code($response);
+            if ($status_code >= 400) {
+                continue;
+            }
+
+            $body = json_decode(wp_remote_retrieve_body($response), true);
+            if (!is_array($body)) {
+                continue;
+            }
+
+            $instances = isset($body['instances']) && is_array($body['instances']) ? $body['instances'] : $body;
+
+            foreach ($instances as $instance) {
+                $name = null;
+
+                if (is_array($instance) && isset($instance['instance']['instanceName'])) {
+                    $name = $instance['instance']['instanceName'];
+                } elseif (is_array($instance) && isset($instance['instanceName'])) {
+                    $name = $instance['instanceName'];
+                } elseif (is_array($instance) && isset($instance['name'])) {
+                    $name = $instance['name'];
+                }
+
+                if ($name === $instance_name) {
                     return true;
                 }
             }
         }
-        
+
         return false;
     }
 
@@ -322,13 +343,22 @@ class ConnectionManager {
             return ['success' => true, 'message' => 'Instância já existe e está pronta'];
         }
 
-        $request_body = [
-            'instanceName' => $instance_name,
-            'integration' => 'WHATSAPP-BAILEYS', // Required by Evolution API v2.x - specifies WhatsApp connection type
-            'qrcode' => true,
+        $request_variants = [
+            [
+                'instanceName' => $instance_name,
+                'integration' => 'WHATSAPP-BAILEYS',
+                'qrcode' => true,
+            ],
+            [
+                'instanceName' => $instance_name,
+                'integration' => 'BAILEYS',
+                'qrcode' => true,
+            ],
+            [
+                'instanceName' => $instance_name,
+                'qrcode' => true,
+            ],
         ];
-        
-        error_log('[ZapWA] Request Body: ' . wp_json_encode($request_body));
 
         $response = null;
         $full_url = null;
@@ -341,26 +371,47 @@ class ConnectionManager {
             $full_url = $candidate_url . '/instance/create';
             error_log('[ZapWA] URL: ' . $full_url);
 
-            $response = wp_remote_post(
-                $full_url,
-                [
-                    'headers' => [
-                        'Content-Type' => 'application/json',
-                        'apikey' => $api_token,
-                    ],
-                    'body' => wp_json_encode($request_body),
-                    'timeout' => 20,
-                    'sslverify' => true, // Importante para HTTPS
-                ]
-            );
+            foreach ($request_variants as $request_body) {
+                error_log('[ZapWA] Request Body: ' . wp_json_encode($request_body));
 
-            if (is_wp_error($response)) {
-                $error_msg = $response->get_error_message();
-                error_log('[ZapWA] WP Error: ' . $error_msg);
-                return ['success' => false, 'error' => 'Erro de conexão: ' . $error_msg];
+                $response = wp_remote_post(
+                    $full_url,
+                    [
+                        'headers' => [
+                            'Content-Type' => 'application/json',
+                            'apikey' => $api_token,
+                        ],
+                        'body' => wp_json_encode($request_body),
+                        'timeout' => 20,
+                        'sslverify' => true,
+                    ]
+                );
+
+                if (is_wp_error($response)) {
+                    $error_msg = $response->get_error_message();
+                    error_log('[ZapWA] WP Error: ' . $error_msg);
+                    return ['success' => false, 'error' => 'Erro de conexão: ' . $error_msg];
+                }
+
+                $status_code = wp_remote_retrieve_response_code($response);
+
+                if ($status_code === 404 && $index < $last_candidate_index) {
+                    break;
+                }
+
+                if ($status_code >= 200 && $status_code < 300) {
+                    $resolved_api_url = $candidate_url;
+                    $should_update_api_url = ($candidate_url !== $api_url);
+                    break 2;
+                }
+
+                if ($status_code === 409) {
+                    $resolved_api_url = $candidate_url;
+                    $should_update_api_url = ($candidate_url !== $api_url);
+                    break 2;
+                }
             }
 
-            $status_code = wp_remote_retrieve_response_code($response);
             if ($status_code === 404 && $index < $last_candidate_index) {
                 continue;
             }
@@ -377,8 +428,12 @@ class ConnectionManager {
         $response_body = wp_remote_retrieve_body($response);
         $body = json_decode($response_body, true);
         
-        // Validar se JSON é válido
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        if (!is_array($body)) {
+            if ($status_code >= 200 && $status_code < 300) {
+                update_option('zapwa_evolution_instance', $instance_name);
+                return ['success' => true, 'data' => ['raw' => $response_body]];
+            }
+
             error_log('[ZapWA] Invalid JSON response: ' . json_last_error_msg());
             return [
                 'success' => false,

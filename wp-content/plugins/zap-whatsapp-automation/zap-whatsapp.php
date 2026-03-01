@@ -6,6 +6,7 @@
 if (!defined('ABSPATH')) exit;
 
 define('ZAP_WA_PATH', plugin_dir_path(__FILE__));
+define('ZAP_WA_URL', plugin_dir_url(__FILE__));
 
 // Installer
 require_once ZAP_WA_PATH . 'includes/Installer.php';
