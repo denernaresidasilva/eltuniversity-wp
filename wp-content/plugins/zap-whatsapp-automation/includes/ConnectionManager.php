@@ -206,11 +206,14 @@ class ConnectionManager {
         ];
 
         if (preg_match('~/api(?:/v\\d+)?(?:/|$)~', $normalized_url)) {
-            // Strip bare /instance only when the URL already targets an Evolution API base path.
+            // Only strip bare /instance when the URL already targets the Evolution API base path.
+            // This avoids removing legitimate /instance path segments on unrelated URLs.
             $endpoint_suffixes[] = '/instance';
         }
 
-        $pattern = '~(?:' . implode('|', array_map('preg_quote', $endpoint_suffixes)) . ')$~';
+        $pattern = '#(?:' . implode('|', array_map(function($suffix) {
+            return preg_quote($suffix, '#');
+        }, $endpoint_suffixes)) . ')$#';
         $normalized_url = preg_replace($pattern, '', $normalized_url);
         $normalized_url = rtrim($normalized_url, '/');
 
@@ -228,7 +231,7 @@ class ConnectionManager {
     private static function get_log_safe_url(string $api_url): string {
         $parts = wp_parse_url($api_url);
         if (!is_array($parts) || empty($parts['host'])) {
-            return '[redacted]';
+            return '[invalid-url]';
         }
 
         $safe_url = '';
