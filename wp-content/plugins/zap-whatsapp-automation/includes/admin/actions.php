@@ -14,6 +14,11 @@ class Actions {
             [self::class, 'send_broadcast']
         );
 
+        add_action(
+            'admin_post_zapwa_delete_all_logs',
+            [self::class, 'delete_all_logs']
+        );
+
         // Adicionar botão "Disparar" na lista de posts do tipo zapwa_message
         add_filter('post_row_actions', [self::class, 'add_broadcast_row_action'], 10, 2);
         add_action('admin_notices', [self::class, 'broadcast_sent_notice']);
@@ -83,5 +88,27 @@ class Actions {
         }
 
         echo '<div class="notice notice-success is-dismissible"><p><strong>✅ Broadcast adicionado à fila e será enviado em breve!</strong></p></div>';
+    }
+
+    /**
+     * Exclui todos os logs de envio do WhatsApp.
+     */
+    public static function delete_all_logs() {
+
+        if (!current_user_can('manage_options')) {
+            wp_die('Sem permissão');
+        }
+
+        check_admin_referer('zapwa_delete_all_logs', 'zapwa_delete_logs_nonce');
+
+        global $wpdb;
+        $table = $wpdb->prefix . 'zap_wa_logs';
+        $wpdb->query("TRUNCATE TABLE {$table}");
+
+        wp_redirect(add_query_arg([
+            'page'    => 'zap-wa-logs',
+            'deleted' => 'all',
+        ], admin_url('admin.php')));
+        exit;
     }
 }

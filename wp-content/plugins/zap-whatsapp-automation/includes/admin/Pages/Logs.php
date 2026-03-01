@@ -45,21 +45,35 @@ class Logs {
         <div class="wrap">
             <h1>Logs de Envio</h1>
 
-            <form method="get">
-                <input type="hidden" name="page" value="zap-wa-logs">
+            <?php if (isset($_GET['deleted']) && $_GET['deleted'] === 'all'): ?>
+                <div class="notice notice-success is-dismissible"><p>Todos os logs foram excluídos.</p></div>
+            <?php endif; ?>
 
-                <select name="status">
-                    <option value="">Status</option>
-                    <option value="enviado">Enviado</option>
-                    <option value="erro">Erro</option>
-                    <option value="pendente">Pendente</option>
-                </select>
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:15px;flex-wrap:wrap;">
+                <form method="get" style="display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                    <input type="hidden" name="page" value="zap-wa-logs">
 
-                <input type="text" name="event" placeholder="Evento">
-                <input type="number" name="user_id" placeholder="User ID">
+                    <select name="status">
+                        <option value="">Status</option>
+                        <option value="enviado" <?php selected($_GET['status'] ?? '', 'enviado'); ?>>Enviado</option>
+                        <option value="erro" <?php selected($_GET['status'] ?? '', 'erro'); ?>>Erro</option>
+                        <option value="pendente" <?php selected($_GET['status'] ?? '', 'pendente'); ?>>Pendente</option>
+                    </select>
 
-                <button class="button">Filtrar</button>
-            </form>
+                    <input type="text" name="event" placeholder="Evento" value="<?php echo esc_attr($_GET['event'] ?? ''); ?>">
+                    <input type="number" name="user_id" placeholder="User ID" value="<?php echo esc_attr($_GET['user_id'] ?? ''); ?>">
+
+                    <button class="button">Filtrar</button>
+                </form>
+
+                <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" style="display:inline-block;">
+                    <?php wp_nonce_field('zapwa_delete_all_logs', 'zapwa_delete_logs_nonce'); ?>
+                    <input type="hidden" name="action" value="zapwa_delete_all_logs">
+                    <button type="submit" class="button button-secondary" style="color:#a00;border-color:#a00;" onclick="return confirm('Tem certeza que deseja excluir TODOS os logs? Esta ação não pode ser desfeita.');">
+                        🗑️ Excluir Todos os Logs
+                    </button>
+                </form>
+            </div>
 
             <table class="widefat striped">
                 <thead>

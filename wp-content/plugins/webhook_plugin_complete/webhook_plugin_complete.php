@@ -1571,8 +1571,8 @@ class Webhook_Receiver {
      * ========================================
      */
     public function test_webhook_page() {
-        // Buscar todos os cursos disponíveis
-        $courses = get_posts(array('post_type' => 'courses', 'numberposts' => -1, 'post_status' => 'publish'));
+        // Buscar todos os cursos disponíveis (publicados e futuros/rascunhos)
+        $courses = get_posts(array('post_type' => 'courses', 'numberposts' => -1, 'post_status' => array('publish', 'draft', 'future', 'pending')));
         ?>
         <div class="wrap webhook-test-page">
             <h1>🎓 Matricular Aluno</h1>
