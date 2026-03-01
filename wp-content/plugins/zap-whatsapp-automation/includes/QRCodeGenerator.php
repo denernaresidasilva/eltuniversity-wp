@@ -25,6 +25,17 @@ class QRCodeGenerator {
         return true;
     }
 
+
+    /**
+     * Build authentication headers for Evolution API.
+     */
+    private static function get_api_headers($api_token) {
+        return [
+            'apikey' => $api_token,
+            'Authorization' => 'Bearer ' . $api_token,
+        ];
+    }
+
     /**
      * Ensure base64 image has a valid data URI prefix.
      */
@@ -104,7 +115,7 @@ class QRCodeGenerator {
      */
     private static function request_connect_endpoint($full_url, $api_token) {
         $request_options = [
-            'headers' => ['apikey' => $api_token],
+            'headers' => self::get_api_headers($api_token),
             'timeout' => 20,
         ];
 
