@@ -33,3 +33,4 @@ delete_option('zap_events_queue');
 // Clear scheduled cron jobs
 wp_clear_scheduled_hook('zap_events_daily_cleanup');
 wp_clear_scheduled_hook('zap_events_process_queue');
+wp_clear_scheduled_hook('zap_events_inactive_check');

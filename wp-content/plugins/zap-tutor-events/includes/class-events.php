@@ -22,6 +22,7 @@ class Events {
             'tutor_quiz_started'             => 'Quiz iniciado',
             'tutor_quiz_finished'            => 'Quiz finalizado',
             'tutor_order_payment_status_changed' => 'Status do pagamento alterado',
+            'tutor_student_inactive'         => 'Aluno sumido (sem login há mais de 7 dias com curso incompleto)',
         ];
     }
 
@@ -236,5 +237,85 @@ class Events {
                 'to'       => $to,
             ]
         );
+    }
+
+    /* ================= ALUNO SUMIDO ================= */
+
+    /**
+     * Verifica e dispara o evento de aluno sumido.
+     *
+     * Critérios:
+     *  - Aluno tem matrícula ativa em pelo menos um curso.
+     *  - Ainda não concluiu todos os seus cursos.
+     *  - Último login registrado foi há mais de 7 dias.
+     *  - Ainda não foi notificado nos últimos 7 dias.
+     */
+    public static function check_inactive_students() {
+
+        global $wpdb;
+
+        $log_table      = $wpdb->prefix . 'zap_event_logs';
+        $seven_days_ago = gmdate('Y-m-d H:i:s', strtotime('-7 days'));
+
+        // Verificar se a tabela de logs existe
+        if ($wpdb->get_var("SHOW TABLES LIKE '{$log_table}'") !== $log_table) {
+            return;
+        }
+
+        // Buscar alunos matriculados que:
+        // 1. Têm matrícula ativa
+        // 2. Não concluíram todos os cursos
+        // 3. O último login foi registrado há mais de 7 dias
+        // 4. Possuem pelo menos um registro de login nos logs
+        $results = $wpdb->get_results($wpdb->prepare(
+            "SELECT DISTINCT enroll.post_author AS user_id,
+                    MAX(login_log.created_at) AS last_login
+             FROM {$wpdb->posts} AS enroll
+             INNER JOIN {$log_table} AS login_log
+                    ON login_log.event_key = 'tutor_student_login'
+                    AND login_log.user_id = enroll.post_author
+             WHERE enroll.post_type   = 'tutor_enrolled'
+               AND enroll.post_status = 'approved'
+               AND NOT EXISTS (
+                   SELECT 1 FROM {$wpdb->comments} AS comp
+                   WHERE comp.comment_type  = 'course_completed'
+                     AND comp.comment_agent = 'TutorLMSPlugin'
+                     AND comp.user_id       = enroll.post_author
+                     AND comp.comment_post_ID = enroll.post_parent
+               )
+             GROUP BY enroll.post_author
+             HAVING last_login <= %s",
+            $seven_days_ago
+        ));
+
+        if (empty($results)) {
+            return;
+        }
+
+        foreach ($results as $row) {
+            $user_id    = (int) $row->user_id;
+            $last_login = $row->last_login;
+
+            // Evitar re-notificar o mesmo aluno nos últimos 7 dias
+            $meta_key      = '_zap_inactive_last_notified';
+            $last_notified = get_user_meta($user_id, $meta_key, true);
+
+            if ($last_notified && $last_notified >= $seven_days_ago) {
+                continue;
+            }
+
+            update_user_meta($user_id, $meta_key, gmdate('Y-m-d H:i:s'));
+
+            $days_inactive = (int) floor((time() - strtotime($last_login)) / DAY_IN_SECONDS);
+
+            Dispatcher::dispatch(
+                'tutor_student_inactive',
+                $user_id,
+                [
+                    'last_login'    => $last_login,
+                    'days_inactive' => $days_inactive,
+                ]
+            );
+        }
     }
 }
