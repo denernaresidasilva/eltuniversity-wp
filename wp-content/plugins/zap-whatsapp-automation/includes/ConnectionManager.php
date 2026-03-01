@@ -186,8 +186,6 @@ class ConnectionManager {
     /**
      * Normalize Evolution API URL removing trailing instance endpoints.
      *
-     * Repeats the removal to handle URLs with multiple appended instance paths.
-     *
      * @param string $api_url
      * @return string Empty string when input is empty or whitespace-only.
      */
@@ -206,15 +204,12 @@ class ConnectionManager {
             '/instance',
         ];
 
-        do {
-            $current_url = $normalized_url;
-            foreach ($endpoint_suffixes as $suffix) {
-                if (substr_compare($normalized_url, $suffix, -strlen($suffix)) === 0) {
-                    $normalized_url = rtrim(substr($normalized_url, 0, -strlen($suffix)), '/');
-                    break;
-                }
+        foreach ($endpoint_suffixes as $suffix) {
+            if (substr_compare($normalized_url, $suffix, -strlen($suffix)) === 0) {
+                $normalized_url = rtrim(substr($normalized_url, 0, -strlen($suffix)), '/');
+                break;
             }
-        } while ($current_url !== $normalized_url);
+        }
 
         return rtrim($normalized_url, '/');
     }
@@ -277,6 +272,13 @@ class ConnectionManager {
         }
 
         $normalized_api_url = self::normalize_api_url($api_url);
+        /**
+         * Filters whether to persist the normalized Evolution API URL.
+         *
+         * @param bool $should_persist
+         * @param string $original_url
+         * @param string $normalized_url
+         */
         $should_persist = apply_filters(
             'zapwa_persist_normalized_api_url',
             true,
