@@ -186,6 +186,8 @@ class ConnectionManager {
     /**
      * Normalize Evolution API URL by removing trailing instance endpoints.
      *
+     * @since 1.1.0
+     *
      * @param string $api_url
      * @return string Normalized URL or empty string when input is empty or whitespace-only.
      */
@@ -205,22 +207,24 @@ class ConnectionManager {
         ];
 
         do {
-            $normalized = false;
+            $made_change = false;
             foreach ($endpoint_suffixes as $suffix) {
                 $suffix_length = strlen($suffix);
                 if (substr_compare($normalized_url, $suffix, -$suffix_length) === 0) {
                     $normalized_url = rtrim(substr($normalized_url, 0, -$suffix_length), '/');
-                    $normalized = true;
+                    $made_change = true;
                     break;
                 }
             }
-        } while ($normalized);
+        } while ($made_change);
 
         return $normalized_url;
     }
 
     /**
      * Build a log-safe URL without credentials or query strings.
+     *
+     * @since 1.1.0
      *
      * @param string $api_url
      * @return string
@@ -283,7 +287,9 @@ class ConnectionManager {
          * Example:
          * add_filter(
          *   'zapwa_persist_normalized_api_url',
-         *   function($should_persist, $original_url, $normalized_url) { return false; },
+         *   function($should_persist, $original_url, $normalized_url) {
+         *     return $should_persist && $original_url !== $normalized_url;
+         *   },
          *   10,
          *   3
          * );
