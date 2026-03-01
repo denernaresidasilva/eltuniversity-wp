@@ -4,6 +4,7 @@ namespace ZapWA\Admin;
 use ZapWA\EvolutionAPI;
 use ZapWA\QRCodeGenerator;
 use ZapWA\ConnectionManager;
+use ZapWA\Cron;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -16,6 +17,7 @@ class Ajax {
         add_action('wp_ajax_zapwa_get_qrcode', [__CLASS__, 'get_qrcode']);
         add_action('wp_ajax_zapwa_check_connection', [__CLASS__, 'check_connection']);
         add_action('wp_ajax_zapwa_create_instance', [__CLASS__, 'create_instance']);
+        add_action('wp_ajax_zapwa_process_queue_now', [__CLASS__, 'process_queue_now']);
     }
 
     public static function send_test() {
@@ -101,5 +103,17 @@ class Ajax {
         } else {
             wp_send_json_error(['error' => $result['error'] ?? 'Erro ao criar instância']);
         }
+    }
+
+    public static function process_queue_now() {
+        check_ajax_referer('zapwa_qrcode', 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Permissão negada');
+        }
+
+        Cron::process();
+
+        wp_send_json_success(['message' => 'Processamento da fila executado']);
     }
 }
