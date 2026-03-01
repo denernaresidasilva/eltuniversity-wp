@@ -184,6 +184,22 @@ class ConnectionManager {
     }
 
     /**
+     * Build Evolution API base URL candidates for compatibility.
+     */
+    private static function get_api_url_candidates($api_url) {
+        $api_url = rtrim($api_url, '/');
+        $candidates = [$api_url];
+        $root_url = rtrim(preg_replace('~/api(?:/v\\d+)?$~', '', $api_url), '/');
+
+        foreach (['/api', '/api/v1', '/api/v2'] as $suffix) {
+            $candidate = $root_url . $suffix;
+            $candidates[] = $candidate;
+        }
+
+        return array_values(array_unique($candidates));
+    }
+
+    /**
      * Create Evolution API instance
      */
     public static function create_instance($instance_name) {
@@ -199,12 +215,10 @@ class ConnectionManager {
 
         // Limpar URL (remover barras extras)
         $api_url = rtrim($api_url, '/');
-        
-        // URL completa que será usada
-        $full_url = $api_url . '/instance/create';
+
+        $api_candidates = self::get_api_url_candidates($api_url);
         
         error_log('[ZapWA] Tentando criar instância...');
-        error_log('[ZapWA] URL: ' . $full_url);
         error_log('[ZapWA] Instance Name: ' . $instance_name);
 
         // Verificar se já existe
@@ -220,26 +234,50 @@ class ConnectionManager {
         
         error_log('[ZapWA] Request Body: ' . wp_json_encode($request_body));
 
-        $response = wp_remote_post(
-            $full_url,
-            [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'apikey' => $api_token,
-                ],
-                'body' => wp_json_encode($request_body),
-                'timeout' => 20,
-                'sslverify' => true, // Importante para HTTPS
-            ]
-        );
+        $response = null;
+        $full_url = null;
+        $status_code = null;
+        $resolved_api_url = $api_url;
+        $should_update_api_url = false;
+        $last_candidate_index = count($api_candidates) - 1;
 
-        if (is_wp_error($response)) {
-            $error_msg = $response->get_error_message();
-            error_log('[ZapWA] WP Error: ' . $error_msg);
-            return ['success' => false, 'error' => 'Erro de conexão: ' . $error_msg];
+        foreach ($api_candidates as $index => $candidate_url) {
+            $full_url = $candidate_url . '/instance/create';
+            error_log('[ZapWA] URL: ' . $full_url);
+
+            $response = wp_remote_post(
+                $full_url,
+                [
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'apikey' => $api_token,
+                    ],
+                    'body' => wp_json_encode($request_body),
+                    'timeout' => 20,
+                    'sslverify' => true, // Importante para HTTPS
+                ]
+            );
+
+            if (is_wp_error($response)) {
+                $error_msg = $response->get_error_message();
+                error_log('[ZapWA] WP Error: ' . $error_msg);
+                return ['success' => false, 'error' => 'Erro de conexão: ' . $error_msg];
+            }
+
+            $status_code = wp_remote_retrieve_response_code($response);
+            if ($status_code === 404 && $index < $last_candidate_index) {
+                continue;
+            }
+
+            $resolved_api_url = $candidate_url;
+            $should_update_api_url = ($status_code !== 404 && $candidate_url !== $api_url);
+            break;
         }
 
-        $status_code = wp_remote_retrieve_response_code($response);
+        if ($should_update_api_url) {
+            update_option('zapwa_evolution_url', $resolved_api_url);
+        }
+
         $response_body = wp_remote_retrieve_body($response);
         $body = json_decode($response_body, true);
         
@@ -268,9 +306,9 @@ class ConnectionManager {
         if ($status_code === 404) {
             return [
                 'success' => false,
-                'error' => 'Endpoint não encontrado (404). Verifique se a versão da Evolution API está correta.',
+                'error' => 'Endpoint não encontrado (404). Verifique se a URL inclui /api/v1 ou /api/v2.',
                 'url_testada' => $full_url,
-                'sugestao' => 'Acesse no navegador: ' . $api_url . '/instance/fetchInstances'
+                'sugestao' => 'Acesse no navegador: ' . $resolved_api_url . '/instance/fetchInstances'
             ];
         }
         

@@ -35,7 +35,7 @@ ls -la vendor/
 
 1. Select **Evolution API** as connection type
 2. Fill in the following fields:
-   - **URL da Evolution API**: Your Evolution API URL (e.g., `https://evolution.yourdomain.com`)
+   - **URL da Evolution API**: Your Evolution API URL (e.g., `https://evolution.yourdomain.com/api/v2` or `/api/v1`)
    - **API Key**: Your Evolution API token
    - **Nome da Instância**: A unique name for this instance (e.g., `my-instance`)
 3. Click **Salvar Configurações**
