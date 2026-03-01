@@ -13,6 +13,10 @@ class Actions {
             'admin_post_zap_send_broadcast',
             [self::class, 'send_broadcast']
         );
+
+        // Adicionar botão "Disparar" na lista de posts do tipo zapwa_message
+        add_filter('post_row_actions', [self::class, 'add_broadcast_row_action'], 10, 2);
+        add_action('admin_notices', [self::class, 'broadcast_sent_notice']);
     }
 
     public static function send_broadcast() {
@@ -33,8 +37,51 @@ class Actions {
         Broadcast::dispatch($message_id);
 
         wp_redirect(
-            admin_url('admin.php?page=zap-wa-messages&broadcast=sent')
+            add_query_arg('broadcast', 'sent', wp_get_referer() ?: admin_url('edit.php?post_type=zapwa_message'))
         );
         exit;
+    }
+
+    /**
+     * Adiciona o botão "Disparar" na coluna de ações da lista de mensagens.
+     */
+    public static function add_broadcast_row_action($actions, $post) {
+
+        if ($post->post_type !== 'zapwa_message') {
+            return $actions;
+        }
+
+        if ($post->post_status !== 'publish') {
+            return $actions;
+        }
+
+        $type = get_post_meta($post->ID, '_zapwa_type', true);
+        if ($type !== 'broadcast') {
+            return $actions;
+        }
+
+        $url = wp_nonce_url(
+            admin_url('admin-post.php?action=zap_send_broadcast&message_id=' . $post->ID),
+            'zap_send_broadcast'
+        );
+
+        $actions['zap_dispatch'] = sprintf(
+            '<a href="%s" style="color:#25d366;font-weight:bold;" onclick="return confirm(\'Disparar broadcast para todos os destinatários?\')">📢 Disparar</a>',
+            esc_url($url)
+        );
+
+        return $actions;
+    }
+
+    /**
+     * Exibe aviso de sucesso após disparar um broadcast.
+     */
+    public static function broadcast_sent_notice() {
+
+        if (!isset($_GET['broadcast']) || sanitize_key($_GET['broadcast']) !== 'sent') {
+            return;
+        }
+
+        echo '<div class="notice notice-success is-dismissible"><p><strong>✅ Broadcast adicionado à fila e será enviado em breve!</strong></p></div>';
     }
 }

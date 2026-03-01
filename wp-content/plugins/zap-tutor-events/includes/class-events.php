@@ -38,6 +38,7 @@ class Events {
         // Tutor hooks
         add_action('tutor_after_student_signup', [self::class, 'student_signup']);
         add_action('tutor_after_login_success', [self::class, 'student_login']);
+        add_action('wp_login', [self::class, 'student_login_wp'], 10, 2); // fallback para compatibilidade
 
         add_action('tutor_after_enrolled', [self::class, 'course_enrolled'], 10, 3);
         add_action('tutor/course/enrol_status_change/after', [self::class, 'enrol_status_changed'], 10, 2);
@@ -65,6 +66,19 @@ class Events {
         Dispatcher::dispatch(
             'tutor_student_login',
             $user_id
+        );
+    }
+
+    /**
+     * Fallback para o hook wp_login (compatibilidade quando tutor_after_login_success não dispara)
+     */
+    public static function student_login_wp($user_login, $user) {
+        if (!$user instanceof \WP_User) {
+            return;
+        }
+        Dispatcher::dispatch(
+            'tutor_student_login',
+            $user->ID
         );
     }
 
