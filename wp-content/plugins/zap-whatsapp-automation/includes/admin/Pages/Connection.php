@@ -119,6 +119,10 @@ class Connection {
                             if (response.success) {
                                 var msg = (response.data && response.data.message) ? response.data.message : 'Instância criada com sucesso!';
                                 $status.text('✅ ' + msg).css('color', '#46b450');
+                                // Wait briefly for Evolution API to prepare the QR code, then reload
+                                setTimeout(function() {
+                                    $('#zapwa-refresh-qrcode').trigger('click');
+                                }, 1500); // 1.5s gives Evolution API time to generate the QR code
                             } else {
                                 var err = (response.data && response.data.error) ? response.data.error : 'Erro ao criar instância';
                                 $status.text('❌ ' + err).css('color', '#dc3232');
