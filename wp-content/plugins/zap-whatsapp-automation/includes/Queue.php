@@ -116,7 +116,7 @@ class Queue {
         $table = $wpdb->prefix . 'zapwa_queue';
         
         $delay = (int) ($payload['delay'] ?? 0);
-        $run_at = date('Y-m-d H:i:s', time() + $delay);
+        $run_at = wp_date('Y-m-d H:i:s', current_time('timestamp') + $delay);
         
         $inserted = $wpdb->insert(
             $table,
