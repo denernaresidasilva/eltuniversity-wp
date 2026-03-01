@@ -186,8 +186,10 @@ class ConnectionManager {
     /**
      * Normalize Evolution API URL removing trailing instance endpoints.
      *
+     * Repeats the removal to handle URLs with multiple appended instance paths.
+     *
      * @param string $api_url
-     * @return string
+     * @return string Empty string when input is empty or whitespace-only.
      */
     private static function normalize_api_url($api_url) {
         $api_url = trim((string) $api_url);
@@ -275,7 +277,13 @@ class ConnectionManager {
         }
 
         $normalized_api_url = self::normalize_api_url($api_url);
-        if ($normalized_api_url !== $api_url) {
+        $should_persist = apply_filters(
+            'zapwa_persist_normalized_api_url',
+            true,
+            $api_url,
+            $normalized_api_url
+        );
+        if ($normalized_api_url !== $api_url && $should_persist) {
             update_option('zapwa_evolution_url', $normalized_api_url);
             $log_before = self::get_log_safe_url($api_url);
             $log_after = self::get_log_safe_url($normalized_api_url);
