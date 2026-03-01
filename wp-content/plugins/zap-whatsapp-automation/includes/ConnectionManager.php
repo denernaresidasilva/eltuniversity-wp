@@ -189,7 +189,7 @@ class ConnectionManager {
      * @param string $api_url
      * @return string Empty string when input is empty or whitespace-only.
      */
-    private static function normalize_api_url($api_url) {
+    private static function normalize_api_url(string $api_url) {
         $api_url = trim((string) $api_url);
         if ($api_url === '') {
             return '';
@@ -220,7 +220,7 @@ class ConnectionManager {
      * @param string $api_url
      * @return string
      */
-    private static function get_log_safe_url($api_url) {
+    private static function get_log_safe_url(string $api_url) {
         $parts = wp_parse_url($api_url);
         if (!is_array($parts) || empty($parts['host'])) {
             return '[redacted]';
@@ -289,7 +289,7 @@ class ConnectionManager {
             update_option('zapwa_evolution_url', $normalized_api_url);
             $log_before = self::get_log_safe_url($api_url);
             $log_after = self::get_log_safe_url($normalized_api_url);
-            error_log('[ZapWA] Normalized Evolution API URL: ' . $log_before . ' -> ' . $log_after);
+            error_log(sprintf('[ZapWA] Normalized Evolution API URL: %s -> %s', $log_before, $log_after));
         }
 
         $api_candidates = self::get_api_url_candidates($normalized_api_url);
