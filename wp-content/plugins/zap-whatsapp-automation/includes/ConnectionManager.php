@@ -276,12 +276,12 @@ class ConnectionManager {
         /**
          * Filters whether to persist the normalized Evolution API URL.
          *
-         * @since 1.0.0
+         * @since 1.1.0
          *
          * @param bool $should_persist
          * @param string $original_url
          * @param string $normalized_url
-         * @example add_filter('zapwa_persist_normalized_api_url', '__return_false');
+         * @example add_filter('zapwa_persist_normalized_api_url', function($should_persist, $original_url, $normalized_url) { return false; }, 10, 3);
          */
         $should_persist = apply_filters(
             'zapwa_persist_normalized_api_url',
