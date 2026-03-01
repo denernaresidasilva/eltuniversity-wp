@@ -15,6 +15,7 @@ class Ajax {
         add_action('wp_ajax_zapwa_send_test', [__CLASS__, 'send_test']);
         add_action('wp_ajax_zapwa_get_qrcode', [__CLASS__, 'get_qrcode']);
         add_action('wp_ajax_zapwa_check_connection', [__CLASS__, 'check_connection']);
+        add_action('wp_ajax_zapwa_create_instance', [__CLASS__, 'create_instance']);
     }
 
     public static function send_test() {
@@ -77,5 +78,28 @@ class Ajax {
         $is_connected = ConnectionManager::is_connected();
 
         wp_send_json_success(['connected' => $is_connected]);
+    }
+
+    public static function create_instance() {
+        // Security check
+        check_ajax_referer('zapwa_qrcode', 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Permissão negada');
+        }
+
+        $instance = sanitize_text_field($_POST['instance'] ?? '');
+
+        if (!$instance) {
+            wp_send_json_error(['error' => 'Nome da instância não informado']);
+        }
+
+        $result = ConnectionManager::create_instance($instance);
+
+        if ($result['success']) {
+            wp_send_json_success($result);
+        } else {
+            wp_send_json_error(['error' => $result['error'] ?? 'Erro ao criar instância']);
+        }
     }
 }

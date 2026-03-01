@@ -16,8 +16,22 @@ class Connection {
             update_option('zapwa_connection_type', sanitize_text_field($_POST['zapwa_connection_type'] ?? 'evolution'));
             update_option('zapwa_evolution_url', esc_url_raw(trim($_POST['zapwa_evolution_url'] ?? '')));
             update_option('zapwa_evolution_token', sanitize_text_field($_POST['zapwa_evolution_token'] ?? ''));
-            update_option('zapwa_evolution_instance', sanitize_text_field($_POST['zapwa_evolution_instance'] ?? ''));
-            echo '<div class="notice notice-success"><p>Configurações salvas!</p></div>';
+            $new_instance = sanitize_text_field($_POST['zapwa_evolution_instance'] ?? '');
+            update_option('zapwa_evolution_instance', $new_instance);
+
+            // Try to auto-create instance if name is set
+            if ($new_instance) {
+                $create_result = ConnectionManager::create_instance($new_instance);
+                if ($create_result['success']) {
+                    $msg = isset($create_result['message']) ? esc_html($create_result['message']) : 'Instância criada com sucesso!';
+                    echo '<div class="notice notice-success"><p>Configurações salvas! ' . $msg . '</p></div>';
+                } else {
+                    $err = isset($create_result['error']) ? esc_html($create_result['error']) : 'Erro ao criar instância';
+                    echo '<div class="notice notice-warning"><p>Configurações salvas, mas não foi possível criar a instância: ' . $err . '</p></div>';
+                }
+            } else {
+                echo '<div class="notice notice-success"><p>Configurações salvas!</p></div>';
+            }
         }
 
         $connection_type = get_option('zapwa_connection_type', 'evolution');
@@ -78,6 +92,47 @@ class Connection {
                     <button type="submit" class="button button-primary">Salvar Configurações</button>
                 </p>
             </form>
+
+            <?php if ($evolution_url && $evolution_token && $instance_name): ?>
+            <hr>
+            <h2>⚙️ Gerenciar Instância</h2>
+            <p>
+                <button id="zapwa-create-instance" class="button button-secondary">🔧 Criar / Reconectar Instância</button>
+                <span id="zapwa-create-instance-status" style="margin-left:10px;"></span>
+            </p>
+            <script>
+            (function($) {
+                var instanceName = '<?php echo esc_js($instance_name); ?>';
+                var nonce = '<?php echo esc_js(wp_create_nonce('zapwa_qrcode')); ?>';
+                $(document).ready(function() {
+                    $('#zapwa-create-instance').on('click', function(e) {
+                        e.preventDefault();
+                        var $btn = $(this);
+                        var $status = $('#zapwa-create-instance-status');
+                        $btn.prop('disabled', true).text('⏳ Criando...');
+                        $status.text('').css('color','');
+                        $.post(ajaxurl, {
+                            action: 'zapwa_create_instance',
+                            instance: instanceName,
+                            nonce: nonce
+                        }, function(response) {
+                            if (response.success) {
+                                var msg = (response.data && response.data.message) ? response.data.message : 'Instância criada com sucesso!';
+                                $status.text('✅ ' + msg).css('color', '#46b450');
+                            } else {
+                                var err = (response.data && response.data.error) ? response.data.error : 'Erro ao criar instância';
+                                $status.text('❌ ' + err).css('color', '#dc3232');
+                            }
+                        }).fail(function() {
+                            $status.text('❌ Erro de conexão').css('color', '#dc3232');
+                        }).always(function() {
+                            $btn.prop('disabled', false).text('🔧 Criar / Reconectar Instância');
+                        });
+                    });
+                });
+            })(jQuery);
+            </script>
+            <?php endif; ?>
 
             <?php if ($instance_name): ?>
             <hr>
