@@ -187,7 +187,8 @@ class ConnectionManager {
      * Normalize Evolution API URL by removing trailing instance endpoints.
      *
      * @param string $api_url
-     * @return string Normalized URL or empty string when input is empty or whitespace-only.
+     * @return string
+     *   Normalized URL or empty string when input is empty or whitespace-only.
      */
     private static function normalize_api_url(string $api_url) {
         $api_url = trim($api_url);
@@ -276,12 +277,13 @@ class ConnectionManager {
         /**
          * Filters whether to persist the normalized Evolution API URL.
          *
+         * Example: add_filter('zapwa_persist_normalized_api_url', function($should_persist, $original_url, $normalized_url) { return false; }, 10, 3);
+         *
          * @since 1.1.0
          *
          * @param bool $should_persist
          * @param string $original_url
          * @param string $normalized_url
-         * @example add_filter('zapwa_persist_normalized_api_url', function($should_persist, $original_url, $normalized_url) { return false; }, 10, 3);
          */
         $should_persist = apply_filters(
             'zapwa_persist_normalized_api_url',
