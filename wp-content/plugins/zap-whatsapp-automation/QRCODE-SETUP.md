@@ -95,10 +95,10 @@ ls -la vendor/
 **Problem**: Error creating instance (404 / endpoint not found)
 
 **Steps**:
-1. Confirm the base URL points to the API (e.g., `https://evolution.seudominio.com/api/v2`).
+1. Confirm the base URL points to the API (e.g., `https://evolution.yourdomain.com/api/v2`).
 2. Test the creation endpoint manually:
    ```bash
-   curl -X POST "https://evolution.seudominio.com/api/v2/instance/create" \
+   curl -X POST "https://evolution.yourdomain.com/api/v2/instance/create" \
      -H "Content-Type: application/json" \
      -H "apikey: YOUR_API_KEY" \
      -H "Authorization: Bearer YOUR_API_KEY" \
