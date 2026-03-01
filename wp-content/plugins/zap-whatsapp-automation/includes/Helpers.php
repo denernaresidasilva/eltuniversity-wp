@@ -24,7 +24,12 @@ class Helpers {
             'phone_number',
             'phone',
             'whatsapp_phone',
-            'mobile_phone'
+            'mobile_phone',
+            'telefone',
+            'telefone_whatsapp',
+            'telefone_limpo',
+            'telefone_original',
+            'telefone_formatado'
         ];
         
         if (in_array($meta_key, $phone_fields)) {
@@ -96,6 +101,11 @@ class Helpers {
             'phone',              // Campo genérico
             'whatsapp_phone',     // Campo específico WhatsApp
             'mobile_phone',       // Telefone móvel
+            'telefone_whatsapp',   // Formato WhatsApp salvo pelo webhook plugin
+            'telefone',            // Campo legado do webhook plugin
+            'telefone_limpo',      // Campo limpo do webhook plugin
+            'telefone_original',   // Campo original do webhook plugin
+            'telefone_formatado',  // Campo formatado do webhook plugin
         ];
 
         $phone = null;

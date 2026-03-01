@@ -612,6 +612,12 @@ class Webhook_Receiver {
         
         // Backward compatibility (campo antigo)
         update_user_meta($user_id, 'telefone', $phone_br);
+
+        // Compatibilidade com integrações externas (WooCommerce/ZapWA)
+        update_user_meta($user_id, 'phone', $phone_br);
+        update_user_meta($user_id, 'billing_phone', $phone_br);
+        update_user_meta($user_id, 'whatsapp_phone', $phone_whatsapp);
+        update_user_meta($user_id, 'phone_number', $phone_br);
         
         // Log
         $this->log_webhook(sprintf(
@@ -926,6 +932,11 @@ class Webhook_Receiver {
             // Se o usuário já existe, apenas matriculá-lo nos cursos
             $user = get_user_by('email', $sale_data['payer_email']);
             if ($user) {
+                // Atualizar telefone/metas caso tenha sido enviado no webhook
+                if (!empty($sale_data['telefone'])) {
+                    $this->save_phone_multiple_formats($user->ID, $sale_data['telefone']);
+                }
+
                 if (!empty($course_ids)) {
                     $this->enroll_user_in_courses($user->ID, $course_ids);
                 }
