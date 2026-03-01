@@ -17,6 +17,8 @@ class Admin {
 
         add_action('admin_menu', [self::class, 'menu']);
         add_action('admin_enqueue_scripts', [self::class, 'enqueue_assets']);
+        add_action('admin_post_zap_events_delete_all_logs', [self::class, 'handle_delete_all_logs']);
+        add_action('admin_post_zap_events_delete_webhook_logs', [self::class, 'handle_delete_webhook_logs']);
     }
 
     /**
@@ -80,6 +82,15 @@ class Admin {
             'zap-tutor-events-logs',
             [self::class, 'logs_page']
         );
+
+        add_submenu_page(
+            'zap-tutor-events',
+            'Logs de Webhook',
+            'Logs de Webhook',
+            'manage_options',
+            'zap-tutor-events-webhook-logs',
+            [self::class, 'webhook_logs_page']
+        );
     }
 
     public static function logs_page() {
@@ -115,6 +126,10 @@ class Admin {
         ?>
         <div class="wrap">
             <h1>Logs de Eventos</h1>
+
+            <?php if (isset($_GET['deleted']) && $_GET['deleted'] === 'all'): ?>
+                <div class="notice notice-success is-dismissible"><p>Todos os logs de eventos foram excluídos.</p></div>
+            <?php endif; ?>
 
             <!-- Filters -->
             <div class="tablenav top">
@@ -156,6 +171,15 @@ class Admin {
                     <input type="submit" class="button" value="Filtrar">
                     <a href="<?php echo admin_url('admin.php?page=zap-tutor-events-logs'); ?>" class="button">Limpar</a>
                     <button type="submit" name="export_csv" value="1" class="button button-primary">Exportar CSV</button>
+                </form>
+
+                &nbsp;
+                <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" style="display: inline-block;">
+                    <?php wp_nonce_field('zap_events_delete_all_logs', 'zap_delete_logs_nonce'); ?>
+                    <input type="hidden" name="action" value="zap_events_delete_all_logs">
+                    <button type="submit" class="button button-secondary" style="color:#a00;border-color:#a00;" onclick="return confirm('Tem certeza que deseja excluir TODOS os logs de eventos? Esta ação não pode ser desfeita.');">
+                        🗑️ Excluir Todos os Logs
+                    </button>
                 </form>
             </div>
 
@@ -272,5 +296,149 @@ class Admin {
         
         fclose($output);
         exit;
+    }
+
+    /**
+     * Handle delete all event logs
+     */
+    public static function handle_delete_all_logs() {
+
+        if (!current_user_can('manage_options')) {
+            wp_die('Unauthorized');
+        }
+
+        check_admin_referer('zap_events_delete_all_logs', 'zap_delete_logs_nonce');
+
+        global $wpdb;
+        $table = $wpdb->prefix . 'zap_event_logs';
+        $wpdb->query("TRUNCATE TABLE {$table}");
+
+        wp_redirect(add_query_arg([
+            'page'    => 'zap-tutor-events-logs',
+            'deleted' => 'all',
+        ], admin_url('admin.php')));
+        exit;
+    }
+
+    /**
+     * Handle delete all webhook logs
+     */
+    public static function handle_delete_webhook_logs() {
+
+        if (!current_user_can('manage_options')) {
+            wp_die('Unauthorized');
+        }
+
+        check_admin_referer('zap_events_delete_webhook_logs', 'zap_delete_webhook_nonce');
+
+        global $wpdb;
+        $table = $wpdb->prefix . 'zap_webhook_logs';
+        $wpdb->query("TRUNCATE TABLE {$table}");
+
+        wp_redirect(add_query_arg([
+            'page'    => 'zap-tutor-events-webhook-logs',
+            'deleted' => 'all',
+        ], admin_url('admin.php')));
+        exit;
+    }
+
+    /**
+     * Webhook logs page
+     */
+    public static function webhook_logs_page() {
+        global $wpdb;
+        $table = $wpdb->prefix . 'zap_webhook_logs';
+
+        // Check if table exists
+        if ($wpdb->get_var("SHOW TABLES LIKE '{$table}'") != $table) {
+            echo '<div class="wrap"><h1>Logs de Webhook</h1><p>Nenhum log de webhook registrado ainda.</p></div>';
+            return;
+        }
+
+        $paged    = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $per_page = 50;
+        $offset   = ($paged - 1) * $per_page;
+
+        $total = $wpdb->get_var("SELECT COUNT(*) FROM {$table}");
+        $logs  = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM {$table} ORDER BY created_at DESC LIMIT %d OFFSET %d",
+            $per_page, $offset
+        ));
+        $total_pages = ceil($total / $per_page);
+
+        if (isset($_GET['deleted']) && $_GET['deleted'] === 'all') {
+            echo '<div class="notice notice-success is-dismissible"><p>Todos os logs de webhook foram excluídos.</p></div>';
+        }
+        ?>
+        <div class="wrap">
+            <h1>Logs de Webhook</h1>
+
+            <div class="tablenav top">
+                <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" style="display:inline-block;">
+                    <?php wp_nonce_field('zap_events_delete_webhook_logs', 'zap_delete_webhook_nonce'); ?>
+                    <input type="hidden" name="action" value="zap_events_delete_webhook_logs">
+                    <button type="submit" class="button button-secondary" style="color:#a00;border-color:#a00;" onclick="return confirm('Tem certeza que deseja excluir TODOS os logs de webhook? Esta ação não pode ser desfeita.');">
+                        🗑️ Excluir Todos os Logs
+                    </button>
+                </form>
+            </div>
+
+            <p>Total de registros: <strong><?php echo number_format_i18n($total); ?></strong></p>
+
+            <?php if (empty($logs)): ?>
+                <p>Nenhum log de webhook registrado.</p>
+            <?php else: ?>
+                <table class="widefat striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Evento</th>
+                            <th>Status</th>
+                            <th>Tentativa</th>
+                            <th>Mensagem</th>
+                            <th>URL</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($logs as $log): ?>
+                            <tr>
+                                <td><?php echo esc_html($log->id); ?></td>
+                                <td><code><?php echo esc_html($log->event_key); ?></code></td>
+                                <td>
+                                    <?php if ($log->success): ?>
+                                        <span style="color:green;">✔ Sucesso</span>
+                                    <?php else: ?>
+                                        <span style="color:red;">✘ Falha</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td><?php echo esc_html($log->attempt); ?></td>
+                                <td><?php echo esc_html($log->message); ?></td>
+                                <td><small><?php echo esc_html($log->webhook_url); ?></small></td>
+                                <td><?php echo esc_html(date_i18n('d/m/Y H:i:s', strtotime($log->created_at))); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+
+                <?php if ($total_pages > 1): ?>
+                    <div class="tablenav bottom">
+                        <div class="tablenav-pages">
+                            <?php
+                            echo paginate_links([
+                                'base'      => add_query_arg('paged', '%#%', admin_url('admin.php?page=zap-tutor-events-webhook-logs')),
+                                'format'    => '',
+                                'current'   => $paged,
+                                'total'     => $total_pages,
+                                'prev_text' => '«',
+                                'next_text' => '»',
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            <?php endif; ?>
+        </div>
+        <?php
     }
 }

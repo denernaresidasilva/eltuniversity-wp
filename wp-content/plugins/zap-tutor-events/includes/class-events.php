@@ -156,9 +156,12 @@ class Events {
      * Course 100% completed
      * 
      * @param int $course_id Course ID
-     * @param int $user_id User ID
+     * @param int $user_id User ID (may not be passed by all Tutor LMS versions)
      */
-    public static function course_completed($course_id, $user_id) {
+    public static function course_completed($course_id, $user_id = null) {
+        if (empty($user_id)) {
+            $user_id = get_current_user_id();
+        }
         Dispatcher::dispatch(
             'tutor_course_completed',
             $user_id,
