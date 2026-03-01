@@ -90,22 +90,22 @@ ls -la vendor/
 3. Ensure instance name doesn't contain special characters
 4. Check PHP error logs for more details
 
-### Instance Creation Endpoint (Passo a Passo)
+### Instance Creation Endpoint (Step by Step)
 
-**Problem**: Erro ao criar instância (404 / endpoint não encontrado)
+**Problem**: Error creating instance (404 / endpoint not found)
 
 **Steps**:
-1. Confirme que a URL base aponta para a API (ex.: `https://evolution.seudominio.com/api/v2`).
-2. Teste manualmente o endpoint de criação:
+1. Confirm the base URL points to the API (e.g., `https://evolution.seudominio.com/api/v2`).
+2. Test the creation endpoint manually:
    ```bash
    curl -X POST "https://evolution.seudominio.com/api/v2/instance/create" \
      -H "Content-Type: application/json" \
-     -H "apikey: SUA_API_KEY" \
-     -H "Authorization: Bearer SUA_API_KEY" \
-     -d '{"instanceName":"minha-instancia","integration":"WHATSAPP-BAILEYS","qrcode":true}'
+     -H "apikey: YOUR_API_KEY" \
+     -H "Authorization: Bearer YOUR_API_KEY" \
+     -d '{"instanceName":"my-instance","integration":"WHATSAPP-BAILEYS","qrcode":true}'
    ```
-3. Se retornar 404, ajuste a URL para `/api`, `/api/v1`, `/api/v2` ou `/api/v3` e repita o teste.
-4. Verifique o log do servidor da Evolution API para confirmar a rota disponível.
+3. If it returns 404, adjust the URL to `/api`, `/api/v1`, `/api/v2`, or `/api/v3` and retry.
+4. Check the Evolution API server logs to confirm the available route.
 
 ### Composer Dependencies Not Installed
 
