@@ -357,9 +357,10 @@ class ConnectionManager {
             $response = wp_remote_post(
                 $full_url,
                 [
-                    'headers' => [
-                        'Content-Type' => 'application/json',
-                    ] + self::get_auth_headers($api_token),
+                    'headers' => array_merge(
+                        ['Content-Type' => 'application/json'],
+                        self::get_auth_headers($api_token)
+                    ),
                     'body' => wp_json_encode($request_body),
                     'timeout' => 20,
                     'sslverify' => true, // Importante para HTTPS
