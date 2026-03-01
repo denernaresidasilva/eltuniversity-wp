@@ -82,6 +82,10 @@ class Installer {
             add_option('zapwa_official_access_token', '');
         }
 
+        if (get_option('zapwa_logging_enabled') === false) {
+            add_option('zapwa_logging_enabled', true);
+        }
+
         // Register CPT and flush rewrite rules
         $cpt_file = plugin_dir_path(__FILE__) . 'PostTypes/Message.php';
         if (file_exists($cpt_file)) {

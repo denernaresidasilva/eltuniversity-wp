@@ -47,12 +47,10 @@ class Loader {
         
         // Processar eventos da tabela de logs a cada 5 minutos
         if (class_exists('\ZapWA\EventLogReader')) {
-            add_action('init', function() {
-                if (!wp_next_scheduled('zapwa_process_event_logs')) {
-                    wp_schedule_event(time(), 'five_minutes', 'zapwa_process_event_logs');
-                }
-            });
-            
+            if (!wp_next_scheduled('zapwa_process_event_logs')) {
+                wp_schedule_event(time(), 'five_minutes', 'zapwa_process_event_logs');
+            }
+
             add_action('zapwa_process_event_logs', ['\ZapWA\EventLogReader', 'process_pending_events']);
         }
     }

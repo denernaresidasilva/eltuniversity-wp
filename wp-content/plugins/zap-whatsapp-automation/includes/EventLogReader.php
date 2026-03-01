@@ -28,6 +28,12 @@ class EventLogReader {
             return;
         }
         
+        // Garantir que a tabela de controle existe
+        $table_processed = $wpdb->prefix . 'zapwa_processed_events';
+        if ($wpdb->get_var("SHOW TABLES LIKE '{$table_processed}'") != $table_processed) {
+            self::create_table();
+        }
+        
         // Buscar eventos recentes que ainda não foram processados
         $events = $wpdb->get_results($wpdb->prepare(
             "SELECT id, event_key, user_id, context, created_at 

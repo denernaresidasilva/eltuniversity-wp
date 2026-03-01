@@ -23,6 +23,7 @@ class Settings {
         add_action('admin_menu', [self::class, 'add_settings_page'], 20);
         add_action('admin_init', [self::class, 'register_settings']);
         add_action('admin_post_zap_events_cleanup_logs', [self::class, 'handle_manual_cleanup']);
+        add_action('admin_post_zap_events_toggle_logs', [self::class, 'handle_toggle_logs']);
     }
 
     /**
@@ -88,6 +89,37 @@ class Settings {
         ?>
         <div class="wrap">
             <h1>Configurações - ZAP Tutor Events</h1>
+
+            <?php if (isset($_GET['logs_toggled'])): ?>
+                <div class="notice notice-success is-dismissible">
+                    <p>Logs de eventos <?php echo get_option('zap_events_log_enabled', true) ? '<strong>ativados</strong>' : '<strong>desativados</strong>'; ?> com sucesso.</p>
+                </div>
+            <?php endif; ?>
+
+            <h2>Controle de Logs</h2>
+            <p>
+                Status atual: <?php if ($log_enabled): ?>
+                    <strong style="color:green;">✔ Logs ATIVADOS</strong>
+                <?php else: ?>
+                    <strong style="color:#a00;">✘ Logs DESATIVADOS</strong>
+                <?php endif; ?>
+            </p>
+            <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" style="display:inline;">
+                <?php wp_nonce_field('zap_events_toggle_logs'); ?>
+                <input type="hidden" name="action" value="zap_events_toggle_logs">
+                <?php if ($log_enabled): ?>
+                    <button type="submit" class="button button-secondary" style="color:#a00;border-color:#a00;"
+                        onclick="return confirm('Desativar os logs de eventos? Os registros existentes serão mantidos.');">
+                        🔕 Desativar Logs
+                    </button>
+                <?php else: ?>
+                    <button type="submit" class="button button-primary">
+                        🔔 Ativar Logs
+                    </button>
+                <?php endif; ?>
+            </form>
+
+            <hr>
 
             <form method="post">
                 <?php wp_nonce_field('zap_events_settings'); ?>
@@ -303,6 +335,28 @@ class Settings {
             'deleted' => $deleted,
         ], admin_url('admin.php')));
         
+        exit;
+    }
+
+    /**
+     * Handle enable/disable logs toggle
+     */
+    public static function handle_toggle_logs() {
+
+        if (!current_user_can('manage_options')) {
+            wp_die('Unauthorized');
+        }
+
+        check_admin_referer('zap_events_toggle_logs');
+
+        $current = get_option('zap_events_log_enabled', true);
+        update_option('zap_events_log_enabled', !$current);
+
+        wp_redirect(add_query_arg([
+            'page'         => 'zap-tutor-events-settings',
+            'logs_toggled' => '1',
+        ], admin_url('admin.php')));
+
         exit;
     }
 }
