@@ -83,7 +83,13 @@ git commit -m "chore: update dependencies"
 ---
 
 
-## 🧪 Troubleshooting: QR Code não carrega
+## 🔌 Integração com Zap Tutor Events
+
+O listener do hook `zap_evento` é registrado **imediatamente** durante o `plugins_loaded`, antes do hook `init` do WordPress. Isso garante que nenhum evento disparado precocemente (como `tutor_course_completed`) seja perdido por condição de corrida de carregamento.
+
+---
+
+
 
 Se a instância é criada, mas o QR Code não aparece automaticamente, siga este passo a passo:
 
