@@ -208,6 +208,14 @@ class MessageSettings {
                                 </label>
                                 <label for="zapwa_email_is_html" class="zapwa-ms-toggle-text">Enviar como HTML</label>
                             </div>
+                            <div class="zapwa-ms-preview-btn-row">
+                                <button type="button"
+                                        id="zapwa-email-preview-btn"
+                                        class="zapwa-btn zapwa-btn-secondary">
+                                    &#x1F441; Preview do E-mail
+                                </button>
+                                <span class="zapwa-ms-hint">Veja como o e-mail ficará antes de salvar</span>
+                            </div>
                         </div>
                     </div>
                 </div>
