@@ -42,7 +42,7 @@ class Logs {
 
         $logs = $wpdb->get_results($query);
         ?>
-        <div class="wrap">
+        <div class="wrap zapwa-page">
             <h1>Logs de Envio</h1>
 
             <?php if (isset($_GET['deleted']) && $_GET['deleted'] === 'all'): ?>

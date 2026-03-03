@@ -55,7 +55,7 @@ class Connection {
             'nonce'        => wp_create_nonce('zapwa_qrcode'),
         ]);
         ?>
-        <div class="wrap">
+        <div class="wrap zapwa-page">
             <h1>🔌 Conexão WhatsApp</h1>
 
             <p>

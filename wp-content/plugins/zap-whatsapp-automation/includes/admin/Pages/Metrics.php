@@ -25,7 +25,7 @@ class Metrics {
         $success_rate = $total > 0 ? round(($sent / $total) * 100, 1) : 0;
         ?>
 
-        <div class="wrap zapwa-metrics">
+        <div class="wrap zapwa-metrics zapwa-page">
             <style>
                 .zapwa-metrics { background:#f0f7f4; margin:0 -20px 0 -12px; padding:20px; min-height:100vh; }
 
@@ -170,6 +170,30 @@ class Metrics {
                 <?php if ($display_name): ?>
                     <span class="greeting">👋 Olá, <?php echo esc_html($display_name); ?>!</span>
                 <?php endif; ?>
+            </div>
+
+            <!-- Atalhos rápidos -->
+            <div class="zapwa-shortcuts">
+                <a href="<?php echo esc_url(admin_url('edit.php?post_type=zapwa_message')); ?>" class="zapwa-shortcut">
+                    <span class="icon">🤖</span>
+                    <span class="label">Automações</span>
+                </a>
+                <a href="<?php echo esc_url(admin_url('admin.php?page=zap-wa-queue')); ?>" class="zapwa-shortcut">
+                    <span class="icon">📦</span>
+                    <span class="label">Fila</span>
+                </a>
+                <a href="<?php echo esc_url(admin_url('admin.php?page=zap-wa-logs')); ?>" class="zapwa-shortcut">
+                    <span class="icon">📋</span>
+                    <span class="label">Logs</span>
+                </a>
+                <a href="<?php echo esc_url(admin_url('admin.php?page=zap-wa-connection')); ?>" class="zapwa-shortcut">
+                    <span class="icon">🔌</span>
+                    <span class="label">Conexão</span>
+                </a>
+                <a href="<?php echo esc_url(admin_url('admin.php?page=zap-wa-settings')); ?>" class="zapwa-shortcut">
+                    <span class="icon">⚙️</span>
+                    <span class="label">Configurações</span>
+                </a>
             </div>
 
             <!-- KPI Row -->
