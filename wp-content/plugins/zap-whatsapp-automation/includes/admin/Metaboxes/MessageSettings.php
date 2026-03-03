@@ -162,7 +162,7 @@ class MessageSettings {
         <hr>
 
         <div class="zapwa-vars-wrap">
-            <p class="zapwa-vars-title">Variáveis disponíveis — clique para inserir no conteúdo:</p>
+            <p class="zapwa-vars-title">Variáveis disponíveis — clique para copiar:</p>
             <div class="zapwa-vars">
                 <span class="zapwa-var" data-var="{user_name}">{user_name}</span>
                 <span class="zapwa-var" data-var="{user_email}">{user_email}</span>
@@ -212,8 +212,8 @@ class MessageSettings {
                 <label for="zapwa_email_body"><strong>Corpo do e-mail</strong></label><br>
                 <textarea id="zapwa_email_body"
                           name="zapwa_email_body"
-                          rows="8"
-                          style="width:100%"
+                          rows="16"
+                          style="width:100%;font-family:monospace;font-size:.88rem;"
                           placeholder="Escreva o corpo do e-mail aqui. Variáveis como {user_name} são suportadas."><?php echo esc_textarea($email_body); ?></textarea>
             </div>
 
