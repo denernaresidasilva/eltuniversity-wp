@@ -9,7 +9,7 @@ class Messages {
 
     public static function render() {
         ?>
-        <div class="wrap">
+        <div class="wrap zapwa-page">
             <h1>Mensagens WhatsApp</h1>
 
             <p>

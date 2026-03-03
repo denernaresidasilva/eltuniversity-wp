@@ -11,6 +11,49 @@ class AdminMenu {
 
         self::load_pages();
         add_action('admin_menu', [self::class, 'register_menu']);
+        add_action('admin_enqueue_scripts', [self::class, 'enqueue_assets']);
+    }
+
+    public static function enqueue_assets($hook) {
+
+        $post_type   = isset($_GET['post_type']) ? sanitize_key($_GET['post_type']) : '';
+        $page        = isset($_GET['page'])      ? sanitize_key($_GET['page'])      : '';
+        $is_zapwa_pt = ($post_type === 'zapwa_message');
+        $is_zapwa_pg = ($page !== '' && strpos($page, 'zap-wa') === 0);
+
+        // Também aplica quando se está editando um post do CPT zapwa_message
+        if (!$is_zapwa_pt && !$is_zapwa_pg) {
+            $post_id = isset($_GET['post']) ? (int) $_GET['post'] : 0;
+            if ($post_id > 0 && get_post_type($post_id) === 'zapwa_message') {
+                $is_zapwa_pt = true;
+            }
+        }
+
+        if (!$is_zapwa_pt && !$is_zapwa_pg) {
+            return;
+        }
+
+        $url     = ZAP_WA_URL . 'assets/admin/';
+        $version = '1.0.0';
+
+        wp_enqueue_style(
+            'zapwa-admin',
+            $url . 'zapwa-admin.css',
+            [],
+            $version
+        );
+
+        wp_enqueue_script(
+            'zapwa-admin',
+            $url . 'zapwa-admin.js',
+            ['jquery'],
+            $version,
+            true
+        );
+
+        wp_localize_script('zapwa-admin', 'zapwaAdmin', [
+            'previewPlaceholder' => __('Escreva a mensagem acima para ver o preview...', 'zap-whatsapp-automation'),
+        ]);
     }
 
     private static function load_pages() {

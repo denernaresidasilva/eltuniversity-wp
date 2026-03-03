@@ -53,12 +53,12 @@ class MessageSettings {
                 transition: all 0.3s;
             }
             .zapwa-type-card:hover {
-                border-color: #0073aa;
-                background: #f0f8ff;
+                border-color: #25d366;
+                background: #f0faf5;
             }
             .zapwa-type-card.active {
-                border-color: #0073aa;
-                background: #e3f2fd;
+                border-color: #075e54;
+                background: #e8f5e9;
             }
             .zapwa-type-card h3 {
                 margin: 0 0 8px 0;
@@ -73,22 +73,6 @@ class MessageSettings {
             }
             .zapwa-config-section.active {
                 display: block;
-            }
-            .zapwa-vars {
-                display:flex;
-                flex-wrap:wrap;
-                gap:6px;
-            }
-            .zapwa-var {
-                background:#f4f4f4;
-                border:1px solid #ddd;
-                border-radius:4px;
-                padding:4px 8px;
-                cursor:pointer;
-                font-family:monospace;
-            }
-            .zapwa-var:hover {
-                background:#eaeaea;
             }
         </style>
 
@@ -171,54 +155,44 @@ class MessageSettings {
 
         <hr>
 
-        <strong>Variáveis disponíveis (use com chaves {}):</strong>
-        <div class="zapwa-vars">
-            <span class="zapwa-var" data-var="{user_name}">{user_name}</span>
-            <span class="zapwa-var" data-var="{user_email}">{user_email}</span>
-            <span class="zapwa-var" data-var="{user_phone}">{user_phone}</span>
-            <span class="zapwa-var" data-var="{course_name}">{course_name}</span>
-            <span class="zapwa-var" data-var="{course_progress}">{course_progress}</span>
-            <span class="zapwa-var" data-var="{course_author}">{course_author}</span>
-            <span class="zapwa-var" data-var="{course_url}">{course_url}</span>
-            <span class="zapwa-var" data-var="{site_name}">{site_name}</span>
-            <span class="zapwa-var" data-var="{site_url}">{site_url}</span>
-            <span class="zapwa-var" data-var="{current_date}">{current_date}</span>
-            <span class="zapwa-var" data-var="{last_login}">{last_login}</span>
-            <span class="zapwa-var" data-var="{days_inactive}">{days_inactive}</span>
+        <div class="zapwa-vars-wrap">
+            <p class="zapwa-vars-title">Variáveis disponíveis — clique para inserir no conteúdo:</p>
+            <div class="zapwa-vars">
+                <span class="zapwa-var" data-var="{user_name}">{user_name}</span>
+                <span class="zapwa-var" data-var="{user_email}">{user_email}</span>
+                <span class="zapwa-var" data-var="{user_phone}">{user_phone}</span>
+                <span class="zapwa-var" data-var="{course_name}">{course_name}</span>
+                <span class="zapwa-var" data-var="{course_progress}">{course_progress}</span>
+                <span class="zapwa-var" data-var="{course_author}">{course_author}</span>
+                <span class="zapwa-var" data-var="{course_url}">{course_url}</span>
+                <span class="zapwa-var" data-var="{site_name}">{site_name}</span>
+                <span class="zapwa-var" data-var="{site_url}">{site_url}</span>
+                <span class="zapwa-var" data-var="{current_date}">{current_date}</span>
+                <span class="zapwa-var" data-var="{last_login}">{last_login}</span>
+                <span class="zapwa-var" data-var="{days_inactive}">{days_inactive}</span>
+            </div>
         </div>
 
-        <p style="margin-top:8px;">
-            <small>✅ Use chaves {} para as variáveis (padrão do Tutor LMS). Clique para copiar.</small>
-        </p>
+        <!-- Preview em bolha WhatsApp -->
+        <div class="zapwa-preview-wrap" id="zapwa-bubble-wrap">
+            <div class="zapwa-preview-label">👁 Preview da mensagem</div>
+            <div class="zapwa-bubble">
+                <div id="zapwa-bubble-text">
+                    <span class="zapwa-bubble-empty">Escreva a mensagem acima para ver o preview...</span>
+                </div>
+            </div>
+        </div>
 
         <script>
         jQuery(document).ready(function($) {
             // Toggle entre Gatilho e Broadcast
             $('.zapwa-type-card').on('click', function() {
                 const type = $(this).data('type');
-                
-                // Atualizar visual
                 $('.zapwa-type-card').removeClass('active');
                 $(this).addClass('active');
-                
-                // Atualizar campo hidden
                 $('#zapwa_type').val(type);
-                
-                // Mostrar/ocultar seções
                 $('.zapwa-config-section').removeClass('active');
                 $('#config-' + type).addClass('active');
-            });
-
-            // Copiar variável ao clicar
-            $('.zapwa-var').on('click', function() {
-                const text = $(this).data('var');
-                navigator.clipboard.writeText(text).then(() => {
-                    const original = $(this).text();
-                    $(this).text('✔ Copiado');
-                    setTimeout(() => {
-                        $(this).text(original);
-                    }, 1200);
-                });
             });
         });
         </script>

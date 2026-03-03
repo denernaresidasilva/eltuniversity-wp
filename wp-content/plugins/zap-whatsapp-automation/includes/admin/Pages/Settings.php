@@ -23,7 +23,7 @@ class Settings {
 
         $logging_enabled = (bool) get_option('zapwa_logging_enabled', true);
         ?>
-        <div class="wrap">
+        <div class="wrap zapwa-page">
             <h1>Configurações – Zap WhatsApp Automation</h1>
 
             <h2>Controle de Logs</h2>

@@ -46,7 +46,7 @@ class QueuePage {
             $summary[$row->status] = (int) $row->cnt;
         }
         ?>
-        <div class="wrap">
+        <div class="wrap zapwa-page">
             <h1>Fila de Mensagens</h1>
 
             <!-- Summary cards -->
