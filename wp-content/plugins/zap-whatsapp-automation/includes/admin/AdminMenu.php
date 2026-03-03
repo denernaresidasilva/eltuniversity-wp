@@ -34,7 +34,7 @@ class AdminMenu {
         }
 
         $url     = ZAP_WA_URL . 'assets/admin/';
-        $version = '1.0.0';
+        $version = '1.1.0';
 
         wp_enqueue_style(
             'zapwa-admin',
