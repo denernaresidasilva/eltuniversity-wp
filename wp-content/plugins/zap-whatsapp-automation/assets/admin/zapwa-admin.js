@@ -104,7 +104,7 @@
     };
 
     /* ---------------------------------------------------------------
-       2. Variable chips — clicar insere no editor ativo
+       2. Variable chips — clicar copia a variável para a área de transferência
     --------------------------------------------------------------- */
     var ZapWAVars = {
 
@@ -113,52 +113,35 @@
                 var varText = $(this).data('var');
                 var $chip   = $(this);
 
-                ZapWAVars._insertVar(varText);
-
-                $chip.addClass('copied');
-                var orig = $chip.text();
-                $chip.text('✔ Inserido');
-                setTimeout(function () {
-                    $chip.removeClass('copied').text(orig);
-                }, 1200);
-
-                // Atualiza o preview imediatamente
-                setTimeout(function () {
-                    ZapWAPreview._update(ZapWAPreview._getContent());
-                }, 50);
+                ZapWAVars._copyVar(varText, $chip);
             });
         },
 
-        _insertVar: function (text) {
-            // Tenta Gutenberg
-            if (typeof wp !== 'undefined' && wp.data && wp.data.dispatch('core/editor')) {
+        _copyVar: function (text, $chip) {
+            var orig = $chip.text();
+
+            var done = function () {
+                $chip.addClass('copied');
+                $chip.text('✔ Copiado');
+                setTimeout(function () {
+                    $chip.removeClass('copied').text(orig);
+                }, 1200);
+            };
+
+            var fallback = function () {
+                // Fallback para navegadores sem Clipboard API
                 try {
-                    wp.data.dispatch('core/editor').insertBlocks(
-                        wp.blocks.createBlock('core/paragraph', { content: text })
-                    );
-                    return;
+                    var $tmp = $('<textarea>').val(text).appendTo('body').select();
+                    document.execCommand('copy');
+                    $tmp.remove();
+                    done();
                 } catch (e) {}
-            }
-            // Tenta TinyMCE
-            if (typeof tinyMCE !== 'undefined' && tinyMCE.activeEditor && !tinyMCE.activeEditor.isHidden()) {
-                tinyMCE.activeEditor.insertContent(text);
-                return;
-            }
-            // Textarea fallback
-            var $ta = $('#content');
-            if ($ta.length) {
-                var el    = $ta[0];
-                var start = el.selectionStart;
-                var end   = el.selectionEnd;
-                var val   = el.value;
-                el.value  = val.substring(0, start) + text + val.substring(end);
-                el.selectionStart = el.selectionEnd = start + text.length;
-                $ta.trigger('input');
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(done, fallback);
             } else {
-                // Copia para área de transferência como fallback final
-                if (navigator.clipboard) {
-                    navigator.clipboard.writeText(text);
-                }
+                fallback();
             }
         }
     };
