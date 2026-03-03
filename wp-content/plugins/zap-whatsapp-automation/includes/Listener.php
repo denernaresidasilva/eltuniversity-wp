@@ -142,6 +142,18 @@ class Listener {
                 error_log("[ZAP WhatsApp] Falha ao enfileirar mensagem para user {$user_id} no evento {$event_key}");
                 Logger::log_stage('fila_erro', $event_key, $user_id, $phone, 'Falha ao enfileirar mensagem');
             }
+
+            // Send email notification if configured (errors must not block WhatsApp queueing)
+            if (class_exists('\ZapWA\EmailNotifier')) {
+                try {
+                    \ZapWA\EmailNotifier::send($message->ID, $payload);
+                } catch (\Throwable $e) {
+                    Logger::debug('Exceção ao enviar e-mail', [
+                        'message_id' => $message->ID,
+                        'error'      => $e->getMessage(),
+                    ]);
+                }
+            }
         }
     }
     

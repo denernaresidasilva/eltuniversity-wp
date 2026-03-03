@@ -62,6 +62,7 @@ git commit -m "chore: update dependencies"
 - ✅ Sistema de fila para envio de mensagens
 - ✅ Métricas e relatórios detalhados
 - ✅ Logs de atividades
+- ✅ Notificações por e-mail junto com o WhatsApp
 
 ---
 
@@ -86,6 +87,56 @@ git commit -m "chore: update dependencies"
 ## 🔌 Integração com Zap Tutor Events
 
 O listener do hook `zap_evento` é registrado **imediatamente** durante o `plugins_loaded`, antes do hook `init` do WordPress. Isso garante que nenhum evento disparado precocemente (como `tutor_course_completed`) seja perdido por condição de corrida de carregamento.
+
+---
+
+## ✉️ Notificações por E-mail
+
+Cada automação de mensagem WhatsApp pode ser configurada para enviar também um e-mail ao mesmo tempo.
+
+### Configuração
+
+No admin de cada mensagem automática (metabox "Configurações da Automação"):
+
+| Campo | Chave Meta | Descrição |
+|---|---|---|
+| Enviar e-mail junto | `zapwa_email_enabled` | Ativa/desativa o envio de e-mail |
+| Assunto do e-mail | `zapwa_email_subject` | Assunto da mensagem (suporta variáveis) |
+| Corpo do e-mail | `zapwa_email_body` | Corpo da mensagem (suporta variáveis) |
+| Enviar como HTML | `zapwa_email_is_html` | Define Content-Type como `text/html` |
+
+### Destinatário
+
+O destinatário do e-mail é extraído automaticamente do payload do evento, tentando as seguintes chaves nesta ordem:
+
+1. `payload['email']`
+2. `payload['user_email']`
+3. `payload['context']['email']`
+4. `payload['context']['user_email']`
+5. `payload['context']['recipient_email']`
+6. E-mail do usuário WordPress (`user_id`)
+
+Você pode sobrescrever o destinatário via filtro:
+
+```php
+add_filter('zapwa_event_email_recipient', function($email, $payload) {
+    // Retorne um e-mail customizado
+    return 'outro@exemplo.com';
+}, 10, 2);
+```
+
+### Variáveis disponíveis
+
+Além das variáveis padrão, o assunto e o corpo do e-mail suportam:
+
+| Variável | Descrição |
+|---|---|
+| `{event}` | Nome do evento disparado |
+| `{event_email}` | E-mail extraído do payload do evento |
+
+### Transporte
+
+O e-mail é enviado via `wp_mail()`, portanto é compatível com **WP Mail SMTP** e qualquer plugin de transporte de e-mail para WordPress.
 
 ---
 

@@ -71,6 +71,7 @@ class Loader {
             'Helpers.php',
             'Variables.php',
             'Logger.php',
+            'EmailNotifier.php',
             'Queue.php',
             'AntiSpam.php',
             'Broadcast.php',
