@@ -206,6 +206,119 @@
     };
 
     /* ---------------------------------------------------------------
+       5. Floating navigation (scroll-to-top visibility)
+    --------------------------------------------------------------- */
+    var ZapWANav = {
+
+        init: function () {
+            var $fabTop = $('#zapwa-fab-top');
+            if (!$fabTop.length) return;
+
+            $(window).on('scroll.zapwaNav', function () {
+                if ($(window).scrollTop() > 200) {
+                    $fabTop.addClass('visible');
+                } else {
+                    $fabTop.removeClass('visible');
+                }
+            });
+        }
+    };
+
+    /* ---------------------------------------------------------------
+       6. Email preview modal
+    --------------------------------------------------------------- */
+    var ZapWAEmailPreview = {
+
+        $modal: null,
+        $frame: null,
+        $loading: null,
+
+        init: function () {
+            this.$modal   = $('#zapwa-email-preview-modal');
+            this.$frame   = $('#zapwa-email-preview-frame');
+            this.$loading = $('#zapwa-preview-loading');
+            this.$trigger = null; // element that opened the modal
+
+            if (!this.$modal.length) return;
+
+            var self = this;
+
+            // Open on preview button click
+            $(document).on('click', '#zapwa-email-preview-btn', function () {
+                self.$trigger = $(this);
+                self.open();
+            });
+
+            // Close on × button
+            $(document).on('click', '#zapwa-modal-close', function () {
+                self.close();
+            });
+
+            // Close on overlay click (outside modal box)
+            this.$modal.on('click', function (e) {
+                if ($(e.target).is(self.$modal)) {
+                    self.close();
+                }
+            });
+
+            // Close on Escape key
+            $(document).on('keydown.zapwaModal', function (e) {
+                if (e.key === 'Escape') {
+                    self.close();
+                }
+            });
+        },
+
+        open: function () {
+            var self    = this;
+            var subject = $('#zapwa_email_subject').val() || '';
+            var body    = $('#zapwa_email_body').val()    || '';
+            var isHtml  = $('#zapwa_email_is_html').is(':checked') ? '1' : '';
+
+            // Show modal with loading state
+            this.$frame.hide();
+            this.$loading.show().text(
+                (zapwaAdmin.i18n && zapwaAdmin.i18n.emailPreviewLoading) || 'Carregando preview...'
+            );
+            this.$modal.fadeIn(200);
+            $('body').addClass('zapwa-modal-open');
+
+            $.post(zapwaAdmin.ajaxUrl, {
+                action:   'zapwa_email_preview',
+                nonce:    zapwaAdmin.emailPreviewNonce,
+                subject:  subject,
+                body:     body,
+                is_html:  isHtml
+            })
+            .done(function (html) {
+                var doc = self.$frame[0].contentDocument || self.$frame[0].contentWindow.document;
+                doc.open();
+                doc.write(html);
+                doc.close();
+                self.$loading.hide();
+                self.$frame.show();
+            })
+            .fail(function () {
+                self.$loading.text(
+                    (zapwaAdmin.i18n && zapwaAdmin.i18n.emailPreviewError) || 'Erro ao carregar o preview.'
+                );
+            });
+        },
+
+        close: function () {
+            this.$modal.fadeOut(150);
+            $('body').removeClass('zapwa-modal-open');
+            // Restore focus to the element that triggered the modal
+            if (this.$trigger && this.$trigger.length) {
+                this.$trigger.trigger('focus');
+            }
+            // Reset iframe
+            this.$frame.hide();
+            this.$loading.show();
+        }
+    };
+
+    /* ---------------------------------------------------------------
        Init on DOM ready
     --------------------------------------------------------------- */
     $(function () {
@@ -213,6 +326,8 @@
         ZapWAVars.init();
         ZapWAMobileTables.init();
         ZapWAMessageSettings.init();
+        ZapWANav.init();
+        ZapWAEmailPreview.init();
     });
 
 }(jQuery));

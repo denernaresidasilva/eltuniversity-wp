@@ -743,3 +743,170 @@
         padding: 9px 10px;
     }
 }
+
+/* ----- Preview button row -------------------------------------------- */
+.zapwa-ms-preview-btn-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #eee;
+}
+
+/* ----- Floating quick-action buttons (FAB group) --------------------- */
+.zapwa-fab-group {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 99999;
+}
+
+.zapwa-fab {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .22);
+    transition: transform .18s, box-shadow .18s;
+    line-height: 1;
+}
+
+.zapwa-fab:hover {
+    transform: scale(1.12);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .28);
+}
+
+.zapwa-fab-back {
+    background: #075e54;
+    color: #fff !important;
+}
+
+.zapwa-fab-list {
+    background: #128c7e;
+    color: #fff !important;
+}
+
+.zapwa-fab-top {
+    background: #25d366;
+    color: #fff !important;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s, transform .18s, box-shadow .18s;
+}
+
+.zapwa-fab-top.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+@media (max-width: 782px) {
+    .zapwa-fab-group {
+        bottom: 16px;
+        right: 14px;
+        gap: 8px;
+    }
+    .zapwa-fab {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+}
+
+/* Prevent body scrolling while the email preview modal is open */
+body.zapwa-modal-open {
+    overflow: hidden;
+}
+
+/* ----- Email preview modal ------------------------------------------- */
+.zapwa-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .6);
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.zapwa-modal {
+    background: #fff;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 680px;
+    height: 80vh;
+    max-height: 700px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+    overflow: hidden;
+}
+
+.zapwa-modal-header {
+    background: linear-gradient(90deg, #075e54, #128c7e);
+    color: #fff;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: .92rem;
+    flex-shrink: 0;
+}
+
+.zapwa-modal-close {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    line-height: 1;
+    transition: background .15s;
+}
+
+.zapwa-modal-close:hover {
+    background: rgba(255, 255, 255, .2);
+}
+
+.zapwa-modal-body {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+.zapwa-preview-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .9rem;
+    color: #888;
+    background: #fafafa;
+}
+
+@media (max-width: 782px) {
+    .zapwa-modal-overlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+    .zapwa-modal {
+        border-radius: 14px 14px 0 0;
+        height: 90vh;
+        max-height: none;
+    }
+}

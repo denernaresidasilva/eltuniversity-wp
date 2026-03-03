@@ -99,6 +99,7 @@ class Loader {
             'admin/AdminMenu.php',
             'admin/actions.php',
             'admin/ajax.php',
+            'admin/Ajax/EmailPreview.php',
             'admin/Metaboxes/MessageSettings.php',
         ];
 
@@ -119,6 +120,10 @@ class Loader {
 
         if (class_exists('\ZapWA\Admin\Ajax')) {
             \ZapWA\Admin\Ajax::init();
+        }
+
+        if (class_exists('\ZapWA\Admin\Ajax\EmailPreview')) {
+            \ZapWA\Admin\Ajax\EmailPreview::init();
         }
 
         if (class_exists('\ZapWA\Admin\Metaboxes\MessageSettings')) {
