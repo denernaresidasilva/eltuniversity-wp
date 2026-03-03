@@ -26,243 +26,232 @@ class MessageSettings {
 
         wp_nonce_field('zapwa_message_settings', 'zapwa_nonce');
 
-        $type   = get_post_meta($post->ID, '_zapwa_type', true);
-        $event  = get_post_meta($post->ID, '_zapwa_event', true);
-        $delay  = get_post_meta($post->ID, '_zapwa_delay', true);
-        $active = get_post_meta($post->ID, '_zapwa_active', true);
+        $type             = get_post_meta($post->ID, '_zapwa_type', true);
+        $event            = get_post_meta($post->ID, '_zapwa_event', true);
+        $delay            = get_post_meta($post->ID, '_zapwa_delay', true);
+        $active           = get_post_meta($post->ID, '_zapwa_active', true);
         $broadcast_target = get_post_meta($post->ID, '_zapwa_broadcast_target', true);
 
-        // Email fields
         $email_enabled = get_post_meta($post->ID, 'zapwa_email_enabled', true);
         $email_subject = get_post_meta($post->ID, 'zapwa_email_subject', true);
         $email_body    = get_post_meta($post->ID, 'zapwa_email_body', true);
         $email_is_html = get_post_meta($post->ID, 'zapwa_email_is_html', true);
 
-        // Eventos do Tutor LMS
-        $events = apply_filters('zap_tutor_events_list', []);
+        $events       = apply_filters('zap_tutor_events_list', []);
+        $is_broadcast = ($type === 'broadcast');
         ?>
-
-        <style>
-            .zapwa-row { margin-bottom:15px; }
-            .zapwa-type-selector {
-                display: flex;
-                gap: 16px;
-                margin-bottom: 24px;
-            }
-            .zapwa-type-card {
-                flex: 1;
-                padding: 20px;
-                border: 2px solid #ddd;
-                border-radius: 8px;
-                cursor: pointer;
-                text-align: center;
-                transition: all 0.3s;
-            }
-            .zapwa-type-card:hover {
-                border-color: #25d366;
-                background: #f0faf5;
-            }
-            .zapwa-type-card.active {
-                border-color: #075e54;
-                background: #e8f5e9;
-            }
-            .zapwa-type-card h3 {
-                margin: 0 0 8px 0;
-                font-size: 18px;
-            }
-            .zapwa-config-section {
-                display: none;
-                padding: 20px;
-                background: #f9f9f9;
-                border-radius: 8px;
-                margin-top: 16px;
-            }
-            .zapwa-config-section.active {
-                display: block;
-            }
-        </style>
 
         <input type="hidden" name="zapwa_type" id="zapwa_type" value="<?php echo esc_attr($type ?: 'trigger'); ?>">
 
-        <!-- SELETOR DE TIPO -->
-        <div class="zapwa-type-selector">
-            <div class="zapwa-type-card <?php echo ($type !== 'broadcast' ? 'active' : ''); ?>" data-type="trigger">
-                <h3>🎯 Gatilho (Automação)</h3>
-                <p>Dispara automaticamente quando um evento ocorre</p>
-            </div>
-            <div class="zapwa-type-card <?php echo ($type === 'broadcast' ? 'active' : ''); ?>" data-type="broadcast">
-                <h3>📢 Disparo Broadcast</h3>
-                <p>Envio manual para múltiplos destinatários</p>
-            </div>
-        </div>
+        <div class="zapwa-ms-layout">
 
-        <!-- CONFIGURAÇÃO GATILHO -->
-        <div class="zapwa-config-section <?php echo ($type !== 'broadcast' ? 'active' : ''); ?>" id="config-trigger">
-            <div class="zapwa-row">
-                <strong>Selecione o Evento Gatilho</strong><br>
-                <select name="zapwa_event" style="width:100%">
-                    <option value="">Selecione um evento</option>
-                    <?php foreach ($events as $key => $label): ?>
-                        <option value="<?php echo esc_attr($key); ?>" <?php selected($event,$key); ?>>
-                            <?php echo esc_html($label); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-                <small>A mensagem será enviada automaticamente quando este evento ocorrer</small>
-            </div>
-        </div>
+            <!-- ===== MAIN COLUMN ===== -->
+            <div class="zapwa-ms-col-main">
 
-        <!-- CONFIGURAÇÃO BROADCAST -->
-        <div class="zapwa-config-section <?php echo ($type === 'broadcast' ? 'active' : ''); ?>" id="config-broadcast">
-            <div class="zapwa-row">
-                <strong>Destinatários</strong><br>
-                <select name="zapwa_broadcast_target" style="width:100%">
-                    <option value="all_students" <?php selected($broadcast_target, 'all_students'); ?>>
-                        👨‍🎓 Todos os Alunos
-                    </option>
-                    <option value="active_courses" <?php selected($broadcast_target, 'active_courses'); ?>>
-                        📚 Alunos com Cursos Ativos
-                    </option>
-                    <option value="inactive_students" <?php selected($broadcast_target, 'inactive_students'); ?>>
-                        💤 Alunos Inativos (7+ dias sem acessar)
-                    </option>
-                    <option value="completed_courses" <?php selected($broadcast_target, 'completed_courses'); ?>>
-                        🎓 Alunos que Completaram Cursos
-                    </option>
-                    <option value="specific_course" <?php selected($broadcast_target, 'specific_course'); ?>>
-                        🎯 Alunos de um Curso Específico
-                    </option>
-                </select>
-            </div>
-
-            <div class="zapwa-row">
-                <strong>Delay entre Mensagens (segundos)</strong><br>
-                <input type="number" 
-                       name="zapwa_delay" 
-                       value="<?php echo esc_attr($delay ?: 5); ?>" 
-                       min="1" 
-                       max="300"
-                       style="width:120px">
-                <small>Tempo de espera entre cada envio (recomendado: 5-10 segundos)</small>
-            </div>
-        </div>
-
-        <hr>
-
-        <div class="zapwa-row">
-            <label>
-                <input type="checkbox"
-                       name="zapwa_active"
-                       value="1"
-                       <?php checked($active,'1'); ?>>
-                <strong>Mensagem ativa</strong>
-            </label>
-        </div>
-
-        <hr>
-
-        <div class="zapwa-vars-wrap">
-            <p class="zapwa-vars-title">Variáveis disponíveis — clique para copiar:</p>
-            <div class="zapwa-vars">
-                <span class="zapwa-var" data-var="{user_name}">{user_name}</span>
-                <span class="zapwa-var" data-var="{user_email}">{user_email}</span>
-                <span class="zapwa-var" data-var="{user_phone}">{user_phone}</span>
-                <span class="zapwa-var" data-var="{course_name}">{course_name}</span>
-                <span class="zapwa-var" data-var="{course_progress}">{course_progress}</span>
-                <span class="zapwa-var" data-var="{course_author}">{course_author}</span>
-                <span class="zapwa-var" data-var="{course_url}">{course_url}</span>
-                <span class="zapwa-var" data-var="{site_name}">{site_name}</span>
-                <span class="zapwa-var" data-var="{site_url}">{site_url}</span>
-                <span class="zapwa-var" data-var="{current_date}">{current_date}</span>
-                <span class="zapwa-var" data-var="{last_login}">{last_login}</span>
-                <span class="zapwa-var" data-var="{days_inactive}">{days_inactive}</span>
-                <span class="zapwa-var" data-var="{event}">{event}</span>
-                <span class="zapwa-var" data-var="{event_email}">{event_email}</span>
-            </div>
-        </div>
-
-        <hr>
-
-        <!-- SEÇÃO DE E-MAIL -->
-        <h3>✉️ E-mail</h3>
-
-        <div class="zapwa-row">
-            <label>
-                <input type="checkbox"
-                       name="zapwa_email_enabled"
-                       id="zapwa_email_enabled"
-                       value="1"
-                       <?php checked($email_enabled, '1'); ?>>
-                <strong>Enviar e-mail junto</strong>
-            </label>
-        </div>
-
-        <div id="zapwa-email-fields" style="<?php echo $email_enabled ? '' : 'display:none;'; ?>">
-            <div class="zapwa-row">
-                <label for="zapwa_email_subject"><strong>Assunto do e-mail</strong></label><br>
-                <input type="text"
-                       id="zapwa_email_subject"
-                       name="zapwa_email_subject"
-                       value="<?php echo esc_attr($email_subject); ?>"
-                       style="width:100%"
-                       placeholder="Ex: Bem-vindo, {user_name}!">
-            </div>
-
-            <div class="zapwa-row">
-                <label for="zapwa_email_body"><strong>Corpo do e-mail</strong></label><br>
-                <textarea id="zapwa_email_body"
-                          name="zapwa_email_body"
-                          rows="16"
-                          style="width:100%;font-family:monospace;font-size:.88rem;"
-                          placeholder="Escreva o corpo do e-mail aqui. Variáveis como {user_name} são suportadas."><?php echo esc_textarea($email_body); ?></textarea>
-            </div>
-
-            <div class="zapwa-row">
-                <label>
-                    <input type="checkbox"
-                           name="zapwa_email_is_html"
-                           value="1"
-                           <?php checked($email_is_html, '1'); ?>>
-                    <strong>Enviar como HTML</strong>
-                </label>
-            </div>
-        </div>
-
-        <script>
-        jQuery(document).ready(function($) {
-            $('#zapwa_email_enabled').on('change', function() {
-                if ($(this).is(':checked')) {
-                    $('#zapwa-email-fields').show();
-                } else {
-                    $('#zapwa-email-fields').hide();
-                }
-            });
-        });
-        </script>
-
-        <!-- Preview em bolha WhatsApp -->
-        <div class="zapwa-preview-wrap" id="zapwa-bubble-wrap">
-            <div class="zapwa-preview-label">👁 Preview da mensagem</div>
-            <div class="zapwa-bubble">
-                <div id="zapwa-bubble-text">
-                    <span class="zapwa-bubble-empty">Escreva a mensagem acima para ver o preview...</span>
+                <!-- TYPE SELECTOR -->
+                <div class="zapwa-ms-section">
+                    <div class="zapwa-ms-section-head">
+                        <span>⚡</span> Tipo de Mensagem
+                    </div>
+                    <div class="zapwa-ms-section-body">
+                        <div class="zapwa-type-tabs">
+                            <button type="button" class="zapwa-type-tab <?php echo !$is_broadcast ? 'active' : ''; ?>" data-type="trigger">
+                                🎯 Gatilho (Automação)
+                            </button>
+                            <button type="button" class="zapwa-type-tab <?php echo $is_broadcast ? 'active' : ''; ?>" data-type="broadcast">
+                                📢 Broadcast
+                            </button>
+                        </div>
+                        <p class="zapwa-type-desc" id="desc-trigger"<?php echo $is_broadcast ? ' style="display:none"' : ''; ?>>
+                            Dispara automaticamente quando um evento específico ocorre na plataforma.
+                        </p>
+                        <p class="zapwa-type-desc" id="desc-broadcast"<?php echo !$is_broadcast ? ' style="display:none"' : ''; ?>>
+                            Envio manual para múltiplos destinatários cadastrados na plataforma.
+                        </p>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <script>
-        jQuery(document).ready(function($) {
-            // Toggle entre Gatilho e Broadcast
-            $('.zapwa-type-card').on('click', function() {
-                const type = $(this).data('type');
-                $('.zapwa-type-card').removeClass('active');
-                $(this).addClass('active');
-                $('#zapwa_type').val(type);
-                $('.zapwa-config-section').removeClass('active');
-                $('#config-' + type).addClass('active');
-            });
-        });
-        </script>
+                <!-- TRIGGER CONFIG -->
+                <div class="zapwa-ms-section" id="config-trigger"<?php echo $is_broadcast ? ' style="display:none"' : ''; ?>>
+                    <div class="zapwa-ms-section-head">
+                        <span>🎯</span> Evento Gatilho
+                    </div>
+                    <div class="zapwa-ms-section-body">
+                        <label class="zapwa-ms-field-label">Selecione o evento que dispara a mensagem:</label>
+                        <select name="zapwa_event" class="zapwa-ms-select">
+                            <option value="">— Selecione um evento —</option>
+                            <?php foreach ($events as $key => $label): ?>
+                                <option value="<?php echo esc_attr($key); ?>" <?php selected($event, $key); ?>>
+                                    <?php echo esc_html($label); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <p class="zapwa-ms-hint">A mensagem será enviada automaticamente quando este evento ocorrer.</p>
+                    </div>
+                </div>
+
+                <!-- BROADCAST CONFIG -->
+                <div class="zapwa-ms-section" id="config-broadcast"<?php echo !$is_broadcast ? ' style="display:none"' : ''; ?>>
+                    <div class="zapwa-ms-section-head">
+                        <span>📢</span> Configuração do Broadcast
+                    </div>
+                    <div class="zapwa-ms-section-body">
+                        <div class="zapwa-ms-field-row">
+                            <label class="zapwa-ms-field-label">Destinatários:</label>
+                            <select name="zapwa_broadcast_target" class="zapwa-ms-select">
+                                <option value="all_students" <?php selected($broadcast_target, 'all_students'); ?>>👨‍🎓 Todos os Alunos</option>
+                                <option value="active_courses" <?php selected($broadcast_target, 'active_courses'); ?>>📚 Alunos com Cursos Ativos</option>
+                                <option value="inactive_students" <?php selected($broadcast_target, 'inactive_students'); ?>>💤 Alunos Inativos (7+ dias sem acessar)</option>
+                                <option value="completed_courses" <?php selected($broadcast_target, 'completed_courses'); ?>>🎓 Alunos que Completaram Cursos</option>
+                                <option value="specific_course" <?php selected($broadcast_target, 'specific_course'); ?>>🎯 Alunos de um Curso Específico</option>
+                            </select>
+                        </div>
+                        <div class="zapwa-ms-field-row">
+                            <label class="zapwa-ms-field-label">Delay entre envios (segundos):</label>
+                            <div class="zapwa-ms-inline-row">
+                                <input type="number"
+                                       name="zapwa_delay"
+                                       value="<?php echo esc_attr($delay ?: 5); ?>"
+                                       min="1"
+                                       max="300"
+                                       class="zapwa-ms-number-input">
+                                <span class="zapwa-ms-hint">Recomendado: 5–10 s para evitar bloqueio</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VARIABLES -->
+                <div class="zapwa-ms-section">
+                    <div class="zapwa-ms-section-head">
+                        <span>🏷️</span> Variáveis — clique para copiar
+                    </div>
+                    <div class="zapwa-ms-section-body">
+                        <div class="zapwa-vars">
+                            <span class="zapwa-var" data-var="{user_name}">{user_name}</span>
+                            <span class="zapwa-var" data-var="{user_email}">{user_email}</span>
+                            <span class="zapwa-var" data-var="{user_phone}">{user_phone}</span>
+                            <span class="zapwa-var" data-var="{course_name}">{course_name}</span>
+                            <span class="zapwa-var" data-var="{course_progress}">{course_progress}</span>
+                            <span class="zapwa-var" data-var="{course_author}">{course_author}</span>
+                            <span class="zapwa-var" data-var="{course_url}">{course_url}</span>
+                            <span class="zapwa-var" data-var="{site_name}">{site_name}</span>
+                            <span class="zapwa-var" data-var="{site_url}">{site_url}</span>
+                            <span class="zapwa-var" data-var="{current_date}">{current_date}</span>
+                            <span class="zapwa-var" data-var="{last_login}">{last_login}</span>
+                            <span class="zapwa-var" data-var="{days_inactive}">{days_inactive}</span>
+                            <span class="zapwa-var" data-var="{event}">{event}</span>
+                            <span class="zapwa-var" data-var="{event_email}">{event_email}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACTIVE TOGGLE -->
+                <div class="zapwa-ms-active-row">
+                    <div class="zapwa-ms-active-label">
+                        <span class="zapwa-ms-active-icon">✅</span>
+                        <div>
+                            <strong>Mensagem Ativa</strong>
+                            <div class="zapwa-ms-hint">Ativa o envio automático desta mensagem</div>
+                        </div>
+                    </div>
+                    <label class="zapwa-switch">
+                        <input type="checkbox" name="zapwa_active" value="1" <?php checked($active, '1'); ?>>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <!-- EMAIL SECTION -->
+                <div class="zapwa-ms-section">
+                    <div class="zapwa-ms-section-head zapwa-ms-section-head--green">
+                        <span>✉️</span> E-mail Opcional
+                    </div>
+                    <div class="zapwa-ms-section-body">
+                        <div class="zapwa-ms-toggle-row">
+                            <label class="zapwa-switch">
+                                <input type="checkbox"
+                                       name="zapwa_email_enabled"
+                                       id="zapwa_email_enabled"
+                                       value="1"
+                                       <?php checked($email_enabled, '1'); ?>>
+                                <span class="slider"></span>
+                            </label>
+                            <label for="zapwa_email_enabled" class="zapwa-ms-toggle-text">Enviar e-mail junto com o WhatsApp</label>
+                        </div>
+
+                        <div id="zapwa-email-fields" class="zapwa-ms-email-fields"<?php echo $email_enabled ? '' : ' style="display:none"'; ?>>
+                            <div class="zapwa-ms-field-row">
+                                <label for="zapwa_email_subject" class="zapwa-ms-field-label">Assunto do e-mail</label>
+                                <input type="text"
+                                       id="zapwa_email_subject"
+                                       name="zapwa_email_subject"
+                                       value="<?php echo esc_attr($email_subject); ?>"
+                                       class="zapwa-ms-text-input"
+                                       placeholder="Ex: Bem-vindo, {user_name}!">
+                            </div>
+                            <div class="zapwa-ms-field-row">
+                                <label for="zapwa_email_body" class="zapwa-ms-field-label">Corpo do e-mail</label>
+                                <textarea id="zapwa_email_body"
+                                          name="zapwa_email_body"
+                                          rows="10"
+                                          class="zapwa-ms-textarea"
+                                          placeholder="Escreva o corpo do e-mail. Variáveis como {user_name} são suportadas."><?php echo esc_textarea($email_body); ?></textarea>
+                            </div>
+                            <div class="zapwa-ms-toggle-row">
+                                <label class="zapwa-switch">
+                                    <input type="checkbox"
+                                           name="zapwa_email_is_html"
+                                           id="zapwa_email_is_html"
+                                           value="1"
+                                           <?php checked($email_is_html, '1'); ?>>
+                                    <span class="slider"></span>
+                                </label>
+                                <label for="zapwa_email_is_html" class="zapwa-ms-toggle-text">Enviar como HTML</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /.zapwa-ms-col-main -->
+
+            <!-- ===== SIDEBAR COLUMN ===== -->
+            <div class="zapwa-ms-col-side">
+
+                <!-- WhatsApp Preview -->
+                <div class="zapwa-ms-preview-card" id="zapwa-bubble-wrap">
+                    <div class="zapwa-ms-preview-head">
+                        <span>👁</span> Preview WhatsApp
+                    </div>
+                    <div class="zapwa-phone-header">
+                        <div class="zapwa-phone-avatar">🤖</div>
+                        <div>
+                            <div class="zapwa-phone-name"><?php echo esc_html(get_bloginfo('name') ?: __('Meu Site', 'zap-whatsapp-automation')); ?></div>
+                            <div class="zapwa-phone-status">online</div>
+                        </div>
+                    </div>
+                    <div class="zapwa-phone-body">
+                        <div class="zapwa-bubble">
+                            <div id="zapwa-bubble-text">
+                                <span class="zapwa-bubble-empty">Escreva a mensagem acima para ver o preview...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips -->
+                <div class="zapwa-ms-tips-card">
+                    <div class="zapwa-ms-tips-head">💡 Dicas Rápidas</div>
+                    <ul class="zapwa-ms-tips-list">
+                        <li>Clique nas variáveis para copiá-las para a área de transferência</li>
+                        <li>Use <code>{user_name}</code> para personalizar a mensagem</li>
+                        <li>Mensagens curtas têm melhor taxa de engajamento</li>
+                        <li>Evite enviar mensagens depois das 22h</li>
+                    </ul>
+                </div>
+
+            </div><!-- /.zapwa-ms-col-side -->
+
+        </div><!-- /.zapwa-ms-layout -->
 
         <?php
     }

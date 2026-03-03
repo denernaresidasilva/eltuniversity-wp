@@ -172,12 +172,47 @@
     };
 
     /* ---------------------------------------------------------------
+       4. Message Settings — type tabs & email toggle
+    --------------------------------------------------------------- */
+    var ZapWAMessageSettings = {
+
+        init: function () {
+            this._initTypeTabs();
+            this._initEmailToggle();
+        },
+
+        _initTypeTabs: function () {
+            $(document).on('click', '.zapwa-type-tab', function () {
+                var type = $(this).data('type');
+                $('.zapwa-type-tab').removeClass('active');
+                $(this).addClass('active');
+                $('#zapwa_type').val(type);
+                $('#config-trigger, #config-broadcast').hide();
+                $('#config-' + type).show();
+                $('#desc-trigger, #desc-broadcast').hide();
+                $('#desc-' + type).show();
+            });
+        },
+
+        _initEmailToggle: function () {
+            $(document).on('change', '#zapwa_email_enabled', function () {
+                if ($(this).is(':checked')) {
+                    $('#zapwa-email-fields').slideDown(200);
+                } else {
+                    $('#zapwa-email-fields').slideUp(200);
+                }
+            });
+        }
+    };
+
+    /* ---------------------------------------------------------------
        Init on DOM ready
     --------------------------------------------------------------- */
     $(function () {
         ZapWAPreview.init();
         ZapWAVars.init();
         ZapWAMobileTables.init();
+        ZapWAMessageSettings.init();
     });
 
 }(jQuery));
