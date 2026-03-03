@@ -12,6 +12,12 @@ class Loader {
         self::load_post_types();
         self::load_core();
 
+        // Register the zap_evento listener immediately (before the 'init' hook)
+        // so events fired early (e.g. during plugins_loaded) are never missed.
+        if (class_exists('\ZapWA\Listener')) {
+            \ZapWA\Listener::init();
+        }
+
         add_action('init', [self::class, 'register_hooks']);
 
         if (is_admin()) {
@@ -27,10 +33,6 @@ class Loader {
 
         if (class_exists('\ZapWA\Helpers')) {
             \ZapWA\Helpers::init();
-        }
-
-        if (class_exists('\ZapWA\Listener')) {
-            \ZapWA\Listener::init();
         }
 
         if (class_exists('\ZapWA\Queue')) {

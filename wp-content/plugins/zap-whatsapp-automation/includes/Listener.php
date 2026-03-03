@@ -5,7 +5,19 @@ if (!defined('ABSPATH')) exit;
 
 class Listener {
 
+    /**
+     * Prevents registering the zap_evento hook more than once.
+     * @var bool
+     */
+    private static $initialized = false;
+
     public static function init() {
+        if (self::$initialized) {
+            return;
+        }
+        self::$initialized = true;
+
+        Logger::debug('Listener registrado para zap_evento');
         add_action('zap_evento', [self::class, 'handle'], 10, 1);
     }
 
@@ -60,16 +72,17 @@ class Listener {
         }
 
         // ✅ DEBUG: confirma que o evento chegou
-        Logger::debug('Evento recebido no ZapWA', $payload);
+        $event_key = sanitize_text_field(trim($payload['event'] ?? ''));
+        Logger::debug('Evento recebido no ZapWA', ['event_key' => $event_key, 'user_id' => $user_id]);
 
         // 🔍 Buscar mensagens configuradas para este evento
-        $messages = Helpers::get_messages_by_event($payload['event']);
+        $messages = Helpers::get_messages_by_event($event_key);
 
         if (empty($messages)) {
             Logger::debug('Nenhuma mensagem configurada para evento', [
-                'event' => $payload['event']
+                'event' => $event_key
             ]);
-            Logger::log_stage('evento_sem_mensagem', $payload['event'], $user_id, '', 'Nenhuma automação ativa para este evento');
+            Logger::log_stage('evento_sem_mensagem', $event_key, $user_id, '', 'Nenhuma automação ativa para este evento');
             return;
         }
 
@@ -82,7 +95,7 @@ class Listener {
                 'user_id' => $user_id,
                 'user_email' => $user->user_email
             ]);
-            Logger::log_stage('evento_erro', $payload['event'], $user_id, '', 'Usuário sem telefone válido');
+            Logger::log_stage('evento_erro', $event_key, $user_id, '', 'Usuário sem telefone válido');
             return;
         }
         
@@ -93,12 +106,12 @@ class Listener {
                 'user_id' => $user_id,
                 'phone' => $phone,
             ]);
-            Logger::log_stage('evento_erro', $payload['event'], $user_id, $phone, 'Telefone inválido');
+            Logger::log_stage('evento_erro', $event_key, $user_id, $phone, 'Telefone inválido');
             return;
         }
         
         // 5. Log do processamento
-        error_log("[ZAP WhatsApp] Processando evento '{$payload['event']}' para user {$user_id} - Telefone: {$phone}");
+        error_log("[ZAP WhatsApp] Processando evento '{$event_key}' para user {$user_id} - Telefone: {$phone}");
 
         foreach ($messages as $message) {
 
@@ -106,7 +119,7 @@ class Listener {
                 'message_id' => $message->ID, // ✅ CORRETO
                 'user_id'    => $user_id,
                 'phone'      => $phone,
-                'event'      => $payload['event'],
+                'event'      => $event_key,
                 'context'    => $payload['context'] ?? [],
                 'delay'      => 0,
             ]);
@@ -114,20 +127,20 @@ class Listener {
             if ($queued) {
                 Logger::debug('Mensagem enviada para fila', [
                     'message_id' => $message->ID,
-                    'event'      => $payload['event'],
+                    'event'      => $event_key,
                     'phone'      => $phone,
                     'user_name'  => $user->display_name,
                 ]);
-                Logger::log_stage('fila_ok', $payload['event'], $user_id, $phone, 'Mensagem enfileirada com sucesso');
+                Logger::log_stage('fila_ok', $event_key, $user_id, $phone, 'Mensagem enfileirada com sucesso');
             } else {
                 Logger::debug('Erro ao enfileirar mensagem', [
                     'message_id' => $message->ID,
-                    'event'      => $payload['event'],
+                    'event'      => $event_key,
                     'phone'      => $phone,
                     'user_name'  => $user->display_name,
                 ]);
-                error_log("[ZAP WhatsApp] Falha ao enfileirar mensagem para user {$user_id} no evento {$payload['event']}");
-                Logger::log_stage('fila_erro', $payload['event'], $user_id, $phone, 'Falha ao enfileirar mensagem');
+                error_log("[ZAP WhatsApp] Falha ao enfileirar mensagem para user {$user_id} no evento {$event_key}");
+                Logger::log_stage('fila_erro', $event_key, $user_id, $phone, 'Falha ao enfileirar mensagem');
             }
         }
     }

@@ -46,6 +46,8 @@ class Helpers {
      */
     public static function get_messages_by_event($event_key) {
 
+        $event_key = sanitize_text_field(trim($event_key));
+
         $args = [
             'post_type'      => 'zapwa_message',
             'post_status'    => 'publish',
