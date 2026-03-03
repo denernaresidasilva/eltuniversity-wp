@@ -155,7 +155,10 @@ class Events {
 
     /**
      * Course 100% completed
-     * 
+     *
+     * Dispatches only once per user/course using a user meta gate,
+     * mirroring the idempotency strategy used by check_course_50().
+     *
      * @param int $course_id Course ID
      * @param int $user_id User ID (may not be passed by all Tutor LMS versions)
      */
@@ -163,6 +166,15 @@ class Events {
         if (empty($user_id)) {
             $user_id = get_current_user_id();
         }
+
+        $course_id = (int) $course_id;
+        $user_id   = (int) $user_id;
+
+        $meta_key = '_zap_course_completed_' . $course_id;
+        if (get_user_meta($user_id, $meta_key, true)) return;
+
+        update_user_meta($user_id, $meta_key, 1);
+
         Dispatcher::dispatch(
             'tutor_course_completed',
             $user_id,
