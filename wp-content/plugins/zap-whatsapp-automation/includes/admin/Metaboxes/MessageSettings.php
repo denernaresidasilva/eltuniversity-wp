@@ -32,6 +32,12 @@ class MessageSettings {
         $active = get_post_meta($post->ID, '_zapwa_active', true);
         $broadcast_target = get_post_meta($post->ID, '_zapwa_broadcast_target', true);
 
+        // Email fields
+        $email_enabled = get_post_meta($post->ID, 'zapwa_email_enabled', true);
+        $email_subject = get_post_meta($post->ID, 'zapwa_email_subject', true);
+        $email_body    = get_post_meta($post->ID, 'zapwa_email_body', true);
+        $email_is_html = get_post_meta($post->ID, 'zapwa_email_is_html', true);
+
         // Eventos do Tutor LMS
         $events = apply_filters('zap_tutor_events_list', []);
         ?>
@@ -170,8 +176,69 @@ class MessageSettings {
                 <span class="zapwa-var" data-var="{current_date}">{current_date}</span>
                 <span class="zapwa-var" data-var="{last_login}">{last_login}</span>
                 <span class="zapwa-var" data-var="{days_inactive}">{days_inactive}</span>
+                <span class="zapwa-var" data-var="{event}">{event}</span>
+                <span class="zapwa-var" data-var="{event_email}">{event_email}</span>
             </div>
         </div>
+
+        <hr>
+
+        <!-- SEÇÃO DE E-MAIL -->
+        <h3>✉️ E-mail</h3>
+
+        <div class="zapwa-row">
+            <label>
+                <input type="checkbox"
+                       name="zapwa_email_enabled"
+                       id="zapwa_email_enabled"
+                       value="1"
+                       <?php checked($email_enabled, '1'); ?>>
+                <strong>Enviar e-mail junto</strong>
+            </label>
+        </div>
+
+        <div id="zapwa-email-fields" style="<?php echo $email_enabled ? '' : 'display:none;'; ?>">
+            <div class="zapwa-row">
+                <label for="zapwa_email_subject"><strong>Assunto do e-mail</strong></label><br>
+                <input type="text"
+                       id="zapwa_email_subject"
+                       name="zapwa_email_subject"
+                       value="<?php echo esc_attr($email_subject); ?>"
+                       style="width:100%"
+                       placeholder="Ex: Bem-vindo, {user_name}!">
+            </div>
+
+            <div class="zapwa-row">
+                <label for="zapwa_email_body"><strong>Corpo do e-mail</strong></label><br>
+                <textarea id="zapwa_email_body"
+                          name="zapwa_email_body"
+                          rows="8"
+                          style="width:100%"
+                          placeholder="Escreva o corpo do e-mail aqui. Variáveis como {user_name} são suportadas."><?php echo esc_textarea($email_body); ?></textarea>
+            </div>
+
+            <div class="zapwa-row">
+                <label>
+                    <input type="checkbox"
+                           name="zapwa_email_is_html"
+                           value="1"
+                           <?php checked($email_is_html, '1'); ?>>
+                    <strong>Enviar como HTML</strong>
+                </label>
+            </div>
+        </div>
+
+        <script>
+        jQuery(document).ready(function($) {
+            $('#zapwa_email_enabled').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $('#zapwa-email-fields').show();
+                } else {
+                    $('#zapwa-email-fields').hide();
+                }
+            });
+        });
+        </script>
 
         <!-- Preview em bolha WhatsApp -->
         <div class="zapwa-preview-wrap" id="zapwa-bubble-wrap">
@@ -214,5 +281,11 @@ class MessageSettings {
         update_post_meta($post_id, '_zapwa_delay', intval($_POST['zapwa_delay'] ?? 5));
         update_post_meta($post_id, '_zapwa_active', isset($_POST['zapwa_active']) ? '1' : '0');
         update_post_meta($post_id, '_zapwa_broadcast_target', sanitize_text_field($_POST['zapwa_broadcast_target'] ?? 'all_students'));
+
+        // Email fields
+        update_post_meta($post_id, 'zapwa_email_enabled', isset($_POST['zapwa_email_enabled']) ? '1' : '0');
+        update_post_meta($post_id, 'zapwa_email_subject', sanitize_text_field($_POST['zapwa_email_subject'] ?? ''));
+        update_post_meta($post_id, 'zapwa_email_body', wp_kses_post($_POST['zapwa_email_body'] ?? ''));
+        update_post_meta($post_id, 'zapwa_email_is_html', isset($_POST['zapwa_email_is_html']) ? '1' : '0');
     }
 }

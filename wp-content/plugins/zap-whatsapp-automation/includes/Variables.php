@@ -28,6 +28,15 @@ class Variables {
                                         : '')
                                     : '',
             '{days_inactive}'   => $payload['context']['days_inactive'] ?? '',
+            '{event}'           => sanitize_text_field($payload['event'] ?? ''),
+            '{event_email}'     => sanitize_email(
+                                    $payload['email']
+                                    ?? $payload['user_email']
+                                    ?? $payload['context']['email']
+                                    ?? $payload['context']['user_email']
+                                    ?? $payload['context']['recipient_email']
+                                    ?? ($user ? $user->user_email : '')
+                                  ),
         ];
 
         return str_replace(array_keys($vars), array_values($vars), $text);
