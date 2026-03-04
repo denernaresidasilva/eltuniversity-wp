@@ -331,3 +331,140 @@
     });
 
 }(jQuery));
+
+    /* ---------------------------------------------------------------
+       7. WhatsApp Editor Toolbar — emoji picker, media, variables
+    --------------------------------------------------------------- */
+    var ZapWAEditorToolbar = {
+
+        init: function () {
+
+            if (!$('#zapwa-editor-wrap').length) return;
+
+            var self = this;
+
+            // ── Emoji picker ──────────────────────────────────────
+            $(document).on('click', '#zapwa-emoji-btn', function (e) {
+                e.stopPropagation();
+                var $panel = $('#zapwa-emoji-panel');
+                var $btn   = $(this);
+                var offset = $btn.offset();
+                $panel.css({
+                    top:  (offset.top + $btn.outerHeight() + 4) + 'px',
+                    left: offset.left + 'px'
+                });
+                $panel.toggle();
+                $btn.attr('aria-expanded', $panel.is(':visible').toString());
+            });
+
+            $(document).on('click', '.zapwa-emoji-item', function () {
+                var emoji = $(this).data('emoji');
+                self._insertIntoEditor(emoji);
+                $('#zapwa-emoji-panel').hide();
+                $('#zapwa-emoji-btn').attr('aria-expanded', 'false');
+            });
+
+            $(document).on('click', function (e) {
+                if (!$(e.target).closest('#zapwa-emoji-btn, #zapwa-emoji-panel').length) {
+                    $('#zapwa-emoji-panel').hide();
+                    $('#zapwa-emoji-btn').attr('aria-expanded', 'false');
+                }
+            });
+
+            // ── Media / Image URL ─────────────────────────────────
+            $(document).on('click', '#zapwa-media-btn', function () {
+                if (typeof wp !== 'undefined' && wp.media) {
+                    var frame = wp.media({ title: 'Selecionar Mídia', button: { text: 'Inserir URL' }, multiple: false });
+                    frame.on('select', function () {
+                        var att = frame.state().get('selection').first().toJSON();
+                        self._insertIntoEditor(att.url);
+                    });
+                    frame.open();
+                } else {
+                    var url = prompt('Cole a URL da mídia (imagem, vídeo, etc.):');
+                    if (url) self._insertIntoEditor(url);
+                }
+            });
+
+            // ── File upload ───────────────────────────────────────
+            $(document).on('click', '#zapwa-file-btn', function () {
+                if (typeof wp !== 'undefined' && wp.media) {
+                    var frame = wp.media({ title: 'Carregar Arquivo', button: { text: 'Usar Arquivo' }, multiple: false, library: { type: '' } });
+                    frame.on('select', function () {
+                        var att = frame.state().get('selection').first().toJSON();
+                        self._insertIntoEditor(att.url);
+                    });
+                    frame.open();
+                } else {
+                    var url = prompt('Cole a URL do arquivo:');
+                    if (url) self._insertIntoEditor(url);
+                }
+            });
+
+            // ── WhatsApp Preview (toolbar button) ─────────────────
+            $(document).on('click', '#zapwa-wa-preview-btn', function () {
+                var content = ZapWAPreview._getContent();
+                var $text   = $('#zapwa-wa-modal-text');
+                if (!$.trim(content)) {
+                    $text.html('<span class="zapwa-bubble-empty">Escreva a mensagem para ver o preview...</span>');
+                } else {
+                    var escaped = $.trim(content)
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/\n/g, '<br>');
+                    escaped = escaped.replace(/\{([^}]+)\}/g, '<span style="color:#075e54;font-weight:700;">{$1}</span>');
+                    var now = ZapWAPreview._now();
+                    $text.html(escaped + '<div class="zapwa-bubble-time">' + now + ' ✓✓</div>');
+                }
+                $('#zapwa-wa-preview-modal').fadeIn(200);
+                $('body').addClass('zapwa-modal-open');
+            });
+
+            // Close WA preview modal
+            $(document).on('click', '#zapwa-wa-modal-close', function () {
+                $('#zapwa-wa-preview-modal').fadeOut(150);
+                $('body').removeClass('zapwa-modal-open');
+            });
+            $(document).on('click', '#zapwa-wa-preview-modal', function (e) {
+                if ($(e.target).is('#zapwa-wa-preview-modal')) {
+                    $('#zapwa-wa-preview-modal').fadeOut(150);
+                    $('body').removeClass('zapwa-modal-open');
+                }
+            });
+        },
+
+        _insertIntoEditor: function (text) {
+            // Try Gutenberg
+            if (typeof wp !== 'undefined' && wp.data && wp.data.dispatch('core/block-editor')) {
+                try {
+                    var blocks = wp.data.select('core/block-editor').getSelectedBlock();
+                    if (blocks && blocks.name === 'core/paragraph') {
+                        var content = blocks.attributes.content || '';
+                        wp.data.dispatch('core/block-editor').updateBlockAttributes(blocks.clientId, { content: content + text });
+                        return;
+                    }
+                } catch (e) {}
+            }
+            // Try TinyMCE classic editor
+            if (typeof tinyMCE !== 'undefined' && tinyMCE.activeEditor && !tinyMCE.activeEditor.isHidden()) {
+                tinyMCE.activeEditor.insertContent(text);
+                return;
+            }
+            // Textarea fallback
+            var field = document.getElementById('content');
+            if (field) {
+                var start = field.selectionStart;
+                var end   = field.selectionEnd;
+                field.value = field.value.slice(0, start) + text + field.value.slice(end);
+                field.selectionStart = field.selectionEnd = start + text.length;
+                field.focus();
+                $(field).trigger('input');
+            }
+        }
+    };
+
+    // Register init
+    $(function () {
+        ZapWAEditorToolbar.init();
+    });

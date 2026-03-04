@@ -13,6 +13,7 @@ class Admin {
         add_action('admin_enqueue_scripts', [self::class, 'enqueue_assets']);
         add_action('admin_post_zap_events_delete_all_logs', [self::class, 'handle_delete_all_logs']);
         add_action('admin_post_zap_events_delete_webhook_logs', [self::class, 'handle_delete_webhook_logs']);
+        WebhooksPage::init();
     }
 
     /**
@@ -52,6 +53,16 @@ class Admin {
             'manage_options',
             'zap-tutor-events',
             [Dashboard::class, 'render_dashboard']
+        );
+
+        // Webhooks management (new dedicated tab)
+        add_submenu_page(
+            'zap-tutor-events',
+            'Webhooks',
+            '🔗 Webhooks',
+            'manage_options',
+            'zap-tutor-events-webhooks',
+            [WebhooksPage::class, 'render']
         );
 
         if (get_option('zap_events_log_enabled', true)) {

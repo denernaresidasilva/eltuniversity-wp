@@ -98,6 +98,12 @@ class Plugin {
                 }
             }
 
+            // Webhooks management page
+            $webhooks_page_file = ZAP_EVENTS_PATH . 'includes/class-webhooks-page.php';
+            if (file_exists($webhooks_page_file)) {
+                require_once $webhooks_page_file;
+            }
+
             // Dashboard
             $dashboard_file = ZAP_EVENTS_PATH . 'includes/class-dashboard.php';
             if (file_exists($dashboard_file)) {

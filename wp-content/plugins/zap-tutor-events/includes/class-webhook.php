@@ -28,25 +28,50 @@ class Webhook {
     const DEFAULT_TIMEOUT = 10;
 
     /**
-     * Send event to webhook URL
-     * 
+     * Send event to webhook URL(s).
+     *
+     * Supports:
+     *  - Legacy single webhook via option `zap_events_webhook_url`
+     *  - New multi-webhook list via `zap_events_webhooks_list` (WebhooksPage)
+     *
      * @param string $event_key Event identifier
-     * @param int $user_id User ID
-     * @param array $context Event context data
-     * @return bool Success status
+     * @param int    $user_id   User ID
+     * @param array  $context   Event context data
+     * @return bool True if at least one webhook succeeded
      */
     public static function send($event_key, $user_id, $context = []) {
-        
-        $webhook_url = get_option('zap_events_webhook_url', '');
-        
-        // Check if webhook is enabled and URL is set
-        if (empty($webhook_url)) {
-            return false;
+
+        $targets = [];
+
+        // ── 1. New multi-webhook list ─────────────────────────────────────
+        $webhook_list = (array) get_option( 'zap_events_webhooks_list', [] );
+        foreach ( $webhook_list as $wh ) {
+            if ( empty( $wh['active'] ) || empty( $wh['url'] ) ) {
+                continue;
+            }
+            // Filter by events if configured
+            if ( ! empty( $wh['events'] ) && ! in_array( $event_key, (array) $wh['events'], true ) ) {
+                continue;
+            }
+            $targets[] = [
+                'url'     => $wh['url'],
+                'timeout' => absint( $wh['timeout'] ?? self::DEFAULT_TIMEOUT ),
+            ];
         }
 
-        // Check if this event type should be sent to webhook
-        $enabled_events = get_option('zap_events_webhook_events', []);
-        if (!empty($enabled_events) && !in_array($event_key, $enabled_events)) {
+        // ── 2. Legacy single webhook (backward compatibility) ─────────────
+        $legacy_url = get_option( 'zap_events_webhook_url', '' );
+        if ( ! empty( $legacy_url ) ) {
+            $legacy_events = get_option( 'zap_events_webhook_events', [] );
+            if ( empty( $legacy_events ) || in_array( $event_key, (array) $legacy_events, true ) ) {
+                $targets[] = [
+                    'url'     => $legacy_url,
+                    'timeout' => absint( get_option( 'zap_events_webhook_timeout', self::DEFAULT_TIMEOUT ) ),
+                ];
+            }
+        }
+
+        if ( empty( $targets ) ) {
             return false;
         }
 
@@ -54,24 +79,34 @@ class Webhook {
             'event'     => $event_key,
             'user_id'   => $user_id,
             'context'   => $context,
-            'timestamp' => current_time('mysql'),
+            'timestamp' => current_time( 'mysql' ),
             'site_url'  => get_site_url(),
         ];
 
-        return self::send_with_retry($webhook_url, $payload);
+        $any_success = false;
+        foreach ( $targets as $target ) {
+            if ( self::send_with_retry( $target['url'], $payload, 1, $target['timeout'] ) ) {
+                $any_success = true;
+            }
+        }
+
+        return $any_success;
     }
 
     /**
      * Send webhook with retry logic
-     * 
-     * @param string $url Webhook URL
-     * @param array $payload Data to send
-     * @param int $attempt Current attempt number
+     *
+     * @param string $url     Webhook URL
+     * @param array  $payload Data to send
+     * @param int    $attempt Current attempt number
+     * @param int    $timeout Request timeout in seconds (0 = use option)
      * @return bool Success status
      */
-    private static function send_with_retry($url, $payload, $attempt = 1) {
+    private static function send_with_retry($url, $payload, $attempt = 1, $timeout = 0) {
         
-        $timeout = get_option('zap_events_webhook_timeout', self::DEFAULT_TIMEOUT);
+        if ( ! $timeout ) {
+            $timeout = get_option('zap_events_webhook_timeout', self::DEFAULT_TIMEOUT);
+        }
         $custom_headers = get_option('zap_events_webhook_headers', []);
 
         $headers = array_merge([
@@ -100,7 +135,7 @@ class Webhook {
             if ($attempt < self::MAX_RETRIES) {
                 // Wait before retry (exponential backoff)
                 sleep(pow(2, $attempt - 1));
-                return self::send_with_retry($url, $payload, $attempt + 1);
+                return self::send_with_retry($url, $payload, $attempt + 1, $timeout);
             }
             
             return false;
@@ -115,7 +150,7 @@ class Webhook {
         // Retry on failure if not max attempts
         if (!$success && $attempt < self::MAX_RETRIES) {
             sleep(pow(2, $attempt - 1));
-            return self::send_with_retry($url, $payload, $attempt + 1);
+            return self::send_with_retry($url, $payload, $attempt + 1, $timeout);
         }
 
         return $success;

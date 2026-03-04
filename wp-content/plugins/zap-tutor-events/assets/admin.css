@@ -161,3 +161,522 @@
 .zap-notice-error {
     border-left-color: #d63638;
 }
+
+/* =======================================================================
+   ZAP Tutor Events — Modern UI/UX styles (v1.2.0)
+   ======================================================================= */
+
+/* ----- Colour palette ------------------------------------------------ */
+:root {
+    --zap-green:  #128c7e;
+    --zap-green2: #25d366;
+    --zap-dark:   #075e54;
+    --zap-bg:     #f0f7f4;
+    --zap-red:    #d63638;
+    --zap-warn:   #dba617;
+}
+
+/* ----- Page wrapper -------------------------------------------------- */
+.zap-events-page {
+    background: var(--zap-bg);
+    min-height: 90vh;
+    padding-bottom: 40px;
+}
+
+/* ----- Header -------------------------------------------------------- */
+.zap-events-header {
+    background: linear-gradient(135deg, #075e54 0%, #128c7e 60%, #25d366 100%);
+    border-radius: 14px;
+    padding: 20px 24px;
+    color: #fff;
+    margin: 8px 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    box-shadow: 0 6px 20px rgba(7,94,84,.22);
+}
+
+.zap-events-header__info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.zap-events-header__icon {
+    font-size: 2.2rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.zap-events-header__title {
+    margin: 0;
+    color: #fff !important;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.zap-events-header__sub {
+    margin: 3px 0 0;
+    opacity: .85;
+    font-size: .85rem;
+}
+
+.zap-events-header__nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Navigation buttons */
+.zap-nav-btn {
+    background: rgba(255,255,255,.15);
+    color: #fff !important;
+    border: 1.5px solid rgba(255,255,255,.35);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: .82rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background .2s;
+    white-space: nowrap;
+}
+
+.zap-nav-btn:hover {
+    background: rgba(255,255,255,.28);
+    color: #fff !important;
+}
+
+.zap-nav-btn--accent {
+    background: #25d366;
+    border-color: #25d366;
+}
+
+.zap-nav-btn--accent:hover {
+    background: #1ebe58;
+    border-color: #1ebe58;
+}
+
+/* ----- Cards --------------------------------------------------------- */
+.zap-events-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.07);
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.zap-events-card__hdr {
+    padding: 12px 20px;
+    background: linear-gradient(90deg, #075e54, #128c7e);
+    color: #fff;
+    font-size: .9rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.zap-events-card__hdr--warn {
+    background: linear-gradient(90deg, #b45309, #d97706);
+}
+
+.zap-events-card__body {
+    padding: 20px;
+}
+
+.zap-events-card__body--flush {
+    padding: 0;
+}
+
+/* ----- Status badges ------------------------------------------------- */
+.zap-status {
+    font-weight: 700;
+    font-size: .88rem;
+}
+
+.zap-status--ok  { color: #2e7d32; }
+.zap-status--err { color: #c62828; }
+
+.zap-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    margin-left: 6px;
+}
+
+.zap-badge--ok    { background: #c8e6c9; color: #2e7d32; }
+.zap-badge--off   { background: #f5f5f5; color: #888; }
+.zap-badge--count { background: #e3f2fd; color: #1565c0; }
+
+/* ----- Form elements ------------------------------------------------- */
+.zap-field-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 16px;
+}
+
+.zap-field-row--inline {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+}
+
+.zap-field-label {
+    font-weight: 600;
+    font-size: .875rem;
+    color: #333;
+}
+
+.zap-field-desc {
+    font-size: .78rem;
+    color: #888;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.zap-input {
+    padding: 8px 12px;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: .9rem;
+    transition: border-color .2s;
+    background: #fff;
+}
+
+.zap-input:focus {
+    outline: none;
+    border-color: #25d366;
+    box-shadow: 0 0 0 3px rgba(37,211,102,.15);
+}
+
+.zap-input--wide { width: 100%; box-sizing: border-box; }
+.zap-input--sm   { width: 80px; text-align: center; }
+
+.zap-select {
+    padding: 8px 12px;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: .9rem;
+    background: #fff;
+    cursor: pointer;
+}
+
+.zap-select:focus {
+    outline: none;
+    border-color: #25d366;
+    box-shadow: 0 0 0 3px rgba(37,211,102,.15);
+}
+
+/* Toggle (reuse zapwa-switch structure) */
+.zap-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.zap-switch input { opacity: 0; width: 0; height: 0; }
+
+.zap-switch .slider {
+    position: absolute;
+    inset: 0;
+    background: #ccc;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: .3s;
+}
+
+.zap-switch .slider:before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: .3s;
+}
+
+.zap-switch input:checked + .slider { background: #25d366; }
+.zap-switch input:checked + .slider:before { transform: translateX(20px); }
+
+/* ----- Buttons ------------------------------------------------------- */
+.zap-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-size: .88rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all .2s;
+    white-space: nowrap;
+}
+
+.zap-btn-primary {
+    background: #25d366;
+    color: #fff !important;
+    box-shadow: 0 2px 8px rgba(37,211,102,.35);
+}
+
+.zap-btn-primary:hover {
+    background: #1ebe58;
+    box-shadow: 0 4px 12px rgba(37,211,102,.45);
+    color: #fff !important;
+}
+
+.zap-btn-secondary {
+    background: #075e54;
+    color: #fff !important;
+}
+
+.zap-btn-secondary:hover {
+    background: #054a42;
+    color: #fff !important;
+}
+
+.zap-btn--danger {
+    background: #fff;
+    color: #c62828 !important;
+    border: 1.5px solid #e57373;
+}
+
+.zap-btn--danger:hover {
+    background: #ffebee;
+    color: #c62828 !important;
+}
+
+.zap-btn--lg {
+    padding: 11px 24px;
+    font-size: .95rem;
+}
+
+.zap-submit-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+    flex-wrap: wrap;
+}
+
+/* ----- Events checklist --------------------------------------------- */
+.zap-events-checklist {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 6px;
+    margin-top: 8px;
+    padding: 12px;
+    background: #f9fafa;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.zap-check-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .85rem;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+    transition: background .15s;
+}
+
+.zap-check-item:hover {
+    background: #e8f5e9;
+}
+
+.zap-check-label {
+    flex: 1;
+    font-weight: 500;
+    color: #333;
+}
+
+.zap-check-key {
+    font-size: .72rem;
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+/* ----- Webhooks layout ---------------------------------------------- */
+.zap-webhooks-layout {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.zap-webhooks-form-col {
+    position: sticky;
+    top: 46px;
+}
+
+/* ----- Webhook list -------------------------------------------------- */
+.zap-wh-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.zap-wh-item {
+    padding: 14px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background .15s;
+}
+
+.zap-wh-item:last-child { border-bottom: none; }
+.zap-wh-item:hover { background: #fafffe; }
+
+.zap-wh-item--editing {
+    background: #f0faf4 !important;
+    border-left: 3px solid #25d366;
+}
+
+.zap-wh-item__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    gap: 8px;
+}
+
+.zap-wh-item__name {
+    font-weight: 700;
+    font-size: .92rem;
+    color: #075e54;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.zap-wh-item__actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.zap-icon-btn {
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 4px 7px;
+    font-size: .95rem;
+    line-height: 1;
+    transition: background .15s;
+    text-decoration: none;
+}
+
+.zap-icon-btn--edit:hover { background: #e8f5e9; border-color: #a5d6a7; }
+.zap-icon-btn--del:hover  { background: #ffebee; border-color: #ef9a9a; }
+
+.zap-wh-item__url {
+    font-size: .78rem;
+    color: #1565c0;
+    word-break: break-all;
+    margin-bottom: 6px;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.zap-wh-item__meta {
+    display: flex;
+    gap: 14px;
+    font-size: .76rem;
+    color: #888;
+    flex-wrap: wrap;
+}
+
+/* ----- Empty state --------------------------------------------------- */
+.zap-empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: #888;
+}
+
+.zap-empty-state__icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.zap-empty-state__sub {
+    font-size: .82rem;
+    margin: 4px 0 0;
+}
+
+/* ----- API endpoints list ------------------------------------------- */
+.zap-api-list {
+    list-style: disc;
+    margin: 8px 0 0 16px;
+    font-size: .82rem;
+    color: #555;
+    line-height: 1.8;
+}
+
+.zap-api-list code {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: .8rem;
+}
+
+/* ----- Responsive ---------------------------------------------------- */
+@media (max-width: 1024px) {
+    .zap-webhooks-layout {
+        grid-template-columns: 1fr;
+    }
+    .zap-webhooks-form-col {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .zap-events-header {
+        padding: 14px 16px;
+    }
+    .zap-events-header__title {
+        font-size: 1.1rem;
+    }
+    .zap-events-header__nav {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    .zap-events-checklist {
+        grid-template-columns: 1fr;
+        max-height: 180px;
+    }
+    .zap-wh-item__meta {
+        gap: 8px;
+    }
+    .zap-submit-row {
+        flex-wrap: wrap;
+    }
+    .zap-btn--lg {
+        width: 100%;
+        justify-content: center;
+    }
+}
