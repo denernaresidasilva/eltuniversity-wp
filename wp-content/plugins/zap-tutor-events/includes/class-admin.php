@@ -33,6 +33,78 @@ class Admin {
         );
     }
 
+    /**
+     * Render tab navigation bar and floating navigation arrows.
+     *
+     * @param string $active_page Current page slug (e.g. 'zap-tutor-events-logs').
+     */
+    public static function render_tab_nav( $active_page = '' ) {
+        $tabs = [
+            [ 'page' => 'zap-tutor-events',             'icon' => '📊', 'label' => 'Dashboard'        ],
+            [ 'page' => 'zap-tutor-events-webhooks',    'icon' => '🔗', 'label' => 'Webhooks'         ],
+            [ 'page' => 'zap-tutor-events-logs',        'icon' => '📋', 'label' => 'Logs'             ],
+            [ 'page' => 'zap-tutor-events-webhook-logs','icon' => '📡', 'label' => 'Logs de Webhook'  ],
+            [ 'page' => 'zap-tutor-events-settings',    'icon' => '⚙️', 'label' => 'Configurações'    ],
+        ];
+
+        $current_index = -1;
+        foreach ( $tabs as $i => $tab ) {
+            if ( $tab['page'] === $active_page ) {
+                $current_index = $i;
+                break;
+            }
+        }
+
+        // Tab bar
+        echo '<nav class="zap-tab-nav" aria-label="' . esc_attr__( 'Navegação do Plugin', 'zap-tutor-events' ) . '">';
+        foreach ( $tabs as $i => $tab ) {
+            $is_active = ( $tab['page'] === $active_page );
+            $url   = admin_url( 'admin.php?page=' . $tab['page'] );
+            $class = 'zap-tab-nav__item' . ( $is_active ? ' zap-tab-nav__item--active' : '' );
+            if ( $i > 0 ) {
+                echo '<span class="zap-tab-nav__sep" aria-hidden="true"></span>';
+            }
+            printf(
+                '<a href="%s" class="%s"%s>%s %s</a>',
+                esc_url( $url ),
+                esc_attr( $class ),
+                $is_active ? ' aria-current="page"' : '',
+                $tab['icon'],
+                esc_html( $tab['label'] )
+            );
+        }
+        echo '</nav>';
+
+        // Floating arrows
+        $prev_tab = ( $current_index > 0 ) ? $tabs[ $current_index - 1 ] : null;
+        $next_tab = ( $current_index >= 0 && $current_index < count( $tabs ) - 1 ) ? $tabs[ $current_index + 1 ] : null;
+
+        if ( $prev_tab || $next_tab ) {
+            echo '<div class="zap-floating-nav">';
+            if ( $prev_tab ) {
+                printf(
+                    '<a href="%s" class="zap-floating-nav__btn zap-floating-nav__btn--prev" title="%s" aria-label="%s">&#8592;<span class="zap-floating-nav__tooltip">%s %s</span></a>',
+                    esc_url( admin_url( 'admin.php?page=' . $prev_tab['page'] ) ),
+                    esc_attr( $prev_tab['label'] ),
+                    esc_attr( sprintf( __( 'Ir para %s', 'zap-tutor-events' ), $prev_tab['label'] ) ),
+                    $prev_tab['icon'],
+                    esc_html( $prev_tab['label'] )
+                );
+            }
+            if ( $next_tab ) {
+                printf(
+                    '<a href="%s" class="zap-floating-nav__btn zap-floating-nav__btn--next" title="%s" aria-label="%s">&#8594;<span class="zap-floating-nav__tooltip">%s %s</span></a>',
+                    esc_url( admin_url( 'admin.php?page=' . $next_tab['page'] ) ),
+                    esc_attr( $next_tab['label'] ),
+                    esc_attr( sprintf( __( 'Ir para %s', 'zap-tutor-events' ), $next_tab['label'] ) ),
+                    $next_tab['icon'],
+                    esc_html( $next_tab['label'] )
+                );
+            }
+            echo '</div>';
+        }
+    }
+
     public static function menu() {
 
         // Main menu opens Dashboard first
@@ -132,6 +204,8 @@ class Admin {
                     <a href="<?php echo esc_url( admin_url( 'admin.php?page=zap-tutor-events' ) ); ?>" class="zap-nav-btn">← Dashboard</a>
                 </div>
             </div>
+
+            <?php Admin::render_tab_nav( 'zap-tutor-events-logs' ); ?>
 
             <?php if (isset($_GET['deleted']) && $_GET['deleted'] === 'all'): ?>
                 <div class="notice notice-success is-dismissible"><p>🗑️ Todos os logs de eventos foram excluídos.</p></div>
@@ -415,6 +489,8 @@ class Admin {
                     </form>
                 </div>
             </div>
+
+            <?php Admin::render_tab_nav( 'zap-tutor-events-webhook-logs' ); ?>
 
             <?php if (empty($logs)): ?>
                 <div class="zap-events-card">

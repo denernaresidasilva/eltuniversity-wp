@@ -90,6 +90,8 @@ class Settings {
                 </div>
             </div>
 
+            <?php Admin::render_tab_nav( 'zap-tutor-events-settings' ); ?>
+
             <?php if (isset($_GET['logs_toggled'])): ?>
                 <div class="notice notice-success is-dismissible">
                     <p>Logs de eventos <?php echo get_option('zap_events_log_enabled', true) ? '<strong>ativados</strong>' : '<strong>desativados</strong>'; ?> com sucesso.</p>

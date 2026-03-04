@@ -682,6 +682,128 @@
 }
 
 /* =======================================================================
+   ZAP Tutor Events — Tab Navigation & Floating Arrows (v1.4.0)
+   ======================================================================= */
+
+/* ----- Tab Navigation Bar -------------------------------------------- */
+.zap-tab-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    padding: 6px 8px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+}
+
+.zap-tab-nav__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    border-radius: 9px;
+    font-size: .85rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: #555 !important;
+    white-space: nowrap;
+    transition: all .2s;
+    border: 1.5px solid transparent;
+}
+
+.zap-tab-nav__item:hover {
+    background: #f0faf4;
+    color: #075e54 !important;
+    text-decoration: none;
+}
+
+.zap-tab-nav__item--active {
+    background: linear-gradient(135deg, #075e54, #128c7e);
+    color: #fff !important;
+    box-shadow: 0 2px 8px rgba(7,94,84,.25);
+}
+
+.zap-tab-nav__item--active:hover {
+    background: linear-gradient(135deg, #075e54, #128c7e);
+    color: #fff !important;
+}
+
+.zap-tab-nav__sep {
+    width: 1px;
+    height: 20px;
+    background: #e0e0e0;
+    margin: 0 2px;
+    flex-shrink: 0;
+}
+
+/* ----- Floating Navigation Arrows ------------------------------------ */
+.zap-floating-nav {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 9999;
+}
+
+.zap-floating-nav__btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #075e54;
+    color: #fff !important;
+    text-decoration: none !important;
+    font-size: 1.25rem;
+    font-weight: 700;
+    box-shadow: 0 4px 16px rgba(7,94,84,.4);
+    transition: background .2s, transform .2s, box-shadow .2s;
+}
+
+.zap-floating-nav__btn:hover {
+    background: #25d366;
+    transform: scale(1.12);
+    box-shadow: 0 6px 20px rgba(37,211,102,.5);
+    color: #fff !important;
+}
+
+.zap-floating-nav__tooltip {
+    position: absolute;
+    right: 58px;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    background: rgba(7,94,84,.92);
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s;
+}
+
+.zap-floating-nav__btn:hover .zap-floating-nav__tooltip {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .zap-tab-nav { padding: 4px 6px; }
+    .zap-tab-nav__item { padding: 7px 10px; font-size: .78rem; }
+    .zap-floating-nav { bottom: 16px; right: 14px; }
+    .zap-floating-nav__btn { width: 42px; height: 42px; font-size: 1.1rem; }
+    .zap-floating-nav__tooltip { display: none; }
+}
+
+/* =======================================================================
    ZAP Tutor Events — Enhanced UX styles (v1.3.0)
    ======================================================================= */
 

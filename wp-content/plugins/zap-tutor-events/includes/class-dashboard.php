@@ -295,6 +295,8 @@ class Dashboard {
                 </form>
             </div>
 
+            <?php \ZapTutorEvents\Admin::render_tab_nav( 'zap-tutor-events' ); ?>
+
             <!-- KPI row -->
             <div class="zap-kpi-row">
                 <div class="zap-kpi">
