@@ -1582,6 +1582,12 @@ body.zapwa-modal-open {
     text-decoration: none;
 }
 
+@media (max-width: 960px) {
+    .post-type-zapwa_message .wp-list-table tbody {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* ----- FAB mobile style inspired by app bottom bar ------------------- */
 @media (max-width: 782px) {
     .zapwa-fab-group {
