@@ -81,6 +81,12 @@ class Plugin {
          */
         if (is_admin()) {
 
+            // Webhooks management page (must be loaded before Admin, which calls WebhooksPage::init())
+            $webhooks_page_file = ZAP_EVENTS_PATH . 'includes/class-webhooks-page.php';
+            if (file_exists($webhooks_page_file)) {
+                require_once $webhooks_page_file;
+            }
+
             $admin_file = ZAP_EVENTS_PATH . 'includes/class-admin.php';
             if (file_exists($admin_file)) {
                 require_once $admin_file;
@@ -96,12 +102,6 @@ class Plugin {
                 if (class_exists(__NAMESPACE__ . '\\Settings')) {
                     Settings::init();
                 }
-            }
-
-            // Webhooks management page
-            $webhooks_page_file = ZAP_EVENTS_PATH . 'includes/class-webhooks-page.php';
-            if (file_exists($webhooks_page_file)) {
-                require_once $webhooks_page_file;
             }
 
             // Dashboard
