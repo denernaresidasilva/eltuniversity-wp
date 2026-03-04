@@ -212,7 +212,7 @@ class WebhooksPage {
                                                     <button type="submit"
                                                             class="zap-icon-btn zap-icon-btn--del"
                                                             title="<?php esc_attr_e( 'Excluir', 'zap-tutor-events' ); ?>"
-                                                            onclick="return confirm('Excluir este webhook?');">🗑️</button>
+                                                            onclick="return confirm('<?php echo esc_js( __( 'Excluir este webhook?', 'zap-tutor-events' ) ); ?>');">🗑️</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -220,7 +220,10 @@ class WebhooksPage {
                                         <div class="zap-wh-item__meta">
                                             <span>⚡ <?php echo $event_count > 0 ? sprintf( _n( '%d evento', '%d eventos', $event_count, 'zap-tutor-events' ), $event_count ) : esc_html__( 'Todos os eventos', 'zap-tutor-events' ); ?></span>
                                             <span>⏱ <?php echo esc_html( ( $wh['timeout'] ?? 10 ) . 's' ); ?></span>
-                                            <span>🗓 <?php echo esc_html( isset( $wh['created_at'] ) ? date_i18n( 'd/m/Y', strtotime( $wh['created_at'] ) ) : '—' ); ?></span>
+                                            <span>🗓 <?php
+                                            $ts = isset( $wh['created_at'] ) ? strtotime( $wh['created_at'] ) : false;
+                                            echo $ts ? esc_html( date_i18n( 'd/m/Y', $ts ) ) : '—';
+                                            ?></span>
                                         </div>
                                     </li>
                                     <?php endforeach; ?>
@@ -249,12 +252,14 @@ class WebhooksPage {
 
         $webhooks = self::get_webhooks();
 
-        $id     = sanitize_text_field( $_POST['webhook_id'] ?? '' );
-        $name   = sanitize_text_field( $_POST['wh_name']    ?? '' );
-        $url    = sanitize_url( $_POST['wh_url']            ?? '' );
-        $events = array_map( 'sanitize_text_field', (array) ( $_POST['wh_events'] ?? [] ) );
-        $timeout = absint( $_POST['wh_timeout']             ?? 10 );
+        // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+        $id      = sanitize_text_field( wp_unslash( $_POST['webhook_id'] ?? '' ) );
+        $name    = sanitize_text_field( wp_unslash( $_POST['wh_name']    ?? '' ) );
+        $url     = sanitize_url( wp_unslash( $_POST['wh_url']            ?? '' ) );
+        $events  = array_map( 'sanitize_text_field', array_map( 'wp_unslash', (array) ( $_POST['wh_events'] ?? [] ) ) );
+        $timeout = absint( $_POST['wh_timeout'] ?? 10 );
         $active  = isset( $_POST['wh_active'] ) ? true : false;
+        // phpcs:enable
 
         if ( empty( $name ) || empty( $url ) ) {
             wp_die( 'Nome e URL são obrigatórios.' );

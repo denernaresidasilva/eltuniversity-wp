@@ -96,9 +96,13 @@ class Settings {
                 </div>
             <?php endif; ?>
 
-            <?php if (isset($_GET['cleanup']) && $_GET['cleanup'] === 'success'): ?>
+            <?php
+            $cleanup_status = isset( $_GET['cleanup'] ) ? sanitize_text_field( wp_unslash( $_GET['cleanup'] ) ) : '';
+            $deleted_count  = isset( $_GET['deleted'] ) ? absint( $_GET['deleted'] ) : 0;
+            if ( $cleanup_status === 'success' ):
+            ?>
                 <div class="notice notice-success is-dismissible">
-                    <p>Limpeza concluída: <strong><?php echo absint( $_GET['deleted'] ?? 0 ); ?></strong> log(s) removido(s).</p>
+                    <p>Limpeza concluída: <strong><?php echo esc_html( $deleted_count ); ?></strong> log(s) removido(s).</p>
                 </div>
             <?php endif; ?>
 

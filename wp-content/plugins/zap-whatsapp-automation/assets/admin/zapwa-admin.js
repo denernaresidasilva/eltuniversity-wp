@@ -408,10 +408,8 @@
                 if (!$.trim(content)) {
                     $text.html('<span class="zapwa-bubble-empty">Escreva a mensagem para ver o preview...</span>');
                 } else {
-                    var escaped = $.trim(content)
-                        .replace(/&/g, '&amp;')
-                        .replace(/</g, '&lt;')
-                        .replace(/>/g, '&gt;')
+                    // Use jQuery text() for safe escaping, then handle controlled markup
+                    var escaped = $('<div>').text($.trim(content)).html()
                         .replace(/\n/g, '<br>');
                     escaped = escaped.replace(/\{([^}]+)\}/g, '<span style="color:#075e54;font-weight:700;">{$1}</span>');
                     var now = ZapWAPreview._now();
@@ -435,8 +433,8 @@
         },
 
         _insertIntoEditor: function (text) {
-            // Try Gutenberg
-            if (typeof wp !== 'undefined' && wp.data && wp.data.dispatch('core/block-editor')) {
+            // Try Gutenberg — use select() to check store existence without side effects
+            if (typeof wp !== 'undefined' && wp.data && wp.data.select('core/block-editor')) {
                 try {
                     var blocks = wp.data.select('core/block-editor').getSelectedBlock();
                     if (blocks && blocks.name === 'core/paragraph') {

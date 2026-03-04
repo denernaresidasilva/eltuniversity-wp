@@ -140,7 +140,7 @@ class AdminMenu {
      */
     public static function render_wa_editor_toolbar( $post ) {
 
-        if ( ! $post || get_post_type( $post ) !== 'zapwa_message' ) {
+        if ( ! ( $post instanceof \WP_Post ) || get_post_type( $post ) !== 'zapwa_message' ) {
             return;
         }
 

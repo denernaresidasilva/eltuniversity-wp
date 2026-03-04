@@ -177,7 +177,7 @@ class MessageSettings {
                             <div class="zapwa-ms-field-row">
                                 <label for="zapwa_email_body" class="zapwa-ms-field-label">
                                     Corpo do e-mail
-                                    <span class="zapwa-ms-hint-inline">— suporta HTML</span>
+                                    <span class="zapwa-ms-hint-inline"><?php esc_html_e( '— suporta HTML', 'zap-whatsapp-automation' ); ?></span>
                                 </label>
                                 <textarea id="zapwa_email_body"
                                           name="zapwa_email_body"
