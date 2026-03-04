@@ -13,6 +13,10 @@ class AdminMenu {
         add_action('admin_menu', [self::class, 'register_menu']);
         add_action('admin_enqueue_scripts', [self::class, 'enqueue_assets']);
         add_action('admin_footer', [self::class, 'render_floating_nav']);
+        // Messages list: inject header + "Nova Mensagem" button
+        add_action('admin_notices', ['ZapWA\\Admin\\Pages\\Messages', 'render_list_header']);
+        // Message editor: inject WhatsApp toolbar between title and content editor
+        add_action('edit_form_after_title', [self::class, 'render_wa_editor_toolbar']);
     }
 
     /**
@@ -124,6 +128,103 @@ class AdminMenu {
                     <iframe id="zapwa-email-preview-frame"
                             title="<?php esc_attr_e('Preview do E-mail', 'zap-whatsapp-automation'); ?>"
                             style="width:100%;height:100%;border:none;display:none;"></iframe>
+                </div>
+            </div>
+        </div>
+        <?php
+    }
+
+    /**
+     * Inject a WhatsApp-style toolbar between the post title and the content editor.
+     * Only fires on the zapwa_message post-edit screen.
+     */
+    public static function render_wa_editor_toolbar( $post ) {
+
+        if ( ! ( $post instanceof \WP_Post ) || get_post_type( $post ) !== 'zapwa_message' ) {
+            return;
+        }
+
+        $vars = [
+            '{user_name}', '{user_email}', '{user_phone}',
+            '{course_name}', '{course_progress}', '{course_url}',
+            '{site_name}', '{current_date}', '{days_inactive}',
+        ];
+        ?>
+        <div class="zapwa-editor-wrap" id="zapwa-editor-wrap">
+
+            <!-- Toolbar strip -->
+            <div class="zapwa-editor-toolbar" role="toolbar" aria-label="<?php esc_attr_e( 'Ferramentas de mensagem', 'zap-whatsapp-automation' ); ?>">
+                <span class="zapwa-editor-toolbar__label">💬 <?php esc_html_e( 'Mensagem WhatsApp', 'zap-whatsapp-automation' ); ?></span>
+
+                <div class="zapwa-editor-toolbar__tools">
+                    <!-- Emoji picker trigger -->
+                    <button type="button" class="zapwa-tool-btn" id="zapwa-emoji-btn" title="<?php esc_attr_e( 'Inserir emoji', 'zap-whatsapp-automation' ); ?>" aria-haspopup="true" aria-expanded="false">
+                        😊
+                    </button>
+
+                    <!-- Media / Image -->
+                    <button type="button" class="zapwa-tool-btn" id="zapwa-media-btn" title="<?php esc_attr_e( 'Inserir mídia (URL)', 'zap-whatsapp-automation' ); ?>">
+                        🖼️
+                    </button>
+
+                    <!-- File upload -->
+                    <button type="button" class="zapwa-tool-btn" id="zapwa-file-btn" title="<?php esc_attr_e( 'Carregar arquivo', 'zap-whatsapp-automation' ); ?>">
+                        📎
+                    </button>
+
+                    <div class="zapwa-tool-divider"></div>
+
+                    <!-- WhatsApp preview -->
+                    <button type="button" class="zapwa-tool-btn zapwa-tool-btn--preview" id="zapwa-wa-preview-btn" title="<?php esc_attr_e( 'Preview WhatsApp', 'zap-whatsapp-automation' ); ?>">
+                        👁 <?php esc_html_e( 'Preview', 'zap-whatsapp-automation' ); ?>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Emoji picker panel (hidden by default) -->
+            <div class="zapwa-emoji-panel" id="zapwa-emoji-panel" style="display:none;" role="dialog" aria-label="<?php esc_attr_e( 'Selecionar emoji', 'zap-whatsapp-automation' ); ?>">
+                <?php
+                $emojis = ['😊','😃','😄','😁','🎉','👍','👋','🙏','❤️','🔥','✅','⭐','📱','💬','📚','🎓','🏆','💡','📝','🚀','⏰','📅','💪','🤝','😎','🙌','👏','💰','📢','✨'];
+                foreach ( $emojis as $e ) {
+                    echo '<button type="button" class="zapwa-emoji-item" data-emoji="' . esc_attr( $e ) . '">' . esc_html( $e ) . '</button>';
+                }
+                ?>
+            </div>
+
+            <!-- Variables quick-bar -->
+            <div class="zapwa-editor-vars" aria-label="<?php esc_attr_e( 'Variáveis disponíveis', 'zap-whatsapp-automation' ); ?>">
+                <span class="zapwa-editor-vars__label"><?php esc_html_e( 'Variáveis:', 'zap-whatsapp-automation' ); ?></span>
+                <div class="zapwa-editor-vars__chips">
+                    <?php foreach ( $vars as $v ) : ?>
+                        <span class="zapwa-var" data-var="<?php echo esc_attr( $v ); ?>"><?php echo esc_html( $v ); ?></span>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
+        </div><!-- /.zapwa-editor-wrap -->
+
+        <!-- Inline WhatsApp preview modal triggered from toolbar -->
+        <div id="zapwa-wa-preview-modal" class="zapwa-modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-label="<?php esc_attr_e( 'Preview WhatsApp', 'zap-whatsapp-automation' ); ?>">
+            <div class="zapwa-modal zapwa-modal--wa">
+                <div class="zapwa-modal-header zapwa-modal-header--green">
+                    <span>💬 <?php esc_html_e( 'Preview WhatsApp', 'zap-whatsapp-automation' ); ?></span>
+                    <button type="button" class="zapwa-modal-close" id="zapwa-wa-modal-close" aria-label="<?php esc_attr_e( 'Fechar', 'zap-whatsapp-automation' ); ?>">✕</button>
+                </div>
+                <div class="zapwa-modal-body zapwa-modal-body--wa">
+                    <div class="zapwa-phone-header">
+                        <div class="zapwa-phone-avatar">🤖</div>
+                        <div>
+                            <div class="zapwa-phone-name"><?php echo esc_html( get_bloginfo( 'name' ) ?: __( 'Meu Site', 'zap-whatsapp-automation' ) ); ?></div>
+                            <div class="zapwa-phone-status">online</div>
+                        </div>
+                    </div>
+                    <div class="zapwa-phone-body">
+                        <div class="zapwa-bubble">
+                            <div id="zapwa-wa-modal-text">
+                                <span class="zapwa-bubble-empty"><?php esc_html_e( 'Escreva a mensagem para ver o preview...', 'zap-whatsapp-automation' ); ?></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -146,21 +146,6 @@ class MessageSettings {
                     </div>
                 </div>
 
-                <!-- ACTIVE TOGGLE -->
-                <div class="zapwa-ms-active-row">
-                    <div class="zapwa-ms-active-label">
-                        <span class="zapwa-ms-active-icon">✅</span>
-                        <div>
-                            <strong>Mensagem Ativa</strong>
-                            <div class="zapwa-ms-hint">Ativa o envio automático desta mensagem</div>
-                        </div>
-                    </div>
-                    <label class="zapwa-switch">
-                        <input type="checkbox" name="zapwa_active" value="1" <?php checked($active, '1'); ?>>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
                 <!-- EMAIL SECTION -->
                 <div class="zapwa-ms-section">
                     <div class="zapwa-ms-section-head zapwa-ms-section-head--green">
@@ -190,12 +175,33 @@ class MessageSettings {
                                        placeholder="Ex: Bem-vindo, {user_name}!">
                             </div>
                             <div class="zapwa-ms-field-row">
-                                <label for="zapwa_email_body" class="zapwa-ms-field-label">Corpo do e-mail</label>
+                                <label for="zapwa_email_body" class="zapwa-ms-field-label">
+                                    Corpo do e-mail
+                                    <span class="zapwa-ms-hint-inline"><?php esc_html_e( '— suporta HTML', 'zap-whatsapp-automation' ); ?></span>
+                                </label>
                                 <textarea id="zapwa_email_body"
                                           name="zapwa_email_body"
                                           rows="10"
                                           class="zapwa-ms-textarea"
-                                          placeholder="Escreva o corpo do e-mail. Variáveis como {user_name} são suportadas."><?php echo esc_textarea($email_body); ?></textarea>
+                                          placeholder="Escreva o corpo do e-mail. HTML e variáveis como {user_name} são suportados."><?php echo esc_textarea($email_body); ?></textarea>
+                            </div>
+                            <!-- Variables below email editor -->
+                            <div class="zapwa-ms-email-vars">
+                                <span class="zapwa-ms-email-vars__label">🏷️ Variáveis (clique para copiar):</span>
+                                <div class="zapwa-vars zapwa-vars--email">
+                                    <span class="zapwa-var" data-var="{user_name}">{user_name}</span>
+                                    <span class="zapwa-var" data-var="{user_email}">{user_email}</span>
+                                    <span class="zapwa-var" data-var="{user_phone}">{user_phone}</span>
+                                    <span class="zapwa-var" data-var="{course_name}">{course_name}</span>
+                                    <span class="zapwa-var" data-var="{course_progress}">{course_progress}</span>
+                                    <span class="zapwa-var" data-var="{course_url}">{course_url}</span>
+                                    <span class="zapwa-var" data-var="{site_name}">{site_name}</span>
+                                    <span class="zapwa-var" data-var="{site_url}">{site_url}</span>
+                                    <span class="zapwa-var" data-var="{current_date}">{current_date}</span>
+                                    <span class="zapwa-var" data-var="{last_login}">{last_login}</span>
+                                    <span class="zapwa-var" data-var="{days_inactive}">{days_inactive}</span>
+                                    <span class="zapwa-var" data-var="{event_email}">{event_email}</span>
+                                </div>
                             </div>
                             <div class="zapwa-ms-toggle-row">
                                 <label class="zapwa-switch">
@@ -220,7 +226,20 @@ class MessageSettings {
                     </div>
                 </div>
 
-            </div><!-- /.zapwa-ms-col-main -->
+                <!-- ACTIVE TOGGLE — always last, prominent -->
+                <div class="zapwa-ms-active-row zapwa-ms-active-row--prominent">
+                    <div class="zapwa-ms-active-label">
+                        <span class="zapwa-ms-active-icon">✅</span>
+                        <div>
+                            <strong>Mensagem Ativa</strong>
+                            <div class="zapwa-ms-hint">Ativa o envio automático desta mensagem</div>
+                        </div>
+                    </div>
+                    <label class="zapwa-switch zapwa-switch--lg">
+                        <input type="checkbox" name="zapwa_active" value="1" <?php checked($active, '1'); ?>>
+                        <span class="slider"></span>
+                    </label>
+                </div>
 
             <!-- ===== SIDEBAR COLUMN ===== -->
             <div class="zapwa-ms-col-side">
