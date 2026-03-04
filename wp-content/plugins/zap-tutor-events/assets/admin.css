@@ -680,3 +680,203 @@
         justify-content: center;
     }
 }
+
+/* =======================================================================
+   ZAP Tutor Events — Enhanced UX styles (v1.3.0)
+   ======================================================================= */
+
+/* ----- Events multi-select ------------------------------------------- */
+.zap-events-select {
+    width: 100%;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: .875rem;
+    padding: 4px;
+    background: #fff;
+    transition: border-color .2s;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.zap-events-select:focus {
+    outline: none;
+    border-color: #25d366;
+    box-shadow: 0 0 0 3px rgba(37,211,102,.15);
+}
+
+.zap-events-select option {
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: .855rem;
+    line-height: 1.5;
+}
+
+.zap-events-select option:checked,
+.zap-events-select option:hover {
+    background: #e8f5e9;
+    color: #075e54;
+}
+
+/* ----- Logs filter form ---------------------------------------------- */
+.zap-logs-filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.zap-logs-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.zap-logs-filter-btns {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-left: auto;
+}
+
+/* ----- Logs table ---------------------------------------------------- */
+.zap-logs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .875rem;
+}
+
+.zap-logs-table thead tr {
+    background: #f0f7f4;
+}
+
+.zap-logs-table th {
+    padding: 10px 14px;
+    text-align: left;
+    font-size: .75rem;
+    font-weight: 700;
+    color: #075e54;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    border-bottom: 2px solid #e0f2f1;
+}
+
+.zap-logs-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: top;
+}
+
+.zap-logs-table tbody tr:hover {
+    background: #fafffe;
+}
+
+.zap-col-id {
+    width: 50px;
+    color: #888;
+    font-size: .8rem;
+}
+
+.zap-col-date {
+    white-space: nowrap;
+    font-size: .82rem;
+    color: #555;
+}
+
+.zap-code-sm {
+    font-size: .75rem;
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.zap-user-name {
+    font-weight: 600;
+    font-size: .88rem;
+    color: #333;
+}
+
+.zap-url-sm {
+    font-size: .75rem;
+    color: #1565c0;
+    word-break: break-all;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.zap-pre-ctx {
+    max-width: 340px;
+    white-space: pre-wrap;
+    font-size: .75rem;
+    background: #f9fafa;
+    border: 1px solid #e8e8e8;
+    border-radius: 6px;
+    padding: 6px 8px;
+    margin: 0;
+    color: #555;
+    overflow: auto;
+}
+
+/* ----- Pagination ---------------------------------------------------- */
+.zap-pagination {
+    display: flex;
+    justify-content: center;
+    padding: 16px;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.zap-pagination .page-numbers {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    font-size: .875rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1.5px solid #e0e0e0;
+    color: #333;
+    transition: all .18s;
+}
+
+.zap-pagination .page-numbers:hover,
+.zap-pagination .page-numbers.current {
+    background: #25d366;
+    border-color: #25d366;
+    color: #fff !important;
+}
+
+.zap-pagination .prev.page-numbers,
+.zap-pagination .next.page-numbers {
+    width: auto;
+    padding: 0 12px;
+}
+
+/* ----- Responsive ---------------------------------------------------- */
+@media (max-width: 768px) {
+    .zap-logs-filter-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .zap-logs-filter-btns {
+        margin-left: 0;
+        width: 100%;
+    }
+    .zap-logs-table thead { display: none; }
+    .zap-logs-table tbody tr {
+        display: block;
+        background: #fff;
+        border-radius: 10px;
+        margin: 0 0 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.07);
+        border-left: 3px solid #25d366;
+    }
+    .zap-logs-table td {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #f5f5f5;
+    }
+    .zap-logs-table td:last-child { border-bottom: none; }
+}

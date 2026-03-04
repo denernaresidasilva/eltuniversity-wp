@@ -401,34 +401,36 @@
                 }
             });
 
-            // ── WhatsApp Preview (toolbar button) ─────────────────
+            // ── WhatsApp Preview (toolbar button) — toggle inline sidebar card ──
             $(document).on('click', '#zapwa-wa-preview-btn', function () {
+                var $wrap = $('#zapwa-bubble-wrap');
+                if ($wrap.is(':visible')) {
+                    $wrap.slideUp(200);
+                    return;
+                }
+                // Update preview content before showing
                 var content = ZapWAPreview._getContent();
-                var $text   = $('#zapwa-wa-modal-text');
+                var $text   = $('#zapwa-bubble-text');
                 if (!$.trim(content)) {
                     $text.html('<span class="zapwa-bubble-empty">Escreva a mensagem para ver o preview...</span>');
                 } else {
-                    // Use jQuery text() for safe escaping, then handle controlled markup
                     var escaped = $('<div>').text($.trim(content)).html()
                         .replace(/\n/g, '<br>');
                     escaped = escaped.replace(/\{([^}]+)\}/g, '<span style="color:#075e54;font-weight:700;">{$1}</span>');
                     var now = ZapWAPreview._now();
                     $text.html(escaped + '<div class="zapwa-bubble-time">' + now + ' ✓✓</div>');
                 }
-                $('#zapwa-wa-preview-modal').fadeIn(200);
-                $('body').addClass('zapwa-modal-open');
+                $wrap.slideDown(200);
+                // Scroll the preview card into view (guard against missing offset)
+                var offset = $wrap.offset();
+                if (offset) {
+                    $('html, body').animate({ scrollTop: offset.top - 80 }, 300);
+                }
             });
 
-            // Close WA preview modal
-            $(document).on('click', '#zapwa-wa-modal-close', function () {
-                $('#zapwa-wa-preview-modal').fadeOut(150);
-                $('body').removeClass('zapwa-modal-open');
-            });
-            $(document).on('click', '#zapwa-wa-preview-modal', function (e) {
-                if ($(e.target).is('#zapwa-wa-preview-modal')) {
-                    $('#zapwa-wa-preview-modal').fadeOut(150);
-                    $('body').removeClass('zapwa-modal-open');
-                }
+            // Close inline preview via ✕ button
+            $(document).on('click', '#zapwa-preview-close-btn', function () {
+                $('#zapwa-bubble-wrap').slideUp(200);
             });
         },
 

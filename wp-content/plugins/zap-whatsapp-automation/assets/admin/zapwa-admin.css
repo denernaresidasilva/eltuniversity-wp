@@ -641,7 +641,27 @@
     font-weight: 700;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 8px;
+}
+
+.zapwa-preview-close-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    line-height: 1;
+    margin-left: auto;
+    opacity: .8;
+    transition: opacity .15s;
+}
+
+.zapwa-preview-close-btn:hover {
+    opacity: 1;
+    background: rgba(255,255,255,.2);
 }
 
 .zapwa-phone-header {
@@ -1243,4 +1263,75 @@ body.zapwa-modal-open {
 
 .zapwa-switch--lg input:checked + .slider:before {
     transform: translateX(26px);
+}
+
+/* =======================================================================
+   CONNECTION PAGE — diagnostics & form grid
+   ======================================================================= */
+.zapwa-diag-item {
+    background: #f9fafa;
+    border: 1px solid #e8e8e8;
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.zapwa-diag-label {
+    font-size: .75rem;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+}
+
+.zapwa-diag-val {
+    font-size: .92rem;
+    font-weight: 700;
+}
+
+.zapwa-diag-val.ok  { color: #2e7d32; }
+.zapwa-diag-val.err { color: #c62828; }
+.zapwa-diag-val.pnd { color: #e65100; }
+
+.zapwa-conn-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.zapwa-conn-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.zapwa-conn-label {
+    font-size: .875rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.zapwa-conn-input {
+    padding: 8px 12px;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: .9rem;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color .2s;
+    background: #fff;
+}
+
+.zapwa-conn-input:focus {
+    outline: none;
+    border-color: #25d366;
+    box-shadow: 0 0 0 3px rgba(37,211,102,.15);
+}
+
+@media (max-width: 782px) {
+    .zapwa-conn-grid {
+        grid-template-columns: 1fr;
+    }
 }
