@@ -67,6 +67,8 @@ class WebhooksPage {
                 </div>
             </div>
 
+            <?php Admin::render_tab_nav( 'zap-tutor-events-webhooks' ); ?>
+
             <?php if ( isset( $_GET['saved'] ) ): ?>
                 <div class="notice notice-success is-dismissible"><p>✅ Webhook salvo com sucesso!</p></div>
             <?php endif; ?>
