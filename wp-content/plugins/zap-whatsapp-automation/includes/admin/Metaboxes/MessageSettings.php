@@ -121,31 +121,6 @@ class MessageSettings {
                     </div>
                 </div>
 
-                <!-- VARIABLES -->
-                <div class="zapwa-ms-section">
-                    <div class="zapwa-ms-section-head">
-                        <span>🏷️</span> Variáveis — clique para copiar
-                    </div>
-                    <div class="zapwa-ms-section-body">
-                        <div class="zapwa-vars">
-                            <span class="zapwa-var" data-var="{user_name}">{user_name}</span>
-                            <span class="zapwa-var" data-var="{user_email}">{user_email}</span>
-                            <span class="zapwa-var" data-var="{user_phone}">{user_phone}</span>
-                            <span class="zapwa-var" data-var="{course_name}">{course_name}</span>
-                            <span class="zapwa-var" data-var="{course_progress}">{course_progress}</span>
-                            <span class="zapwa-var" data-var="{course_author}">{course_author}</span>
-                            <span class="zapwa-var" data-var="{course_url}">{course_url}</span>
-                            <span class="zapwa-var" data-var="{site_name}">{site_name}</span>
-                            <span class="zapwa-var" data-var="{site_url}">{site_url}</span>
-                            <span class="zapwa-var" data-var="{current_date}">{current_date}</span>
-                            <span class="zapwa-var" data-var="{last_login}">{last_login}</span>
-                            <span class="zapwa-var" data-var="{days_inactive}">{days_inactive}</span>
-                            <span class="zapwa-var" data-var="{event}">{event}</span>
-                            <span class="zapwa-var" data-var="{event_email}">{event_email}</span>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- EMAIL SECTION -->
                 <div class="zapwa-ms-section">
                     <div class="zapwa-ms-section-head zapwa-ms-section-head--green">
@@ -241,13 +216,16 @@ class MessageSettings {
                     </label>
                 </div>
 
+            </div><!-- /.zapwa-ms-col-main -->
+
             <!-- ===== SIDEBAR COLUMN ===== -->
             <div class="zapwa-ms-col-side">
 
-                <!-- WhatsApp Preview -->
-                <div class="zapwa-ms-preview-card" id="zapwa-bubble-wrap">
+                <!-- WhatsApp Preview (hidden by default; toggled by Preview button) -->
+                <div class="zapwa-ms-preview-card" id="zapwa-bubble-wrap" style="display:none;">
                     <div class="zapwa-ms-preview-head">
                         <span>👁</span> Preview WhatsApp
+                        <button type="button" id="zapwa-preview-close-btn" class="zapwa-preview-close-btn" title="<?php esc_attr_e( 'Fechar', 'zap-whatsapp-automation' ); ?>">✕</button>
                     </div>
                     <div class="zapwa-phone-header">
                         <div class="zapwa-phone-avatar">🤖</div>

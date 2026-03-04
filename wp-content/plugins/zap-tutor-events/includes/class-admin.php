@@ -117,128 +117,155 @@ class Admin {
         $all_events = Events::registry();
 
         ?>
-        <div class="wrap">
-            <h1>Logs de Eventos</h1>
+        <div class="wrap zap-events-page">
 
-            <?php if (isset($_GET['deleted']) && $_GET['deleted'] === 'all'): ?>
-                <div class="notice notice-success is-dismissible"><p>Todos os logs de eventos foram excluídos.</p></div>
-            <?php endif; ?>
-
-            <!-- Filters -->
-            <div class="tablenav top">
-                <form method="get" style="display: inline-block;">
-                    <input type="hidden" name="page" value="zap-tutor-events-logs">
-                    <?php wp_nonce_field('zap_export_logs', 'zap_export_nonce'); ?>
-                    
-                    <select name="event_filter">
-                        <option value="">Todos os eventos</option>
-                        <?php foreach ($all_events as $key => $label): ?>
-                            <option value="<?php echo esc_attr($key); ?>" <?php selected($event_filter, $key); ?>>
-                                <?php echo esc_html($label); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-
-                    <input type="number" 
-                           name="user_filter" 
-                           placeholder="User ID" 
-                           value="<?php echo $user_filter ?: ''; ?>" 
-                           style="width: 100px;">
-
-                    <input type="date" 
-                           name="date_from" 
-                           value="<?php echo esc_attr($date_from); ?>" 
-                           placeholder="Data Inicial">
-
-                    <input type="date" 
-                           name="date_to" 
-                           value="<?php echo esc_attr($date_to); ?>" 
-                           placeholder="Data Final">
-
-                    <select name="per_page">
-                        <option value="50" <?php selected($per_page, 50); ?>>50 por página</option>
-                        <option value="100" <?php selected($per_page, 100); ?>>100 por página</option>
-                        <option value="200" <?php selected($per_page, 200); ?>>200 por página</option>
-                    </select>
-
-                    <input type="submit" class="button" value="Filtrar">
-                    <a href="<?php echo admin_url('admin.php?page=zap-tutor-events-logs'); ?>" class="button">Limpar</a>
-                    <button type="submit" name="export_csv" value="1" class="button button-primary">Exportar CSV</button>
-                </form>
-
-                &nbsp;
-                <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" style="display: inline-block;">
-                    <?php wp_nonce_field('zap_events_delete_all_logs', 'zap_delete_logs_nonce'); ?>
-                    <input type="hidden" name="action" value="zap_events_delete_all_logs">
-                    <button type="submit" class="button button-secondary" style="color:#a00;border-color:#a00;" onclick="return confirm('Tem certeza que deseja excluir TODOS os logs de eventos? Esta ação não pode ser desfeita.');">
-                        🗑️ Excluir Todos os Logs
-                    </button>
-                </form>
+            <!-- Page header -->
+            <div class="zap-events-header">
+                <div class="zap-events-header__info">
+                    <span class="zap-events-header__icon">📋</span>
+                    <div>
+                        <h1 class="zap-events-header__title"><?php esc_html_e( 'Logs de Eventos', 'zap-tutor-events' ); ?></h1>
+                        <p class="zap-events-header__sub"><?php printf( esc_html__( '%s registros encontrados', 'zap-tutor-events' ), number_format_i18n( $total_logs ) ); ?></p>
+                    </div>
+                </div>
+                <div class="zap-events-header__nav">
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=zap-tutor-events' ) ); ?>" class="zap-nav-btn">← Dashboard</a>
+                </div>
             </div>
 
-            <p>Total de registros: <strong><?php echo number_format_i18n($total_logs); ?></strong></p>
+            <?php if (isset($_GET['deleted']) && $_GET['deleted'] === 'all'): ?>
+                <div class="notice notice-success is-dismissible"><p>🗑️ Todos os logs de eventos foram excluídos.</p></div>
+            <?php endif; ?>
 
-            <?php if (empty($logs)): ?>
-                <p>Nenhum evento registrado com os filtros selecionados.</p>
-            <?php else: ?>
-                <table class="widefat striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Evento</th>
-                            <th>User ID</th>
-                            <th>Usuário</th>
-                            <th>Data</th>
-                            <th>Contexto</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($logs as $log): 
-                            $user_data = get_userdata($log->user_id);
-                            $user_name = $user_data ? $user_data->display_name : 'N/A';
-                            $event_label = $all_events[$log->event_key] ?? $log->event_key;
-                        ?>
-                            <tr>
-                                <td><?php echo esc_html($log->id); ?></td>
-                                <td>
-                                    <strong><?php echo esc_html($event_label); ?></strong><br>
-                                    <code style="font-size: 11px;"><?php echo esc_html($log->event_key); ?></code>
-                                </td>
-                                <td><?php echo esc_html($log->user_id); ?></td>
-                                <td><?php echo esc_html($user_name); ?></td>
-                                <td><?php echo esc_html(date_i18n('d/m/Y H:i:s', strtotime($log->created_at))); ?></td>
-                                <td>
-                                    <pre style="max-width:400px;white-space:pre-wrap;font-size:11px;"><?php echo esc_html($log->context); ?></pre>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-
-                <!-- Pagination -->
-                <?php if ($total_pages > 1): ?>
-                    <div class="tablenav bottom">
-                        <div class="tablenav-pages">
-                            <?php
-                            $base_url = add_query_arg([
-                                'page'         => 'zap-tutor-events-logs',
-                                'event_filter' => $event_filter,
-                                'user_filter'  => $user_filter,
-                                'date_from'    => $date_from,
-                                'date_to'      => $date_to,
-                                'per_page'     => $per_page,
-                            ], admin_url('admin.php'));
-
-                            echo paginate_links([
-                                'base'      => add_query_arg('paged', '%#%', $base_url),
-                                'format'    => '',
-                                'current'   => $paged,
-                                'total'     => $total_pages,
-                                'prev_text' => '«',
-                                'next_text' => '»',
-                            ]);
-                            ?>
+            <!-- Filters card -->
+            <div class="zap-events-card">
+                <div class="zap-events-card__hdr">🔍 <?php esc_html_e( 'Filtros', 'zap-tutor-events' ); ?></div>
+                <div class="zap-events-card__body">
+                    <form method="get" class="zap-logs-filter-form">
+                        <input type="hidden" name="page" value="zap-tutor-events-logs">
+                        <?php wp_nonce_field('zap_export_logs', 'zap_export_nonce'); ?>
+                        <div class="zap-logs-filter-row">
+                            <select name="event_filter" class="zap-select">
+                                <option value=""><?php esc_html_e( 'Todos os eventos', 'zap-tutor-events' ); ?></option>
+                                <?php foreach ($all_events as $key => $label): ?>
+                                    <option value="<?php echo esc_attr($key); ?>" <?php selected($event_filter, $key); ?>>
+                                        <?php echo esc_html($label); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <input type="number"
+                                   name="user_filter"
+                                   placeholder="<?php esc_attr_e( 'User ID', 'zap-tutor-events' ); ?>"
+                                   value="<?php echo $user_filter ?: ''; ?>"
+                                   class="zap-input"
+                                   style="width:100px;">
+                            <input type="date" name="date_from" value="<?php echo esc_attr($date_from); ?>" class="zap-input">
+                            <input type="date" name="date_to"   value="<?php echo esc_attr($date_to);   ?>" class="zap-input">
+                            <select name="per_page" class="zap-select">
+                                <option value="50"  <?php selected($per_page,  50); ?>>50 / pág.</option>
+                                <option value="100" <?php selected($per_page, 100); ?>>100 / pág.</option>
+                                <option value="200" <?php selected($per_page, 200); ?>>200 / pág.</option>
+                            </select>
+                            <div class="zap-logs-filter-btns">
+                                <button type="submit" class="zap-btn zap-btn-primary">
+                                    🔍 <?php esc_html_e( 'Filtrar', 'zap-tutor-events' ); ?>
+                                </button>
+                                <a href="<?php echo esc_url( admin_url('admin.php?page=zap-tutor-events-logs') ); ?>" class="zap-btn zap-btn-secondary">
+                                    ✕ <?php esc_html_e( 'Limpar', 'zap-tutor-events' ); ?>
+                                </a>
+                                <button type="submit" name="export_csv" value="1" class="zap-btn zap-btn-primary" style="background:#1565c0;">
+                                    📥 <?php esc_html_e( 'Exportar CSV', 'zap-tutor-events' ); ?>
+                                </button>
+                            </div>
                         </div>
+                    </form>
+                    <form method="post" action="<?php echo esc_url( admin_url('admin-post.php') ); ?>" style="margin-top:12px;">
+                        <?php wp_nonce_field('zap_events_delete_all_logs', 'zap_delete_logs_nonce'); ?>
+                        <input type="hidden" name="action" value="zap_events_delete_all_logs">
+                        <button type="submit"
+                                class="zap-btn zap-btn--danger"
+                                onclick="return confirm('<?php echo esc_js(__('Tem certeza que deseja excluir TODOS os logs de eventos? Esta ação não pode ser desfeita.', 'zap-tutor-events')); ?>');">
+                            🗑️ <?php esc_html_e( 'Excluir Todos os Logs', 'zap-tutor-events' ); ?>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Logs table card -->
+            <?php if (empty($logs)): ?>
+                <div class="zap-events-card">
+                    <div class="zap-events-card__body">
+                        <div class="zap-empty-state">
+                            <span class="zap-empty-state__icon">📋</span>
+                            <p><?php esc_html_e( 'Nenhum evento registrado com os filtros selecionados.', 'zap-tutor-events' ); ?></p>
+                        </div>
+                    </div>
+                </div>
+            <?php else: ?>
+                <div class="zap-events-card">
+                    <div class="zap-events-card__hdr">
+                        📊 <?php esc_html_e( 'Registros', 'zap-tutor-events' ); ?>
+                        <span class="zap-badge zap-badge--count"><?php echo number_format_i18n($total_logs); ?></span>
+                    </div>
+                    <div class="zap-events-card__body--flush">
+                        <div style="overflow-x:auto;">
+                            <table class="zap-logs-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th><?php esc_html_e( 'Evento', 'zap-tutor-events' ); ?></th>
+                                        <th><?php esc_html_e( 'Usuário', 'zap-tutor-events' ); ?></th>
+                                        <th><?php esc_html_e( 'Data', 'zap-tutor-events' ); ?></th>
+                                        <th><?php esc_html_e( 'Contexto', 'zap-tutor-events' ); ?></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($logs as $log):
+                                        $user_data  = get_userdata($log->user_id);
+                                        $user_name  = $user_data ? $user_data->display_name : 'N/A';
+                                        $event_label = $all_events[$log->event_key] ?? $log->event_key;
+                                    ?>
+                                        <tr>
+                                            <td class="zap-col-id"><?php echo esc_html($log->id); ?></td>
+                                            <td>
+                                                <strong><?php echo esc_html($event_label); ?></strong><br>
+                                                <code class="zap-code-sm"><?php echo esc_html($log->event_key); ?></code>
+                                            </td>
+                                            <td>
+                                                <span class="zap-user-name"><?php echo esc_html($user_name); ?></span><br>
+                                                <code class="zap-code-sm">ID: <?php echo esc_html($log->user_id); ?></code>
+                                            </td>
+                                            <td class="zap-col-date"><?php echo esc_html(date_i18n('d/m/Y H:i', strtotime($log->created_at))); ?></td>
+                                            <td><pre class="zap-pre-ctx"><?php echo esc_html($log->context); ?></pre></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <?php if ($total_pages > 1): ?>
+                    <div class="zap-pagination">
+                        <?php
+                        $base_url = add_query_arg([
+                            'page'         => 'zap-tutor-events-logs',
+                            'event_filter' => $event_filter,
+                            'user_filter'  => $user_filter,
+                            'date_from'    => $date_from,
+                            'date_to'      => $date_to,
+                            'per_page'     => $per_page,
+                        ], admin_url('admin.php'));
+
+                        echo paginate_links([
+                            'base'      => add_query_arg('paged', '%#%', $base_url),
+                            'format'    => '',
+                            'current'   => $paged,
+                            'total'     => $total_pages,
+                            'prev_text' => '« ' . esc_html__('Anterior', 'zap-tutor-events'),
+                            'next_text' => esc_html__('Próxima', 'zap-tutor-events') . ' »',
+                        ]);
+                        ?>
                     </div>
                 <?php endif; ?>
             <?php endif; ?>
@@ -344,7 +371,7 @@ class Admin {
 
         // Check if table exists
         if ($wpdb->get_var("SHOW TABLES LIKE '{$table}'") != $table) {
-            echo '<div class="wrap"><h1>Logs de Webhook</h1><p>Nenhum log de webhook registrado ainda.</p></div>';
+            echo '<div class="wrap zap-events-page"><div class="zap-events-card"><div class="zap-events-card__body"><div class="zap-empty-state"><span class="zap-empty-state__icon">🔗</span><p>' . esc_html__('Nenhum log de webhook registrado ainda.', 'zap-tutor-events') . '</p></div></div></div></div>';
             return;
         }
 
@@ -360,74 +387,100 @@ class Admin {
         $total_pages = ceil($total / $per_page);
 
         if (isset($_GET['deleted']) && $_GET['deleted'] === 'all') {
-            echo '<div class="notice notice-success is-dismissible"><p>Todos os logs de webhook foram excluídos.</p></div>';
+            echo '<div class="notice notice-success is-dismissible"><p>🗑️ Todos os logs de webhook foram excluídos.</p></div>';
         }
         ?>
-        <div class="wrap">
-            <h1>Logs de Webhook</h1>
+        <div class="wrap zap-events-page">
 
-            <div class="tablenav top">
-                <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" style="display:inline-block;">
-                    <?php wp_nonce_field('zap_events_delete_webhook_logs', 'zap_delete_webhook_nonce'); ?>
-                    <input type="hidden" name="action" value="zap_events_delete_webhook_logs">
-                    <button type="submit" class="button button-secondary" style="color:#a00;border-color:#a00;" onclick="return confirm('Tem certeza que deseja excluir TODOS os logs de webhook? Esta ação não pode ser desfeita.');">
-                        🗑️ Excluir Todos os Logs
-                    </button>
-                </form>
+            <!-- Page header -->
+            <div class="zap-events-header">
+                <div class="zap-events-header__info">
+                    <span class="zap-events-header__icon">🔗</span>
+                    <div>
+                        <h1 class="zap-events-header__title"><?php esc_html_e( 'Logs de Webhook', 'zap-tutor-events' ); ?></h1>
+                        <p class="zap-events-header__sub"><?php printf( esc_html__( '%s registros', 'zap-tutor-events' ), number_format_i18n( $total ) ); ?></p>
+                    </div>
+                </div>
+                <div class="zap-events-header__nav">
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=zap-tutor-events' ) ); ?>" class="zap-nav-btn">← Dashboard</a>
+                    <form method="post" action="<?php echo esc_url( admin_url('admin-post.php') ); ?>" style="display:inline;">
+                        <?php wp_nonce_field('zap_events_delete_webhook_logs', 'zap_delete_webhook_nonce'); ?>
+                        <input type="hidden" name="action" value="zap_events_delete_webhook_logs">
+                        <button type="submit"
+                                class="zap-nav-btn"
+                                style="background:rgba(220,53,69,.25);border-color:rgba(220,53,69,.5);"
+                                onclick="return confirm('<?php echo esc_js(__('Excluir TODOS os logs de webhook?', 'zap-tutor-events')); ?>');">
+                            🗑️ <?php esc_html_e( 'Limpar Logs', 'zap-tutor-events' ); ?>
+                        </button>
+                    </form>
+                </div>
             </div>
 
-            <p>Total de registros: <strong><?php echo number_format_i18n($total); ?></strong></p>
-
             <?php if (empty($logs)): ?>
-                <p>Nenhum log de webhook registrado.</p>
+                <div class="zap-events-card">
+                    <div class="zap-events-card__body">
+                        <div class="zap-empty-state">
+                            <span class="zap-empty-state__icon">🔗</span>
+                            <p><?php esc_html_e( 'Nenhum log de webhook registrado.', 'zap-tutor-events' ); ?></p>
+                        </div>
+                    </div>
+                </div>
             <?php else: ?>
-                <table class="widefat striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Evento</th>
-                            <th>Status</th>
-                            <th>Tentativa</th>
-                            <th>Mensagem</th>
-                            <th>URL</th>
-                            <th>Data</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($logs as $log): ?>
-                            <tr>
-                                <td><?php echo esc_html($log->id); ?></td>
-                                <td><code><?php echo esc_html($log->event_key); ?></code></td>
-                                <td>
-                                    <?php if ($log->success): ?>
-                                        <span style="color:green;">✔ Sucesso</span>
-                                    <?php else: ?>
-                                        <span style="color:red;">✘ Falha</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td><?php echo esc_html($log->attempt); ?></td>
-                                <td><?php echo esc_html($log->message); ?></td>
-                                <td><small><?php echo esc_html($log->webhook_url); ?></small></td>
-                                <td><?php echo esc_html(date_i18n('d/m/Y H:i:s', strtotime($log->created_at))); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+                <div class="zap-events-card">
+                    <div class="zap-events-card__hdr">
+                        📊 <?php esc_html_e( 'Registros de Webhook', 'zap-tutor-events' ); ?>
+                        <span class="zap-badge zap-badge--count"><?php echo number_format_i18n($total); ?></span>
+                    </div>
+                    <div class="zap-events-card__body--flush">
+                        <div style="overflow-x:auto;">
+                            <table class="zap-logs-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th><?php esc_html_e( 'Evento', 'zap-tutor-events' ); ?></th>
+                                        <th><?php esc_html_e( 'Status', 'zap-tutor-events' ); ?></th>
+                                        <th><?php esc_html_e( 'Tentativa', 'zap-tutor-events' ); ?></th>
+                                        <th><?php esc_html_e( 'Mensagem', 'zap-tutor-events' ); ?></th>
+                                        <th><?php esc_html_e( 'URL', 'zap-tutor-events' ); ?></th>
+                                        <th><?php esc_html_e( 'Data', 'zap-tutor-events' ); ?></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($logs as $log): ?>
+                                        <tr>
+                                            <td class="zap-col-id"><?php echo esc_html($log->id); ?></td>
+                                            <td><code class="zap-code-sm"><?php echo esc_html($log->event_key); ?></code></td>
+                                            <td>
+                                                <?php if ($log->success): ?>
+                                                    <span class="zap-status zap-status--ok">✔ <?php esc_html_e( 'Sucesso', 'zap-tutor-events' ); ?></span>
+                                                <?php else: ?>
+                                                    <span class="zap-status zap-status--err">✘ <?php esc_html_e( 'Falha', 'zap-tutor-events' ); ?></span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo esc_html($log->attempt); ?></td>
+                                            <td><?php echo esc_html($log->message); ?></td>
+                                            <td><small class="zap-url-sm"><?php echo esc_html($log->webhook_url); ?></small></td>
+                                            <td class="zap-col-date"><?php echo esc_html(date_i18n('d/m/Y H:i', strtotime($log->created_at))); ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
                 <?php if ($total_pages > 1): ?>
-                    <div class="tablenav bottom">
-                        <div class="tablenav-pages">
-                            <?php
-                            echo paginate_links([
-                                'base'      => add_query_arg('paged', '%#%', admin_url('admin.php?page=zap-tutor-events-webhook-logs')),
-                                'format'    => '',
-                                'current'   => $paged,
-                                'total'     => $total_pages,
-                                'prev_text' => '«',
-                                'next_text' => '»',
-                            ]);
-                            ?>
-                        </div>
+                    <div class="zap-pagination">
+                        <?php
+                        echo paginate_links([
+                            'base'      => add_query_arg('paged', '%#%', admin_url('admin.php?page=zap-tutor-events-webhook-logs')),
+                            'format'    => '',
+                            'current'   => $paged,
+                            'total'     => $total_pages,
+                            'prev_text' => '«',
+                            'next_text' => '»',
+                        ]);
+                        ?>
                     </div>
                 <?php endif; ?>
             <?php endif; ?>

@@ -114,23 +114,26 @@ class WebhooksPage {
                                 </div>
 
                                 <div class="zap-field-row">
-                                    <label class="zap-field-label"><?php esc_html_e( 'Eventos', 'zap-tutor-events' ); ?></label>
-                                    <span class="zap-field-desc"><?php esc_html_e( 'Deixe todos desmarcados para enviar todos os eventos.', 'zap-tutor-events' ); ?></span>
-                                    <div class="zap-events-checklist">
+                                    <label class="zap-field-label" for="wh_events"><?php esc_html_e( 'Eventos', 'zap-tutor-events' ); ?></label>
+                                    <span class="zap-field-desc"><?php esc_html_e( 'Selecione os eventos. Deixe em branco para enviar todos.', 'zap-tutor-events' ); ?></span>
+                                    <select id="wh_events"
+                                            name="wh_events[]"
+                                            multiple
+                                            class="zap-events-select"
+                                            size="8">
                                         <?php
                                         $sel_events = $edit_wh['events'] ?? [];
                                         foreach ( $all_events as $key => $label ) :
                                         ?>
-                                            <label class="zap-check-item">
-                                                <input type="checkbox"
-                                                       name="wh_events[]"
-                                                       value="<?php echo esc_attr( $key ); ?>"
-                                                       <?php checked( in_array( $key, $sel_events, true ) ); ?>>
-                                                <span class="zap-check-label"><?php echo esc_html( $label ); ?></span>
-                                                <code class="zap-check-key"><?php echo esc_html( $key ); ?></code>
-                                            </label>
+                                            <option value="<?php echo esc_attr( $key ); ?>"
+                                                    <?php selected( in_array( $key, $sel_events, true ) ); ?>>
+                                                <?php echo esc_html( $label ); ?> — <?php echo esc_html( $key ); ?>
+                                            </option>
                                         <?php endforeach; ?>
-                                    </div>
+                                    </select>
+                                    <span class="zap-field-desc" style="margin-top:4px;">
+                                        <?php esc_html_e( 'Ctrl+clique (ou Cmd+clique no Mac) para selecionar múltiplos.', 'zap-tutor-events' ); ?>
+                                    </span>
                                 </div>
 
                                 <div class="zap-field-row zap-field-row--inline">
