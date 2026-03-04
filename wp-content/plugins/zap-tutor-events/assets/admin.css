@@ -168,12 +168,13 @@
 
 /* ----- Colour palette ------------------------------------------------ */
 :root {
-    --zap-green:  #128c7e;
-    --zap-green2: #25d366;
-    --zap-dark:   #075e54;
-    --zap-bg:     #f0f7f4;
-    --zap-red:    #d63638;
-    --zap-warn:   #dba617;
+    --zap-primary:   #1a237e;
+    --zap-primary2:  #3949ab;
+    --zap-primary3:  #5c6bc0;
+    --zap-accent:    #43a047;
+    --zap-bg:        #f0f2f7;
+    --zap-red:       #d63638;
+    --zap-warn:      #dba617;
 }
 
 /* ----- Page wrapper -------------------------------------------------- */
@@ -185,7 +186,7 @@
 
 /* ----- Header -------------------------------------------------------- */
 .zap-events-header {
-    background: linear-gradient(135deg, #075e54 0%, #128c7e 60%, #25d366 100%);
+    background: linear-gradient(135deg, #1a237e 0%, #283593 60%, #3949ab 100%);
     border-radius: 14px;
     padding: 20px 24px;
     color: #fff;
@@ -195,7 +196,7 @@
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 14px;
-    box-shadow: 0 6px 20px rgba(7,94,84,.22);
+    box-shadow: 0 6px 20px rgba(26,35,126,.22);
 }
 
 .zap-events-header__info {
@@ -251,13 +252,13 @@
 }
 
 .zap-nav-btn--accent {
-    background: #25d366;
-    border-color: #25d366;
+    background: #3949ab;
+    border-color: #3949ab;
 }
 
 .zap-nav-btn--accent:hover {
-    background: #1ebe58;
-    border-color: #1ebe58;
+    background: #283593;
+    border-color: #283593;
 }
 
 /* ----- Cards --------------------------------------------------------- */
@@ -271,7 +272,7 @@
 
 .zap-events-card__hdr {
     padding: 12px 20px;
-    background: linear-gradient(90deg, #075e54, #128c7e);
+    background: linear-gradient(90deg, #1a237e, #3949ab);
     color: #fff;
     font-size: .9rem;
     font-weight: 700;
@@ -355,8 +356,8 @@
 
 .zap-input:focus {
     outline: none;
-    border-color: #25d366;
-    box-shadow: 0 0 0 3px rgba(37,211,102,.15);
+    border-color: #3949ab;
+    box-shadow: 0 0 0 3px rgba(57,73,171,.15);
 }
 
 .zap-input--wide { width: 100%; box-sizing: border-box; }
@@ -373,8 +374,8 @@
 
 .zap-select:focus {
     outline: none;
-    border-color: #25d366;
-    box-shadow: 0 0 0 3px rgba(37,211,102,.15);
+    border-color: #3949ab;
+    box-shadow: 0 0 0 3px rgba(57,73,171,.15);
 }
 
 /* Toggle (reuse zapwa-switch structure) */
@@ -409,7 +410,7 @@
     transition: .3s;
 }
 
-.zap-switch input:checked + .slider { background: #25d366; }
+.zap-switch input:checked + .slider { background: #3949ab; }
 .zap-switch input:checked + .slider:before { transform: translateX(20px); }
 
 /* ----- Buttons ------------------------------------------------------- */
@@ -429,24 +430,24 @@
 }
 
 .zap-btn-primary {
-    background: #25d366;
+    background: #3949ab;
     color: #fff !important;
-    box-shadow: 0 2px 8px rgba(37,211,102,.35);
+    box-shadow: 0 2px 8px rgba(57,73,171,.35);
 }
 
 .zap-btn-primary:hover {
-    background: #1ebe58;
-    box-shadow: 0 4px 12px rgba(37,211,102,.45);
+    background: #283593;
+    box-shadow: 0 4px 12px rgba(57,73,171,.45);
     color: #fff !important;
 }
 
 .zap-btn-secondary {
-    background: #075e54;
+    background: #1a237e;
     color: #fff !important;
 }
 
 .zap-btn-secondary:hover {
-    background: #054a42;
+    background: #0d1757;
     color: #fff !important;
 }
 
@@ -501,7 +502,7 @@
 }
 
 .zap-check-item:hover {
-    background: #e8f5e9;
+    background: #e8eaf6;
 }
 
 .zap-check-label {
@@ -512,8 +513,8 @@
 
 .zap-check-key {
     font-size: .72rem;
-    background: #e8f5e9;
-    color: #2e7d32;
+    background: #e8eaf6;
+    color: #1a237e;
     padding: 1px 5px;
     border-radius: 4px;
     font-family: 'SFMono-Regular', Consolas, monospace;
@@ -546,11 +547,11 @@
 }
 
 .zap-wh-item:last-child { border-bottom: none; }
-.zap-wh-item:hover { background: #fafffe; }
+.zap-wh-item:hover { background: #f5f5ff; }
 
 .zap-wh-item--editing {
-    background: #f0faf4 !important;
-    border-left: 3px solid #25d366;
+    background: #eef0fb !important;
+    border-left: 3px solid #3949ab;
 }
 
 .zap-wh-item__header {
@@ -564,7 +565,7 @@
 .zap-wh-item__name {
     font-weight: 700;
     font-size: .92rem;
-    color: #075e54;
+    color: #1a237e;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -590,7 +591,7 @@
     text-decoration: none;
 }
 
-.zap-icon-btn--edit:hover { background: #e8f5e9; border-color: #a5d6a7; }
+.zap-icon-btn--edit:hover { background: #e8eaf6; border-color: #9fa8da; }
 .zap-icon-btn--del:hover  { background: #ffebee; border-color: #ef9a9a; }
 
 .zap-wh-item__url {
@@ -637,8 +638,8 @@
 }
 
 .zap-api-list code {
-    background: #e8f5e9;
-    color: #2e7d32;
+    background: #e8eaf6;
+    color: #1a237e;
     padding: 1px 5px;
     border-radius: 4px;
     font-size: .8rem;
@@ -715,19 +716,19 @@
 }
 
 .zap-tab-nav__item:hover {
-    background: #f0faf4;
-    color: #075e54 !important;
+    background: #e8eaf6;
+    color: #1a237e !important;
     text-decoration: none;
 }
 
 .zap-tab-nav__item--active {
-    background: linear-gradient(135deg, #075e54, #128c7e);
+    background: linear-gradient(135deg, #1a237e, #3949ab);
     color: #fff !important;
-    box-shadow: 0 2px 8px rgba(7,94,84,.25);
+    box-shadow: 0 2px 8px rgba(26,35,126,.25);
 }
 
 .zap-tab-nav__item--active:hover {
-    background: linear-gradient(135deg, #075e54, #128c7e);
+    background: linear-gradient(135deg, #1a237e, #3949ab);
     color: #fff !important;
 }
 
@@ -743,11 +744,13 @@
 .zap-floating-nav {
     position: fixed;
     bottom: 28px;
-    right: 28px;
+    left: 24px;
+    right: 24px;
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    flex-direction: row;
+    align-items: center;
     z-index: 9999;
+    pointer-events: none;
 }
 
 .zap-floating-nav__btn {
@@ -755,32 +758,36 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
-    background: #075e54;
+    background: #1a237e;
     color: #fff !important;
     text-decoration: none !important;
-    font-size: 1.25rem;
+    font-size: 1.3rem;
     font-weight: 700;
-    box-shadow: 0 4px 16px rgba(7,94,84,.4);
+    box-shadow: 0 4px 16px rgba(26,35,126,.4);
     transition: background .2s, transform .2s, box-shadow .2s;
+    pointer-events: all;
+}
+
+.zap-floating-nav__btn--next {
+    margin-left: auto;
 }
 
 .zap-floating-nav__btn:hover {
-    background: #25d366;
+    background: #3949ab;
     transform: scale(1.12);
-    box-shadow: 0 6px 20px rgba(37,211,102,.5);
+    box-shadow: 0 6px 20px rgba(57,73,171,.5);
     color: #fff !important;
 }
 
 .zap-floating-nav__tooltip {
     position: absolute;
-    right: 58px;
     top: 50%;
     transform: translateY(-50%);
     white-space: nowrap;
-    background: rgba(7,94,84,.92);
+    background: rgba(26,35,126,.92);
     color: #fff;
     font-size: .72rem;
     font-weight: 600;
@@ -791,16 +798,41 @@
     transition: opacity .2s;
 }
 
+.zap-floating-nav__btn--prev .zap-floating-nav__tooltip {
+    left: 58px;
+    right: auto;
+}
+
+.zap-floating-nav__btn--next .zap-floating-nav__tooltip {
+    right: 58px;
+    left: auto;
+}
+
 .zap-floating-nav__btn:hover .zap-floating-nav__tooltip {
     opacity: 1;
 }
 
 @media (max-width: 768px) {
-    .zap-tab-nav { padding: 4px 6px; }
-    .zap-tab-nav__item { padding: 7px 10px; font-size: .78rem; }
-    .zap-floating-nav { bottom: 16px; right: 14px; }
-    .zap-floating-nav__btn { width: 42px; height: 42px; font-size: 1.1rem; }
+    .zap-tab-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-radius: 0;
+        box-shadow: 0 -2px 16px rgba(0,0,0,.14);
+        z-index: 1000;
+        padding: 4px 6px;
+        justify-content: space-around;
+        overflow-x: hidden;
+        flex-shrink: 0;
+    }
+    .zap-tab-nav__item { padding: 7px 8px; font-size: .74rem; flex: 1; justify-content: center; }
+    .zap-floating-nav { bottom: 70px; left: 12px; right: 12px; }
+    .zap-floating-nav__btn { width: 44px; height: 44px; font-size: 1.1rem; }
     .zap-floating-nav__tooltip { display: none; }
+    /* Compensate for fixed bottom tab nav */
+    .wrap.zap-events-page,
+    .wrap.zap-dashboard { padding-bottom: 72px; }
 }
 
 /* =======================================================================
@@ -822,8 +854,8 @@
 
 .zap-events-select:focus {
     outline: none;
-    border-color: #25d366;
-    box-shadow: 0 0 0 3px rgba(37,211,102,.15);
+    border-color: #3949ab;
+    box-shadow: 0 0 0 3px rgba(57,73,171,.15);
 }
 
 .zap-events-select option {
@@ -835,8 +867,8 @@
 
 .zap-events-select option:checked,
 .zap-events-select option:hover {
-    background: #e8f5e9;
-    color: #075e54;
+    background: #e8eaf6;
+    color: #1a237e;
 }
 
 /* ----- Logs filter form ---------------------------------------------- */
@@ -868,7 +900,7 @@
 }
 
 .zap-logs-table thead tr {
-    background: #f0f7f4;
+    background: #e8eaf6;
 }
 
 .zap-logs-table th {
@@ -876,10 +908,10 @@
     text-align: left;
     font-size: .75rem;
     font-weight: 700;
-    color: #075e54;
+    color: #1a237e;
     text-transform: uppercase;
     letter-spacing: .3px;
-    border-bottom: 2px solid #e0f2f1;
+    border-bottom: 2px solid #c5cae9;
 }
 
 .zap-logs-table td {
@@ -889,7 +921,7 @@
 }
 
 .zap-logs-table tbody tr:hover {
-    background: #fafffe;
+    background: #f5f5ff;
 }
 
 .zap-col-id {
@@ -906,8 +938,8 @@
 
 .zap-code-sm {
     font-size: .75rem;
-    background: #e8f5e9;
-    color: #2e7d32;
+    background: #e8eaf6;
+    color: #1a237e;
     padding: 1px 5px;
     border-radius: 4px;
     font-family: 'SFMono-Regular', Consolas, monospace;
@@ -965,8 +997,8 @@
 
 .zap-pagination .page-numbers:hover,
 .zap-pagination .page-numbers.current {
-    background: #25d366;
-    border-color: #25d366;
+    background: #3949ab;
+    border-color: #3949ab;
     color: #fff !important;
 }
 
@@ -993,7 +1025,7 @@
         border-radius: 10px;
         margin: 0 0 10px;
         box-shadow: 0 2px 8px rgba(0,0,0,.07);
-        border-left: 3px solid #25d366;
+        border-left: 3px solid #3949ab;
     }
     .zap-logs-table td {
         display: flex;
