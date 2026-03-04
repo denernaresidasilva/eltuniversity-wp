@@ -81,13 +81,13 @@ class Connection {
                         <div class="zapwa-diag-item">
                             <span class="zapwa-diag-label">⚙️ <?php esc_html_e( 'WP-Cron', 'zap-whatsapp-automation' ); ?></span>
                             <span class="zapwa-diag-val <?php echo $wp_cron_disabled ? 'err' : 'ok'; ?>">
-                                <?php echo $wp_cron_disabled ? '❌ Desabilitado' : '✅ Habilitado'; ?>
+                                <?php echo $wp_cron_disabled ? '❌ ' . esc_html__( 'Desabilitado', 'zap-whatsapp-automation' ) : '✅ ' . esc_html__( 'Habilitado', 'zap-whatsapp-automation' ); ?>
                             </span>
                         </div>
                         <div class="zapwa-diag-item">
                             <span class="zapwa-diag-label">⏰ <?php esc_html_e( 'Próxima execução', 'zap-whatsapp-automation' ); ?></span>
                             <span class="zapwa-diag-val <?php echo $next_cron ? 'ok' : 'err'; ?>">
-                                <?php echo $next_cron ? esc_html(date('H:i:s', $next_cron)) : '❌ Não agendado'; ?>
+                                <?php echo $next_cron ? esc_html( date( 'H:i:s', $next_cron ) ) : '❌ ' . esc_html__( 'Não agendado', 'zap-whatsapp-automation' ); ?>
                             </span>
                         </div>
                         <div class="zapwa-diag-item">

@@ -120,7 +120,8 @@ class WebhooksPage {
                                             name="wh_events[]"
                                             multiple
                                             class="zap-events-select"
-                                            size="8">
+                                            size="8"
+                                            aria-label="<?php esc_attr_e( 'Selecione eventos (Ctrl+clique para múltiplos)', 'zap-tutor-events' ); ?>">
                                         <?php
                                         $sel_events = $edit_wh['events'] ?? [];
                                         foreach ( $all_events as $key => $label ) :

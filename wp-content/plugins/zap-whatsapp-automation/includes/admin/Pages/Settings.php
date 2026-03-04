@@ -35,8 +35,8 @@ class Settings {
             <?php if (isset($enabled)): ?>
                 <div class="notice notice-success is-dismissible">
                     <p><?php echo $enabled
-                        ? '✅ Logs <strong>ativados</strong> com sucesso.'
-                        : '🔕 Logs <strong>desativados</strong> com sucesso.'; ?></p>
+                        ? '✅ ' . esc_html__( 'Logs ativados com sucesso.', 'zap-whatsapp-automation' )
+                        : '🔕 ' . esc_html__( 'Logs desativados com sucesso.', 'zap-whatsapp-automation' ); ?></p>
                 </div>
             <?php endif; ?>
 

@@ -421,8 +421,11 @@
                     $text.html(escaped + '<div class="zapwa-bubble-time">' + now + ' ✓✓</div>');
                 }
                 $wrap.slideDown(200);
-                // Scroll the preview card into view
-                $('html, body').animate({ scrollTop: $wrap.offset().top - 80 }, 300);
+                // Scroll the preview card into view (guard against missing offset)
+                var offset = $wrap.offset();
+                if (offset) {
+                    $('html, body').animate({ scrollTop: offset.top - 80 }, 300);
+                }
             });
 
             // Close inline preview via ✕ button
