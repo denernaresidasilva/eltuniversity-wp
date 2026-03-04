@@ -42,6 +42,11 @@ class Dashboard {
 
         $all_events = Events::registry();
         $total_events = array_sum(array_column($stats, 'count'));
+        $log_enabled = (bool) get_option('zap_events_log_enabled', true);
+        $use_queue = (bool) get_option('zap_events_use_queue', false);
+        $active_webhooks = count(array_filter(WebhooksPage::get_webhooks(), static function($wh) {
+            return !empty($wh['active']);
+        }));
 
         // Color palette for event types
         $event_colors = [
@@ -296,6 +301,27 @@ class Dashboard {
             </div>
 
             <?php \ZapTutorEvents\Admin::render_tab_nav( 'zap-tutor-events' ); ?>
+
+            <div class="zap-dashboard-actions">
+                <a class="zap-btn zap-btn-primary" href="<?php echo esc_url(admin_url('admin.php?page=zap-tutor-events-webhooks')); ?>">➕ Novo Webhook</a>
+                <a class="zap-btn zap-btn-secondary" href="<?php echo esc_url(admin_url('admin.php?page=zap-tutor-events-logs')); ?>">📋 Ver Logs</a>
+                <a class="zap-btn zap-btn-secondary" href="<?php echo esc_url(admin_url('admin.php?page=zap-tutor-events-settings')); ?>">⚙️ Configurações</a>
+            </div>
+
+            <div class="zap-health-grid">
+                <div class="zap-health-item">
+                    <span class="zap-health-item__label">Logs de eventos</span>
+                    <strong class="zap-health-item__value <?php echo $log_enabled ? 'is-ok' : 'is-off'; ?>"><?php echo $log_enabled ? 'Ativos' : 'Desativados'; ?></strong>
+                </div>
+                <div class="zap-health-item">
+                    <span class="zap-health-item__label">Fila assíncrona</span>
+                    <strong class="zap-health-item__value <?php echo $use_queue ? 'is-ok' : 'is-off'; ?>"><?php echo $use_queue ? 'Ligada' : 'Desligada'; ?></strong>
+                </div>
+                <div class="zap-health-item">
+                    <span class="zap-health-item__label">Webhooks ativos</span>
+                    <strong class="zap-health-item__value is-ok"><?php echo esc_html($active_webhooks); ?></strong>
+                </div>
+            </div>
 
             <!-- KPI row -->
             <div class="zap-kpi-row">

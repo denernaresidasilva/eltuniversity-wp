@@ -92,6 +92,13 @@ class Settings {
 
             <?php Admin::render_tab_nav( 'zap-tutor-events-settings' ); ?>
 
+            <div class="zap-section-nav" aria-label="<?php esc_attr_e('Navegação das seções', 'zap-tutor-events'); ?>">
+                <a href="#zap-settings-logs" class="zap-section-nav__item">📋 Logs</a>
+                <a href="#zap-settings-advanced" class="zap-section-nav__item">⚡ Avançado</a>
+                <a href="#zap-settings-api" class="zap-section-nav__item">🔑 API</a>
+                <a href="#zap-settings-cleanup" class="zap-section-nav__item">🧹 Limpeza</a>
+            </div>
+
             <?php if (isset($_GET['logs_toggled'])): ?>
                 <div class="notice notice-success is-dismissible">
                     <p>Logs de eventos <?php echo get_option('zap_events_log_enabled', true) ? '<strong>ativados</strong>' : '<strong>desativados</strong>'; ?> com sucesso.</p>
@@ -139,7 +146,7 @@ class Settings {
             <form method="post">
                 <?php wp_nonce_field('zap_events_settings'); ?>
 
-                <div class="zap-events-card">
+                <div class="zap-events-card" id="zap-settings-logs">
                     <div class="zap-events-card__hdr">📁 Configurações de Logs</div>
                     <div class="zap-events-card__body">
                         <div class="zap-field-row">
@@ -164,7 +171,7 @@ class Settings {
                     </div>
                 </div>
 
-                <div class="zap-events-card">
+                <div class="zap-events-card" id="zap-settings-advanced">
                     <div class="zap-events-card__hdr">⚡ Configurações Avançadas</div>
                     <div class="zap-events-card__body">
                         <div class="zap-field-row">
@@ -178,7 +185,7 @@ class Settings {
                     </div>
                 </div>
 
-                <div class="zap-events-card">
+                <div class="zap-events-card" id="zap-settings-api">
                     <div class="zap-events-card__hdr">🔑 API REST</div>
                     <div class="zap-events-card__body">
                         <div class="zap-field-row">
@@ -203,7 +210,7 @@ class Settings {
                 </div>
             </form>
 
-            <div class="zap-events-card">
+            <div class="zap-events-card" id="zap-settings-cleanup">
                 <div class="zap-events-card__hdr zap-events-card__hdr--warn">🧹 Limpeza Manual de Logs</div>
                 <div class="zap-events-card__body">
                     <p>Remova manualmente logs antigos baseado na configuração de retenção atual.</p>
