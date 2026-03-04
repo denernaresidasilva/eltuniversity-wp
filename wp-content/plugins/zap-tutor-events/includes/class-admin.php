@@ -34,18 +34,27 @@ class Admin {
     }
 
     /**
-     * Render tab navigation bar and floating navigation arrows.
+     * Return plugin navigation tabs.
+     *
+     * @return array<int, array<string, string>>
+     */
+    public static function get_navigation_tabs() {
+        return [
+            [ 'page' => 'zap-tutor-events',              'icon' => '📊', 'label' => 'Dashboard'       ],
+            [ 'page' => 'zap-tutor-events-webhooks',     'icon' => '🔗', 'label' => 'Webhooks'        ],
+            [ 'page' => 'zap-tutor-events-logs',         'icon' => '📋', 'label' => 'Logs'            ],
+            [ 'page' => 'zap-tutor-events-webhook-logs', 'icon' => '📡', 'label' => 'Logs de Webhook' ],
+            [ 'page' => 'zap-tutor-events-settings',     'icon' => '⚙️', 'label' => 'Configurações'   ],
+        ];
+    }
+
+    /**
+     * Render app-like desktop sidebar and mobile bottom nav.
      *
      * @param string $active_page Current page slug (e.g. 'zap-tutor-events-logs').
      */
     public static function render_tab_nav( $active_page = '' ) {
-        $tabs = [
-            [ 'page' => 'zap-tutor-events',             'icon' => '📊', 'label' => 'Dashboard'        ],
-            [ 'page' => 'zap-tutor-events-webhooks',    'icon' => '🔗', 'label' => 'Webhooks'         ],
-            [ 'page' => 'zap-tutor-events-logs',        'icon' => '📋', 'label' => 'Logs'             ],
-            [ 'page' => 'zap-tutor-events-webhook-logs','icon' => '📡', 'label' => 'Logs de Webhook'  ],
-            [ 'page' => 'zap-tutor-events-settings',    'icon' => '⚙️', 'label' => 'Configurações'    ],
-        ];
+        $tabs = self::get_navigation_tabs();
 
         $current_index = -1;
         foreach ( $tabs as $i => $tab ) {
@@ -55,8 +64,8 @@ class Admin {
             }
         }
 
-        // Tab bar
-        echo '<nav class="zap-tab-nav" aria-label="' . esc_attr__( 'Navegação do Plugin', 'zap-tutor-events' ) . '">';
+        echo '<nav class="zap-tab-nav zap-tab-nav--desktop" aria-label="' . esc_attr__( 'Navegação do Plugin', 'zap-tutor-events' ) . '">';
+        echo '<div class="zap-tab-nav__title">⚡ ZAP Tutor Events</div>';
         foreach ( $tabs as $i => $tab ) {
             $is_active = ( $tab['page'] === $active_page );
             $url   = admin_url( 'admin.php?page=' . $tab['page'] );
@@ -75,12 +84,28 @@ class Admin {
         }
         echo '</nav>';
 
+        echo '<nav class="zap-tab-nav zap-tab-nav--mobile" aria-label="' . esc_attr__( 'Navegação móvel do Plugin', 'zap-tutor-events' ) . '">';
+        foreach ( $tabs as $tab ) {
+            $is_active = ( $tab['page'] === $active_page );
+            $url   = admin_url( 'admin.php?page=' . $tab['page'] );
+            $class = 'zap-tab-nav__item' . ( $is_active ? ' zap-tab-nav__item--active' : '' );
+            printf(
+                '<a href="%s" class="%s"%s><span class="zap-tab-nav__icon">%s</span><span class="zap-tab-nav__label">%s</span></a>',
+                esc_url( $url ),
+                esc_attr( $class ),
+                $is_active ? ' aria-current="page"' : '',
+                $tab['icon'],
+                esc_html( $tab['label'] )
+            );
+        }
+        echo '</nav>';
+
         // Floating arrows
         $prev_tab = ( $current_index > 0 ) ? $tabs[ $current_index - 1 ] : null;
         $next_tab = ( $current_index >= 0 && $current_index < count( $tabs ) - 1 ) ? $tabs[ $current_index + 1 ] : null;
 
         if ( $prev_tab || $next_tab ) {
-            echo '<div class="zap-floating-nav">';
+            echo '<div class="zap-floating-nav" aria-hidden="true">';
             if ( $prev_tab ) {
                 printf(
                     '<a href="%s" class="zap-floating-nav__btn zap-floating-nav__btn--prev" title="%s" aria-label="%s">&#8592;<span class="zap-floating-nav__tooltip">%s %s</span></a>',
@@ -137,25 +162,23 @@ class Admin {
             [WebhooksPage::class, 'render']
         );
 
-        if (get_option('zap_events_log_enabled', true)) {
-            add_submenu_page(
-                'zap-tutor-events',
-                'Logs',
-                'Logs',
-                'manage_options',
-                'zap-tutor-events-logs',
-                [self::class, 'logs_page']
-            );
+        add_submenu_page(
+            'zap-tutor-events',
+            'Logs',
+            'Logs',
+            'manage_options',
+            'zap-tutor-events-logs',
+            [self::class, 'logs_page']
+        );
 
-            add_submenu_page(
-                'zap-tutor-events',
-                'Logs de Webhook',
-                'Logs de Webhook',
-                'manage_options',
-                'zap-tutor-events-webhook-logs',
-                [self::class, 'webhook_logs_page']
-            );
-        }
+        add_submenu_page(
+            'zap-tutor-events',
+            'Logs de Webhook',
+            'Logs de Webhook',
+            'manage_options',
+            'zap-tutor-events-webhook-logs',
+            [self::class, 'webhook_logs_page']
+        );
     }
 
     public static function logs_page() {
@@ -206,6 +229,33 @@ class Admin {
             </div>
 
             <?php Admin::render_tab_nav( 'zap-tutor-events-logs' ); ?>
+
+            <?php if (!get_option('zap_events_log_enabled', true)): ?>
+                <div class="notice notice-warning is-dismissible">
+                    <p>⚠️ <?php esc_html_e('Os logs de eventos estão desativados. Ative em Configurações para voltar a registrar novos eventos.', 'zap-tutor-events'); ?></p>
+                </div>
+            <?php endif; ?>
+
+            <?php
+            $active_filters = [];
+            if ($event_filter) {
+                $active_filters[] = 'Evento: ' . ($all_events[$event_filter] ?? $event_filter);
+            }
+            if ($user_filter) {
+                $active_filters[] = 'User ID: ' . $user_filter;
+            }
+            if ($date_from || $date_to) {
+                $active_filters[] = 'Período: ' . ($date_from ?: '...') . ' → ' . ($date_to ?: '...');
+            }
+            ?>
+
+            <?php if (!empty($active_filters)): ?>
+                <div class="zap-active-filters" aria-label="<?php esc_attr_e('Filtros ativos', 'zap-tutor-events'); ?>">
+                    <?php foreach ($active_filters as $active_filter): ?>
+                        <span class="zap-filter-chip"><?php echo esc_html($active_filter); ?></span>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
 
             <?php if (isset($_GET['deleted']) && $_GET['deleted'] === 'all'): ?>
                 <div class="notice notice-success is-dismissible"><p>🗑️ Todos os logs de eventos foram excluídos.</p></div>
@@ -445,7 +495,21 @@ class Admin {
 
         // Check if table exists
         if ($wpdb->get_var("SHOW TABLES LIKE '{$table}'") != $table) {
-            echo '<div class="wrap zap-events-page"><div class="zap-events-card"><div class="zap-events-card__body"><div class="zap-empty-state"><span class="zap-empty-state__icon">🔗</span><p>' . esc_html__('Nenhum log de webhook registrado ainda.', 'zap-tutor-events') . '</p></div></div></div></div>';
+            ?>
+            <div class="wrap zap-events-page">
+                <div class="zap-events-header">
+                    <div class="zap-events-header__info">
+                        <span class="zap-events-header__icon">📡</span>
+                        <div>
+                            <h1 class="zap-events-header__title"><?php esc_html_e( 'Logs de Webhook', 'zap-tutor-events' ); ?></h1>
+                            <p class="zap-events-header__sub"><?php esc_html_e( 'Acompanhe entregas e falhas de webhooks', 'zap-tutor-events' ); ?></p>
+                        </div>
+                    </div>
+                </div>
+                <?php Admin::render_tab_nav( 'zap-tutor-events-webhook-logs' ); ?>
+                <div class="zap-events-card"><div class="zap-events-card__body"><div class="zap-empty-state"><span class="zap-empty-state__icon">🔗</span><p><?php esc_html_e('Nenhum log de webhook registrado ainda.', 'zap-tutor-events'); ?></p></div></div></div>
+            </div>
+            <?php
             return;
         }
 

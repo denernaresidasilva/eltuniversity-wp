@@ -76,6 +76,13 @@ class WebhooksPage {
                 <div class="notice notice-info is-dismissible"><p>🗑️ Webhook removido.</p></div>
             <?php endif; ?>
 
+            <?php $active_count = count( array_filter( $webhooks, static function( $wh ) { return ! empty( $wh['active'] ); } ) ); ?>
+            <div class="zap-inline-kpis">
+                <div class="zap-inline-kpi"><span>🔗</span><?php echo esc_html( count( $webhooks ) ); ?> webhooks</div>
+                <div class="zap-inline-kpi zap-inline-kpi--ok"><span>✅</span><?php echo esc_html( $active_count ); ?> ativos</div>
+                <div class="zap-inline-kpi"><span>⚙️</span><?php echo esc_html( max( 0, count( $webhooks ) - $active_count ) ); ?> inativos</div>
+            </div>
+
             <div class="zap-webhooks-layout">
 
                 <!-- ── ADD / EDIT FORM ────────────────────────────────── -->
@@ -184,6 +191,15 @@ class WebhooksPage {
                             📋 <?php esc_html_e( 'Webhooks Cadastrados', 'zap-tutor-events' ); ?>
                             <span class="zap-badge zap-badge--count"><?php echo count( $webhooks ); ?></span>
                         </div>
+                        <div class="zap-events-card__body">
+                            <div class="zap-webhooks-toolbar">
+                                <input type="search"
+                                       id="zap-webhooks-search"
+                                       class="zap-input zap-input--wide"
+                                       placeholder="Buscar por nome ou URL..."
+                                       aria-label="<?php esc_attr_e( 'Buscar webhooks', 'zap-tutor-events' ); ?>">
+                            </div>
+                        </div>
                         <div class="zap-events-card__body zap-events-card__body--flush">
                             <?php if ( empty( $webhooks ) ): ?>
                                 <div class="zap-empty-state">
@@ -197,7 +213,7 @@ class WebhooksPage {
                                         $is_editing = ( $edit_id === $wh['id'] );
                                         $event_count = count( $wh['events'] );
                                     ?>
-                                    <li class="zap-wh-item<?php echo $is_editing ? ' zap-wh-item--editing' : ''; ?>">
+                                    <li data-zap-search="<?php echo esc_attr( strtolower( ( $wh['name'] ?? '' ) . ' ' . ( $wh['url'] ?? '' ) ) ); ?>" class="zap-wh-item<?php echo $is_editing ? ' zap-wh-item--editing' : ''; ?>">
                                         <div class="zap-wh-item__header">
                                             <div class="zap-wh-item__name">
                                                 <?php echo esc_html( $wh['name'] ); ?>
@@ -241,6 +257,22 @@ class WebhooksPage {
 
             </div><!-- /.zap-webhooks-layout -->
         </div><!-- /.wrap -->
+        <script>
+        (function(){
+            const input = document.getElementById('zap-webhooks-search');
+            if (!input) {
+                return;
+            }
+            const rows = Array.from(document.querySelectorAll('.zap-wh-item[data-zap-search]'));
+            input.addEventListener('input', function(){
+                const term = (input.value || '').trim().toLowerCase();
+                rows.forEach(function(row){
+                    const text = row.getAttribute('data-zap-search') || '';
+                    row.style.display = !term || text.indexOf(term) !== -1 ? '' : 'none';
+                });
+            });
+        })();
+        </script>
         <?php
     }
 
