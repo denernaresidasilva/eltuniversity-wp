@@ -1258,3 +1258,57 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* =======================================================================
+   ZAP Tutor Events — mobile/nav fixes (menu overlap + arrow position)
+   ======================================================================= */
+@media (min-width: 1201px) {
+    .zap-tab-nav--desktop {
+        left: calc(160px + 16px);
+        top: 118px;
+        z-index: 60;
+    }
+
+    .folded .zap-tab-nav--desktop {
+        left: calc(36px + 16px);
+    }
+
+    .zap-events-page,
+    .zap-dashboard {
+        margin-left: 250px;
+    }
+
+    .folded .zap-events-page,
+    .folded .zap-dashboard {
+        margin-left: 130px;
+    }
+}
+
+.zap-floating-nav {
+    left: auto;
+    right: 22px;
+    bottom: 86px;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.zap-floating-nav__btn--next {
+    margin-left: 0;
+}
+
+.zap-floating-nav__btn--prev .zap-floating-nav__tooltip {
+    left: auto;
+    right: 58px;
+}
+
+@media (max-width: 768px) {
+    .zap-tab-nav--mobile {
+        z-index: 100001;
+    }
+
+    .zap-floating-nav {
+        bottom: 82px;
+        right: 14px;
+    }
+}

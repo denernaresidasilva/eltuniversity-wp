@@ -48,6 +48,16 @@ class MessageSettings {
             <!-- ===== MAIN COLUMN ===== -->
             <div class="zapwa-ms-col-main">
 
+                <!-- CHANNEL NAV -->
+                <div class="zapwa-ms-channel-nav" aria-label="Navegação de canais">
+                    <button type="button" class="zapwa-ms-channel-btn is-wa" data-zapwa-scroll-target="#postdivrich">
+                        💬 Editor WhatsApp
+                    </button>
+                    <button type="button" class="zapwa-ms-channel-btn is-email" data-zapwa-scroll-target="#zapwa-email-section">
+                        ✉️ Editor E-mail
+                    </button>
+                </div>
+
                 <!-- TYPE SELECTOR -->
                 <div class="zapwa-ms-section">
                     <div class="zapwa-ms-section-head">
@@ -122,7 +132,7 @@ class MessageSettings {
                 </div>
 
                 <!-- EMAIL SECTION -->
-                <div class="zapwa-ms-section">
+                <div class="zapwa-ms-section" id="zapwa-email-section">
                     <div class="zapwa-ms-section-head zapwa-ms-section-head--green">
                         <span>✉️</span> E-mail Opcional
                     </div>
