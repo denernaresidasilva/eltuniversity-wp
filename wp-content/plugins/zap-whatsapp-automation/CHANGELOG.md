@@ -1,3 +1,10 @@
+## [Unreleased]
+
+### Changed
+- 🧹 Removido o arquivo de briefing `UI-UX-REDESIGN-IDEIAS.md` para reduzir ruído em PR e facilitar resolução de conflitos de merge.
+
+---
+
 # Changelog
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
