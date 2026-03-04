@@ -744,13 +744,17 @@
 .zap-floating-nav {
     position: fixed;
     bottom: 28px;
-    left: 24px;
+    left: 190px;
     right: 24px;
     display: flex;
     flex-direction: row;
     align-items: center;
     z-index: 9999;
     pointer-events: none;
+}
+
+.folded .zap-floating-nav {
+    left: 70px;
 }
 
 .zap-floating-nav__btn {
@@ -1033,4 +1037,205 @@
         border-bottom: 1px solid #f5f5f5;
     }
     .zap-logs-table td:last-child { border-bottom: none; }
+}
+
+/* =======================================================================
+   ZAP Tutor Events — App navigation + Sprint UX upgrades (v1.5.0)
+   ======================================================================= */
+
+.zap-tab-nav--desktop {
+    display: none !important;
+}
+
+.zap-tab-nav__title {
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: #666;
+    padding: 4px 10px 8px;
+    border-bottom: 1px solid #eceff1;
+    margin-bottom: 4px;
+}
+
+.zap-events-page,
+.zap-dashboard {
+    margin-left: 0;
+}
+
+.zap-tab-nav--desktop .zap-tab-nav__item {
+    width: 100%;
+    justify-content: flex-start;
+}
+
+.zap-tab-nav--desktop .zap-tab-nav__sep {
+    display: none;
+}
+
+.zap-tab-nav--mobile {
+    display: none;
+}
+
+.zap-active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: -8px 0 14px;
+}
+
+.zap-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    background: #eef2ff;
+    color: #283593;
+    border: 1px solid #c5cae9;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+.zap-inline-kpis {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.zap-inline-kpi {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #d9e2ec;
+    font-size: .78rem;
+    font-weight: 700;
+    color: #334155;
+}
+
+.zap-inline-kpi--ok {
+    background: #ecfdf5;
+    color: #166534;
+    border-color: #a7f3d0;
+}
+
+.zap-webhooks-toolbar {
+    max-width: 380px;
+}
+
+.zap-section-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: -6px 0 16px;
+}
+
+.zap-section-nav__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    background: #fff;
+    border: 1px solid #d9e2ec;
+    color: #334155;
+    font-size: .8rem;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 7px 12px;
+}
+
+.zap-section-nav__item:hover {
+    border-color: #3949ab;
+    color: #1a237e;
+}
+
+.zap-dashboard-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.zap-health-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(120px, 1fr));
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.zap-health-item {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 10px 12px;
+}
+
+.zap-health-item__label {
+    font-size: .72rem;
+    color: #64748b;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.zap-health-item__value {
+    font-size: .95rem;
+    color: #0f172a;
+}
+
+.zap-health-item__value.is-ok { color: #166534; }
+.zap-health-item__value.is-off { color: #b91c1c; }
+
+@media (max-width: 1200px) {
+    .zap-events-page,
+    .zap-dashboard {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .zap-tab-nav--desktop {
+        display: none;
+    }
+
+    .zap-tab-nav--mobile {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-radius: 0;
+        margin: 0;
+        padding: 4px;
+        justify-content: space-between;
+        z-index: 1000;
+        box-shadow: 0 -2px 14px rgba(0,0,0,.16);
+    }
+
+    .zap-tab-nav--mobile .zap-tab-nav__item {
+        flex: 1;
+        flex-direction: column;
+        gap: 2px;
+        padding: 6px 4px;
+        min-width: 0;
+    }
+
+    .zap-tab-nav--mobile .zap-tab-nav__label {
+        font-size: .65rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    .zap-tab-nav--mobile .zap-tab-nav__sep {
+        display: none;
+    }
+
+    .zap-floating-nav {
+        display: none;
+    }
+
+    .zap-health-grid {
+        grid-template-columns: 1fr;
+    }
 }
