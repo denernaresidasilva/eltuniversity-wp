@@ -285,6 +285,8 @@ class AdminMenu {
             'QueuePage.php', // ✅ FILA
             'Metrics.php', // ✅ MÉTRICAS
             'Settings.php', // ✅ CONFIGURAÇÕES
+            'Contacts.php', // ✅ CONTATOS & TAGS
+            'AIAgents.php', // ✅ AGENTES IA
         ];
 
         foreach ($files as $file) {
@@ -387,6 +389,26 @@ class AdminMenu {
             'manage_options',
             'zap-wa-settings',
             ['ZapWA\\Admin\\Pages\\Settings', 'render']
+        );
+
+        // SUBMENU CONTATOS / TAGS
+        add_submenu_page(
+            'zap-wa-metrics',
+            __('Contatos & Tags', 'zap-whatsapp-automation'),
+            __('Contatos & Tags', 'zap-whatsapp-automation'),
+            'manage_options',
+            'zap-wa-contacts',
+            ['ZapWA\\Admin\\Pages\\Contacts', 'render']
+        );
+
+        // SUBMENU AGENTES IA
+        add_submenu_page(
+            'zap-wa-metrics',
+            __('Agentes IA', 'zap-whatsapp-automation'),
+            '🤖 ' . __('Agentes IA', 'zap-whatsapp-automation'),
+            'manage_options',
+            'zap-wa-ai-agents',
+            ['ZapWA\\Admin\\Pages\\AIAgents', 'render']
         );
     }
 
