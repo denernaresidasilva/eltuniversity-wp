@@ -1452,23 +1452,37 @@ body.zapwa-modal-open {
     background: #fff;
     border: 1px solid #e5ece8;
     border-radius: 12px;
-    padding: 14px 12px;
+    padding: 16px 12px;
     text-align: center;
+    box-shadow: 0 2px 8px rgba(7, 94, 84, .06);
+    transition: transform .18s, box-shadow .18s;
+}
+
+.zapwa-stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(7, 94, 84, .12);
 }
 
 .zapwa-stat__num {
     font-weight: 800;
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     color: #075e54;
+    line-height: 1.1;
 }
 
 .zapwa-stat__label {
-    margin-top: 4px;
+    margin-top: 5px;
     font-size: .78rem;
     color: #666;
     text-transform: uppercase;
     letter-spacing: .3px;
 }
+
+/* Coloured accent variants for individual stat cards */
+.zapwa-stat--ok    { border-top: 3px solid #25d366; }
+.zapwa-stat--error { border-top: 3px solid #e53935; }
+.zapwa-stat--warn  { border-top: 3px solid #fb8c00; }
+.zapwa-stat--info  { border-top: 3px solid #1e88e5; }
 
 .zapwa-status-pill {
     display: inline-flex;
@@ -1601,5 +1615,175 @@ body.zapwa-modal-open {
         border-radius: 14px;
         background: rgba(255,255,255,.94);
         box-shadow: 0 -2px 16px rgba(0,0,0,.14);
+    }
+}
+
+/* =======================================================================
+   UI/UX ENHANCEMENTS v1.3.0 — Editor, Cards, App-like styling
+   ======================================================================= */
+
+/* ----- Message editor toolbar improvements --------------------------- */
+.zapwa-editor-wrap {
+    border: 1.5px solid #d4e8df;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 10px 0;
+    box-shadow: 0 2px 10px rgba(7,94,84,.07);
+}
+
+.zapwa-editor-toolbar {
+    background: linear-gradient(90deg, #075e54, #128c7e);
+}
+
+.zapwa-editor-toolbar__label {
+    color: rgba(255,255,255,.9);
+}
+
+.zapwa-tool-btn {
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.2);
+    color: #fff;
+    transition: background .18s, transform .14s;
+}
+
+.zapwa-tool-btn:hover {
+    background: rgba(255,255,255,.25);
+    transform: scale(1.1);
+    color: #fff;
+}
+
+.zapwa-tool-btn--preview {
+    background: #25d366;
+    border-color: #1ebe58;
+    color: #fff;
+    font-weight: 700;
+}
+
+.zapwa-tool-btn--preview:hover {
+    background: #1ebe58;
+    transform: scale(1.04);
+}
+
+/* ----- Message list card enhancements -------------------------------- */
+.post-type-zapwa_message .wp-list-table tbody tr {
+    transition: transform .18s, box-shadow .18s;
+}
+
+.post-type-zapwa_message .wp-list-table tbody tr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(7,94,84,.14);
+}
+
+/* Status column — improve pill visibility inside cards */
+.post-type-zapwa_message .wp-list-table .column-zapwa_status {
+    margin-top: 6px;
+}
+
+/* ----- Logs page improvements ---------------------------------------- */
+.zapwa-page .widefat.striped tbody tr:nth-child(odd) {
+    background: #f8fbfa;
+}
+
+.zapwa-page .widefat th {
+    background: #f0f7f4;
+    color: #075e54;
+    font-size: .82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    border-bottom: 2px solid #d4e8df;
+}
+
+.zapwa-page .widefat td {
+    vertical-align: middle;
+    border-bottom: 1px solid #eef4f1;
+    font-size: .855rem;
+}
+
+/* ----- Filter form improvements -------------------------------------- */
+.zapwa-filter-form select,
+.zapwa-filter-form input[type="text"],
+.zapwa-filter-form input[type="number"] {
+    border: 1.5px solid #d4e8df;
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: .875rem;
+    background: #fff;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.zapwa-filter-form select:focus,
+.zapwa-filter-form input[type="text"]:focus,
+.zapwa-filter-form input[type="number"]:focus {
+    outline: none;
+    border-color: #25d366;
+    box-shadow: 0 0 0 3px rgba(37,211,102,.15);
+}
+
+/* ----- Inline ghost/secondary button improvements -------------------- */
+.zapwa-btn-ghost {
+    background: transparent;
+    border: 1.5px solid #b7d6c7;
+    color: #075e54 !important;
+    transition: all .2s;
+}
+
+.zapwa-btn-ghost:hover {
+    background: #e8f5e9;
+    border-color: #25d366;
+    color: #075e54 !important;
+}
+
+/* ----- New message button -------------------------------------------- */
+.zapwa-btn-new {
+    background: #25d366;
+    color: #fff !important;
+    box-shadow: 0 2px 8px rgba(37,211,102,.4);
+    transition: all .2s;
+}
+
+.zapwa-btn-new:hover {
+    background: #1ebe58;
+    box-shadow: 0 4px 14px rgba(37,211,102,.5);
+    color: #fff !important;
+}
+
+.zapwa-btn-new__icon {
+    font-weight: 900;
+    font-size: 1.1em;
+}
+
+/* ----- Mobile improvements ------------------------------------------- */
+@media (max-width: 782px) {
+    .zapwa-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .zapwa-page-toolbar {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .zapwa-page-toolbar form {
+        width: 100%;
+    }
+
+    .zapwa-admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .zapwa-admin-header h1,
+    .zapwa-admin-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .zapwa-editor-vars {
+        padding: 6px 10px;
+    }
+
+    .zapwa-editor-vars__chips {
+        gap: 4px;
     }
 }

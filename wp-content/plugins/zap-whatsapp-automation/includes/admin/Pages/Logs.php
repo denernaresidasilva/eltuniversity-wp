@@ -75,10 +75,10 @@ class Logs {
             <?php endif; ?>
 
             <div class="zapwa-stats-grid">
-                <div class="zapwa-stat"><div class="zapwa-stat__num"><?php echo number_format_i18n($total_logs); ?></div><div class="zapwa-stat__label">Exibidos</div></div>
-                <div class="zapwa-stat"><div class="zapwa-stat__num"><?php echo number_format_i18n($count_ok); ?></div><div class="zapwa-stat__label">Enviados</div></div>
-                <div class="zapwa-stat"><div class="zapwa-stat__num"><?php echo number_format_i18n($count_pending); ?></div><div class="zapwa-stat__label">Pendentes</div></div>
-                <div class="zapwa-stat"><div class="zapwa-stat__num"><?php echo number_format_i18n($count_error); ?></div><div class="zapwa-stat__label">Com erro</div></div>
+                <div class="zapwa-stat zapwa-stat--info"><div class="zapwa-stat__num"><?php echo number_format_i18n($total_logs); ?></div><div class="zapwa-stat__label">Exibidos</div></div>
+                <div class="zapwa-stat zapwa-stat--ok"><div class="zapwa-stat__num"><?php echo number_format_i18n($count_ok); ?></div><div class="zapwa-stat__label">Enviados</div></div>
+                <div class="zapwa-stat zapwa-stat--warn"><div class="zapwa-stat__num"><?php echo number_format_i18n($count_pending); ?></div><div class="zapwa-stat__label">Pendentes</div></div>
+                <div class="zapwa-stat zapwa-stat--error"><div class="zapwa-stat__num"><?php echo number_format_i18n($count_error); ?></div><div class="zapwa-stat__label">Com erro</div></div>
             </div>
 
             <div class="zapwa-card">

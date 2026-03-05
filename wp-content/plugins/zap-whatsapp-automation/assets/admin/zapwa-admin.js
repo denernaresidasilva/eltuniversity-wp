@@ -329,11 +329,13 @@
         $waModal: null,
 
         init: function () {
+            // Always cache the modal reference (rendered in admin_footer, not inside form).
+            this.$waModal = $('#zapwa-wa-preview-modal');
+
             if (!$('#zapwa-editor-wrap').length) {
                 return;
             }
 
-            this.$waModal = $('#zapwa-wa-preview-modal');
             this._bindEmoji();
             this._bindMediaButtons();
             this._bindPreview();

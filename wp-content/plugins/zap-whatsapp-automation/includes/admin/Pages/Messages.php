@@ -79,15 +79,15 @@ class Messages {
         </div>
 
         <div class="zapwa-stats-grid zapwa-stats-grid--messages">
-            <div class="zapwa-stat">
+            <div class="zapwa-stat zapwa-stat--info">
                 <div class="zapwa-stat__num"><?php echo number_format_i18n($total); ?></div>
                 <div class="zapwa-stat__label"><?php esc_html_e('Publicadas', 'zap-whatsapp-automation'); ?></div>
             </div>
-            <div class="zapwa-stat">
+            <div class="zapwa-stat zapwa-stat--ok">
                 <div class="zapwa-stat__num"><?php echo number_format_i18n($active); ?></div>
                 <div class="zapwa-stat__label"><?php esc_html_e('Ativas', 'zap-whatsapp-automation'); ?></div>
             </div>
-            <div class="zapwa-stat">
+            <div class="zapwa-stat zapwa-stat--warn">
                 <div class="zapwa-stat__num"><?php echo number_format_i18n($drafts); ?></div>
                 <div class="zapwa-stat__label"><?php esc_html_e('Rascunhos', 'zap-whatsapp-automation'); ?></div>
             </div>

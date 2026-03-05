@@ -1302,13 +1302,60 @@
     right: 58px;
 }
 
-@media (max-width: 768px) {
-    .zap-tab-nav--mobile {
-        z-index: 100001;
+/* --- WordPress admin uses 782px as its mobile breakpoint.
+       Match that here so the desktop nav hides at the same
+       point WP switches to its mobile sidebar layout.      --- */
+@media (max-width: 782px) {
+    /* Hide the desktop/sidebar nav on WP-admin mobile. */
+    .zap-tab-nav--desktop {
+        display: none !important;
     }
 
+    /* Reset content margin when desktop nav is gone. */
+    .zap-events-page,
+    .zap-dashboard {
+        margin-left: 0 !important;
+    }
+
+    /* Show mobile bottom nav (was only enabled at ≤768px before). */
+    .zap-tab-nav--mobile {
+        display: flex !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-radius: 0;
+        margin: 0;
+        padding: 4px;
+        justify-content: space-between;
+        /* Stay above WP admin bar (99999) but let the WP admin
+           sliding sidebar (9990) appear on top so it doesn't get
+           obscured when the user opens the hamburger menu.         */
+        z-index: 10000;
+        box-shadow: 0 -2px 14px rgba(0, 0, 0, .16);
+    }
+
+    /* Add padding so page content isn't hidden behind the bottom nav. */
+    .wrap.zap-events-page,
+    .wrap.zap-dashboard {
+        padding-bottom: 72px !important;
+    }
+
+    /* Hide floating prev/next arrows — the bottom nav handles navigation. */
     .zap-floating-nav {
-        bottom: 82px;
+        display: none !important;
+    }
+}
+
+/* Floating back/next arrows on tablets (783px–1200px): improved positioning. */
+@media (min-width: 783px) and (max-width: 1200px) {
+    .zap-floating-nav {
         right: 14px;
+        bottom: 24px;
+    }
+    .zap-floating-nav__btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1.15rem;
     }
 }
