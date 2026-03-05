@@ -43,6 +43,10 @@ class Loader {
             \ZapWA\Cron::init();
         }
 
+        if (class_exists('\ZapWA\Link_Tracker')) {
+            \ZapWA\Link_Tracker::init();
+        }
+
         if (class_exists('\ZapWA\HealthCheck')) {
             \ZapWA\HealthCheck::init();
         }
@@ -99,6 +103,9 @@ class Loader {
             'QRCodeGenerator.php', // ✅ QR CODE GENERATOR
             'Cron.php',
             'Metrics.php', // ✅ MÉTRICAS
+            'Event_Tracker.php',
+            'Tag_Manager.php',
+            'Link_Tracker.php',
             'HealthCheck.php', // ✅ HEALTH CHECK
         ];
 

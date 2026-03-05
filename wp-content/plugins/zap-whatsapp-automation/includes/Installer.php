@@ -57,6 +57,21 @@ class Installer {
             \ZapWA\EventLogReader::create_table();
         }
 
+        // Event tracker table
+        if (class_exists('\ZapWA\Event_Tracker')) {
+            \ZapWA\Event_Tracker::create_table();
+        }
+
+        // Tag manager tables
+        if (class_exists('\ZapWA\Tag_Manager')) {
+            \ZapWA\Tag_Manager::create_tables();
+        }
+
+        // Link tracker table
+        if (class_exists('\ZapWA\Link_Tracker')) {
+            \ZapWA\Link_Tracker::create_table();
+        }
+
         // Set default options with standardized names
         if (get_option('zapwa_evolution_url') === false) {
             add_option('zapwa_evolution_url', '');
