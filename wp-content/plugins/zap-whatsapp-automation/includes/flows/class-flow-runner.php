@@ -127,8 +127,9 @@ class Flow_Runner {
      * @return string 'ok' | 'stop' | 'condition_true' | 'condition_false'
      */
     private static function execute_node(array $node, array $context, $run) {
-        $type = $node['type'] ?? '';
-        $data = $node['data'] ?? [];
+        $type    = $node['type'] ?? '';
+        $data    = $node['data'] ?? [];
+        $user_id = (int) ($context['user_id'] ?? 0);
 
         switch ($type) {
             case 'trigger':
@@ -147,6 +148,26 @@ class Flow_Runner {
 
             case 'condition':
                 return self::execute_condition($data, $context);
+
+            case 'add_tag':
+                $tag = sanitize_text_field($data['tag'] ?? '');
+                if ($tag && $user_id && class_exists('\ZapWA\Tag_Manager')) {
+                    \ZapWA\Tag_Manager::add_tag_to_contact($user_id, $tag);
+                }
+                return 'ok';
+
+            case 'remove_tag':
+                $tag = sanitize_text_field($data['tag'] ?? '');
+                if ($tag && $user_id && class_exists('\ZapWA\Tag_Manager')) {
+                    \ZapWA\Tag_Manager::remove_tag_from_contact($user_id, $tag);
+                }
+                return 'ok';
+
+            case 'webhook':
+                return self::execute_webhook($data, $context);
+
+            case 'ai_agent':
+                return self::execute_ai_agent($data, $context);
 
             case 'end':
                 return 'stop';
@@ -245,11 +266,16 @@ class Flow_Runner {
 
         switch ($condition_type) {
             case 'has_tag':
-                $tags = get_user_meta($user_id, 'zapwa_tags', true);
-                if (!is_array($tags)) {
-                    $tags = array_map('trim', explode(',', (string) $tags));
+                if (class_exists('\ZapWA\Tag_Manager')) {
+                    $result = \ZapWA\Tag_Manager::contact_has_tag($user_id, $value);
+                } else {
+                    // Legacy fallback
+                    $tags = get_user_meta($user_id, 'zapwa_tags', true);
+                    if (!is_array($tags)) {
+                        $tags = array_map('trim', explode(',', (string) $tags));
+                    }
+                    $result = in_array($value, $tags, true);
                 }
-                $result = in_array($value, $tags, true);
                 break;
 
             case 'has_purchased_course':
@@ -257,6 +283,62 @@ class Flow_Runner {
                 $enrolled = get_user_meta($user_id, '_tutor_enrolled_course_ids', true);
                 $enrolled = is_array($enrolled) ? $enrolled : [];
                 $result   = in_array((int) $value, array_map('intval', $enrolled), true);
+                break;
+
+            case 'course_enrolled':
+                if (class_exists('\ZapWA\Event_Tracker')) {
+                    $events = \ZapWA\Event_Tracker::get_events($user_id, 'course_enrolled', 1);
+                    $result = !empty($events);
+                    if ($value) {
+                        $result = false;
+                        foreach ($events as $ev) {
+                            if ($ev->event_value === (string) absint($value)) {
+                                $result = true;
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    $enrolled = get_user_meta($user_id, '_tutor_enrolled_course_ids', true);
+                    $enrolled = is_array($enrolled) ? $enrolled : [];
+                    $result   = in_array((int) $value, array_map('intval', $enrolled), true);
+                }
+                break;
+
+            case 'course_completed':
+                if (class_exists('\ZapWA\Event_Tracker')) {
+                    $events = \ZapWA\Event_Tracker::get_events($user_id, 'course_completed', 100);
+                    $result = !empty($events);
+                    if ($value) {
+                        $result = false;
+                        foreach ($events as $ev) {
+                            if ($ev->event_value === (string) absint($value)) {
+                                $result = true;
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    $result = false;
+                }
+                break;
+
+            case 'link_clicked':
+                if (class_exists('\ZapWA\Event_Tracker')) {
+                    $events = \ZapWA\Event_Tracker::get_events($user_id, 'link_clicked', 1);
+                    $result = !empty($events);
+                } else {
+                    $result = false;
+                }
+                break;
+
+            case 'video_watched':
+                if (class_exists('\ZapWA\Event_Tracker')) {
+                    $events = \ZapWA\Event_Tracker::get_events($user_id, 'video_completed', 1);
+                    $result = !empty($events);
+                } else {
+                    $result = false;
+                }
                 break;
 
             default:
@@ -269,6 +351,99 @@ class Flow_Runner {
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
+
+    private static function execute_webhook(array $data, array $context) {
+        $url    = esc_url_raw($data['url'] ?? '');
+        $method = strtoupper(sanitize_text_field($data['method'] ?? 'POST'));
+
+        if (!$url || !wp_http_validate_url($url)) {
+            return 'ok';
+        }
+
+        if (!in_array($method, ['GET', 'POST', 'PUT', 'PATCH'], true)) {
+            $method = 'POST';
+        }
+
+        // Replace dynamic variables {{name}}, {{email}}, {{tags}}
+        $body_template = $data['body'] ?? '';
+        $tags = '';
+        if (class_exists('\ZapWA\Tag_Manager') && !empty($context['user_id'])) {
+            $raw_tags = \ZapWA\Tag_Manager::get_contact_tags((int) $context['user_id']);
+            $tags = implode(',', array_map('sanitize_text_field', (array) $raw_tags));
+        }
+        $body_template = str_replace(
+            ['{{name}}', '{{email}}', '{{tags}}'],
+            [
+                sanitize_text_field($context['user_name'] ?? ''),
+                sanitize_email($context['user_email'] ?? ''),
+                $tags,
+            ],
+            $body_template
+        );
+
+        // Parse headers
+        $headers = ['Content-Type' => 'application/json'];
+        if (!empty($data['headers']) && is_array($data['headers'])) {
+            foreach ($data['headers'] as $key => $value) {
+                $headers[sanitize_text_field($key)] = sanitize_text_field($value);
+            }
+        }
+
+        $args = [
+            'method'  => $method,
+            'headers' => $headers,
+            'timeout' => 15,
+            'body'    => $body_template,
+        ];
+
+        $response = wp_remote_request($url, $args);
+
+        if (is_wp_error($response)) {
+            Logger::debug('[Flows] webhook error', ['error' => $response->get_error_message()]);
+        } else {
+            Logger::debug('[Flows] webhook response', ['code' => wp_remote_retrieve_response_code($response)]);
+            if (class_exists('\ZapWA\Event_Tracker') && !empty($context['user_id'])) {
+                \ZapWA\Event_Tracker::record(
+                    (int) $context['user_id'],
+                    'webhook_received',
+                    $url,
+                    'flow_webhook',
+                    ['method' => $method, 'status' => wp_remote_retrieve_response_code($response)]
+                );
+            }
+        }
+
+        return 'ok';
+    }
+
+    private static function execute_ai_agent(array $data, array $context) {
+        $agent_id = absint($data['agent_id'] ?? 0);
+        $prompt   = sanitize_textarea_field($data['prompt'] ?? '');
+        $user_id  = (int) ($context['user_id'] ?? 0);
+
+        if (!$agent_id || !$prompt || !$user_id) {
+            return 'ok';
+        }
+
+        // Replace placeholders in prompt
+        $prompt = str_replace(
+            ['{user_name}', '{user_email}'],
+            [$context['user_name'] ?? '', $context['user_email'] ?? ''],
+            $prompt
+        );
+
+        if (!class_exists('\ZapWA\AI_Agent')) {
+            return 'ok';
+        }
+
+        $result = \ZapWA\AI_Agent::run($agent_id, $user_id, $prompt);
+
+        if (!empty($result['text'])) {
+            Logger::debug('[Flows] AI Agent response', ['user_id' => $user_id, 'has_response' => true]);
+        }
+
+        return 'ok';
+    }
 
     private static function find_node_by_id(array $nodes, $id) {
         foreach ($nodes as $node) {

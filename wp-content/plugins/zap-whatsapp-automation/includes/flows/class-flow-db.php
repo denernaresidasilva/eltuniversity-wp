@@ -131,4 +131,55 @@ class Flow_DB {
             $wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", absint($run_id))
         );
     }
+
+    /**
+     * Create the flow_stats table.
+     */
+    public static function create_stats_table() {
+        global $wpdb;
+        $table   = $wpdb->prefix . 'zapwa_flow_stats';
+        $charset = $wpdb->get_charset_collate();
+
+        $sql = "CREATE TABLE {$table} (
+            id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            flow_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+            node_id VARCHAR(100) NOT NULL DEFAULT '',
+            executions BIGINT UNSIGNED NOT NULL DEFAULT 0,
+            conversions BIGINT UNSIGNED NOT NULL DEFAULT 0,
+            errors BIGINT UNSIGNED NOT NULL DEFAULT 0,
+            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            UNIQUE KEY flow_node (flow_id, node_id),
+            KEY flow_id (flow_id)
+        ) {$charset};";
+
+        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+        dbDelta($sql);
+    }
+
+    /**
+     * Increment a stat counter for a node.
+     *
+     * @param int    $flow_id
+     * @param string $node_id
+     * @param string $counter executions|conversions|errors
+     */
+    public static function increment_stat($flow_id, $node_id, $counter = 'executions') {
+        global $wpdb;
+        $allowed = ['executions', 'conversions', 'errors'];
+        if (!in_array($counter, $allowed, true)) {
+            return;
+        }
+        $table = $wpdb->prefix . 'zapwa_flow_stats';
+        // $counter is validated against $allowed above, so interpolation is safe.
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO {$table} (flow_id, node_id, {$counter}) VALUES (%d, %s, 1)
+                 ON DUPLICATE KEY UPDATE {$counter} = {$counter} + 1",
+                absint($flow_id),
+                sanitize_text_field($node_id)
+            )
+        );
+    }
 }

@@ -148,6 +148,7 @@ class Installer {
             require_once $flow_db_file;
             if (class_exists('\ZapWA\Flows\Flow_DB')) {
                 \ZapWA\Flows\Flow_DB::create_table();
+                \ZapWA\Flows\Flow_DB::create_stats_table();
             }
         }
         if (class_exists('\ZapWA\Flows\Flow_CPT')) {

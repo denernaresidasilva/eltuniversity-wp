@@ -84,6 +84,10 @@ class Loader {
         if (class_exists('\ZapWA\Flows\Flow_REST_Controller')) {
             \ZapWA\Flows\Flow_REST_Controller::init();
         }
+
+        if (class_exists('\ZapWA\Video_Tracker')) {
+            \ZapWA\Video_Tracker::init();
+        }
     }
 
     private static function load_post_types() {
@@ -117,6 +121,7 @@ class Loader {
             'Tutor_Integration.php',
             'AI_Agent.php',
             'Instagram.php',
+            'Video_Tracker.php',
             'HealthCheck.php', // ✅ HEALTH CHECK
         ];
 
