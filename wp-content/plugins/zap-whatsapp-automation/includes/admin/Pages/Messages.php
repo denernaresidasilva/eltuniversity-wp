@@ -34,8 +34,30 @@ class Messages {
         if ( ! $screen || $screen->id !== 'edit-zapwa_message' ) {
             return;
         }
+
         $new_url     = esc_url( admin_url( 'post-new.php?post_type=zapwa_message' ) );
         $metrics_url = esc_url( admin_url( 'admin.php?page=zap-wa-metrics' ) );
+
+        $counts = wp_count_posts('zapwa_message');
+        $total  = isset($counts->publish) ? (int) $counts->publish : 0;
+        $drafts = isset($counts->draft) ? (int) $counts->draft : 0;
+        $trash  = isset($counts->trash) ? (int) $counts->trash : 0;
+
+        $active_query = new \WP_Query([
+            'post_type'              => 'zapwa_message',
+            'post_status'            => ['publish', 'draft'],
+            'posts_per_page'         => -1,
+            'fields'                 => 'ids',
+            'meta_key'               => '_zapwa_active',
+            'meta_value'             => '1',
+            'no_found_rows'          => true,
+            'ignore_sticky_posts'    => true,
+            'update_post_meta_cache' => false,
+            'update_post_term_cache' => false,
+        ]);
+
+        $active = (int) $active_query->post_count;
+        wp_reset_postdata();
         ?>
         <div class="zapwa-messages-header">
             <div class="zapwa-messages-header__info">
@@ -53,6 +75,25 @@ class Messages {
                     <span class="zapwa-btn-new__icon">＋</span>
                     <?php esc_html_e( 'Nova Mensagem', 'zap-whatsapp-automation' ); ?>
                 </a>
+            </div>
+        </div>
+
+        <div class="zapwa-stats-grid zapwa-stats-grid--messages">
+            <div class="zapwa-stat">
+                <div class="zapwa-stat__num"><?php echo number_format_i18n($total); ?></div>
+                <div class="zapwa-stat__label"><?php esc_html_e('Publicadas', 'zap-whatsapp-automation'); ?></div>
+            </div>
+            <div class="zapwa-stat">
+                <div class="zapwa-stat__num"><?php echo number_format_i18n($active); ?></div>
+                <div class="zapwa-stat__label"><?php esc_html_e('Ativas', 'zap-whatsapp-automation'); ?></div>
+            </div>
+            <div class="zapwa-stat">
+                <div class="zapwa-stat__num"><?php echo number_format_i18n($drafts); ?></div>
+                <div class="zapwa-stat__label"><?php esc_html_e('Rascunhos', 'zap-whatsapp-automation'); ?></div>
+            </div>
+            <div class="zapwa-stat">
+                <div class="zapwa-stat__num"><?php echo number_format_i18n($trash); ?></div>
+                <div class="zapwa-stat__label"><?php esc_html_e('Lixeira', 'zap-whatsapp-automation'); ?></div>
             </div>
         </div>
         <?php

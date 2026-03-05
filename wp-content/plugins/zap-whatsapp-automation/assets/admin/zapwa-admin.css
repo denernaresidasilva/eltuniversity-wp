@@ -1509,3 +1509,97 @@ body.zapwa-modal-open {
         width: 100%;
     }
 }
+
+/* ----- Messages list in card layout (desktop + mobile) -------------- */
+.zapwa-stats-grid--messages {
+    margin-top: -6px;
+}
+
+.post-type-zapwa_message .wp-list-table {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+}
+
+.post-type-zapwa_message .wp-list-table thead,
+.post-type-zapwa_message .wp-list-table tfoot {
+    display: none;
+}
+
+.post-type-zapwa_message .wp-list-table tbody {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 14px;
+}
+
+.post-type-zapwa_message .wp-list-table tbody tr {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid #dcebe4;
+    border-left: 4px solid #25d366;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.07);
+}
+
+.post-type-zapwa_message .wp-list-table tbody td {
+    display: block;
+    border: none;
+    padding: 4px 0;
+}
+
+.post-type-zapwa_message .wp-list-table .column-title {
+    font-weight: 700;
+    color: #075e54;
+    font-size: .95rem;
+}
+
+.post-type-zapwa_message .wp-list-table .column-title .row-title {
+    color: #075e54;
+}
+
+.post-type-zapwa_message .wp-list-table .column-date,
+.post-type-zapwa_message .wp-list-table .column-author {
+    font-size: .78rem;
+    color: #6b7280;
+}
+
+.post-type-zapwa_message .wp-list-table .row-actions {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #e6ece9;
+    visibility: visible;
+}
+
+.post-type-zapwa_message .wp-list-table .row-actions span a {
+    display: inline-flex;
+    padding: 5px 10px;
+    border-radius: 7px;
+    background: #eef8f3;
+    color: #0f766e;
+    font-size: .75rem;
+    text-decoration: none;
+}
+
+@media (max-width: 960px) {
+    .post-type-zapwa_message .wp-list-table tbody {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ----- FAB mobile style inspired by app bottom bar ------------------- */
+@media (max-width: 782px) {
+    .zapwa-fab-group {
+        left: 12px;
+        right: 12px;
+        bottom: 10px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 10px;
+        border-radius: 14px;
+        background: rgba(255,255,255,.94);
+        box-shadow: 0 -2px 16px rgba(0,0,0,.14);
+    }
+}
