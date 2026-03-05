@@ -92,7 +92,9 @@ class AdminMenu {
         ]);
 
         // Load flow builder assets only on builder and flows list pages.
-        if (self::is_flow_builder_page() || sanitize_key(wp_unslash($_GET['page'] ?? '')) === 'zap-wa-flows') {
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+        $current_page = isset($_GET['page']) ? sanitize_key(wp_unslash($_GET['page'])) : '';
+        if ($current_page === 'zap-wa-flows' || $current_page === 'zap-wa-flow-builder') {
             wp_enqueue_style(
                 'zapwa-flow-builder',
                 $url . 'flow-builder.css',
@@ -101,7 +103,7 @@ class AdminMenu {
             );
         }
 
-        if (self::is_flow_builder_page()) {
+        if ($current_page === 'zap-wa-flow-builder') {
             wp_enqueue_script(
                 'zapwa-flow-builder',
                 $url . 'flow-builder.js',

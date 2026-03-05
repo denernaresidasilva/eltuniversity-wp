@@ -222,7 +222,7 @@ class Flow_REST_Controller extends WP_REST_Controller {
      */
     private function sanitize_flow_structure($structure) {
         if (is_string($structure)) {
-            $decoded = json_decode(wp_unslash($structure), true);
+            $decoded = json_decode($structure, true);
             $structure = is_array($decoded) ? $decoded : [];
         }
 

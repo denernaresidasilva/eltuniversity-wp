@@ -751,20 +751,23 @@
             },
             body: JSON.stringify(payload),
         })
-        .then(function (res) { return res.json().then(function (d) { return { ok: res.ok, body: d }; }); })
+        .then(function (res) {
+            var ok = res.ok;
+            return res.json()
+                .catch(function () { return { message: res.statusText }; })
+                .then(function (d) { return { ok: ok, body: d }; });
+        })
         .then(function (res) {
             if (!res.ok) throw new Error(res.body.message || 'Error');
 
-            if (!flowId || flowId === 0) {
+            if (!data.flowId || data.flowId === 0) {
                 data.flowId = res.body.id;
-                // Update URL without reload
-                var newUrl = window.location.href.replace(
-                    /([?&]page=zap-wa-flow-builder)([^&]*)/,
-                    '$1&flow_id=' + res.body.id
-                );
-                if (!window.location.href.includes('flow_id=')) {
-                    history.replaceState({}, '', newUrl);
-                }
+                // Update URL without reload using URLSearchParams.
+                try {
+                    var newUrl = new URL(window.location.href);
+                    newUrl.searchParams.set('flow_id', res.body.id);
+                    history.replaceState({}, '', newUrl.toString());
+                } catch (e) { /* ignore URL update failure */ }
             }
 
             showNotice(data.i18n.saved || 'Salvo!', false);

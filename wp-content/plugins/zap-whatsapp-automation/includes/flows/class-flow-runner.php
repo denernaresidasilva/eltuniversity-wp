@@ -246,8 +246,9 @@ class Flow_Runner {
         switch ($condition_type) {
             case 'has_tag':
                 $tags = get_user_meta($user_id, 'zapwa_tags', true);
-                $tags = is_array($tags) ? $tags : (array) explode(',', (string) $tags);
-                $tags = array_map('trim', $tags);
+                if (!is_array($tags)) {
+                    $tags = array_map('trim', explode(',', (string) $tags));
+                }
                 $result = in_array($value, $tags, true);
                 break;
 
