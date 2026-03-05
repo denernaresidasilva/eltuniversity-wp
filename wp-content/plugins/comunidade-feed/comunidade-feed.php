@@ -2166,7 +2166,7 @@ class ComunidadeQA {
     
     // Processar submissão de pergunta
     public function handle_submit_question() {
-        if (!wp_verify_nonce($_POST['nonce'], 'comunidade_nonce')) {
+        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'comunidade_nonce')) {
             wp_die('Nonce inválido');
         }
         
@@ -2174,7 +2174,7 @@ class ComunidadeQA {
             wp_send_json_error('Você precisa estar logado');
         }
         
-        $title = sanitize_text_field($_POST['title']);
+        $title = sanitize_text_field($_POST['title'] ?? '');
         
         if (empty($title)) {
             wp_send_json_error('Título é obrigatório');
@@ -2242,7 +2242,7 @@ class ComunidadeQA {
     
     // Processar submissão de resposta
     public function handle_submit_answer() {
-        if (!wp_verify_nonce($_POST['nonce'], 'comunidade_nonce')) {
+        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'comunidade_nonce')) {
             wp_die('Nonce inválido');
         }
         
@@ -2250,8 +2250,8 @@ class ComunidadeQA {
             wp_send_json_error('Você precisa estar logado');
         }
         
-        $question_id = intval($_POST['question_id']);
-        $content = sanitize_textarea_field($_POST['content']);
+        $question_id = intval($_POST['question_id'] ?? 0);
+        $content = sanitize_textarea_field($_POST['content'] ?? '');
         
         if (empty($content)) {
             wp_send_json_error('Conteúdo da resposta é obrigatório');
@@ -2287,7 +2287,7 @@ class ComunidadeQA {
     
     // Processar exclusão de pergunta
     public function handle_delete_question() {
-        if (!wp_verify_nonce($_POST['nonce'], 'comunidade_admin_nonce')) {
+        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'comunidade_admin_nonce')) {
             wp_die('Nonce inválido');
         }
         
@@ -2295,7 +2295,7 @@ class ComunidadeQA {
             wp_send_json_error('Você não tem permissão para fazer isso');
         }
         
-        $question_id = intval($_POST['question_id']);
+        $question_id = intval($_POST['question_id'] ?? 0);
         
         if (empty($question_id)) {
             wp_send_json_error('ID da pergunta é obrigatório');
@@ -2328,7 +2328,7 @@ class ComunidadeQA {
     
     // Processar exclusão de resposta
     public function handle_delete_answer() {
-        if (!wp_verify_nonce($_POST['nonce'], 'comunidade_admin_nonce')) {
+        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'comunidade_admin_nonce')) {
             wp_die('Nonce inválido');
         }
         
@@ -2336,7 +2336,7 @@ class ComunidadeQA {
             wp_send_json_error('Você não tem permissão para fazer isso');
         }
         
-        $answer_id = intval($_POST['answer_id']);
+        $answer_id = intval($_POST['answer_id'] ?? 0);
         
         if (empty($answer_id)) {
             wp_send_json_error('ID da resposta é obrigatório');

@@ -294,7 +294,7 @@ class Admin {
 				do_action( "tutor_before_{$name}_admin_menu" );
 
 				do_action( "tutor_before_{$name}_menu" );
-				add_submenu_page( $args['parent_slug'], $args['page_title'], $args['menu_title'], $args['capability'], $args['menu_slug'], $args['callback'] ?? '', $args['position'] ?? null );
+				add_submenu_page( $args['parent_slug'], $args['page_title'] ?? '', $args['menu_title'] ?? '', $args['capability'], $args['menu_slug'], $args['callback'] ?? '', $args['position'] ?? null );
 
 				// Backward compatibility hook.
 				do_action( "tutor_after_{$name}_menu" );
@@ -307,7 +307,7 @@ class Admin {
 					continue;
 				}
 
-				add_submenu_page( 'tutor', '', '<span class="tutor-admin-menu-separator"></span>', 'manage_tutor_instructor', '#' );
+				add_submenu_page( 'tutor', __( 'Tutor LMS', 'tutor' ), '<span class="tutor-admin-menu-separator"></span>', 'manage_tutor_instructor', '#' );
 			}
 		}
 	}

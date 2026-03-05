@@ -3650,7 +3650,7 @@ class Webhook_Receiver {
             return;
         }
         
-        $webhook_id = sanitize_key($_POST['webhook_id']);
+        $webhook_id = sanitize_key($_POST['webhook_id'] ?? '');
         
         if (empty($webhook_id)) {
             wp_send_json_error(array('message' => 'ID do webhook inválido.'));
@@ -3685,7 +3685,7 @@ class Webhook_Receiver {
             return;
         }
         
-        $webhook_id = sanitize_key($_POST['webhook_id']);
+        $webhook_id = sanitize_key($_POST['webhook_id'] ?? '');
         
         if (empty($webhook_id)) {
             wp_send_json_error(array('message' => 'ID do webhook inválido.'));
@@ -3828,8 +3828,8 @@ class Webhook_Receiver {
             return;
         }
         
-        $webhook_name = sanitize_text_field($_POST['webhook_name']);
-        $webhook_id = sanitize_key($_POST['webhook_id']);
+        $webhook_name = sanitize_text_field($_POST['webhook_name'] ?? '');
+        $webhook_id = sanitize_key($_POST['webhook_id'] ?? '');
         $course_ids = isset($_POST['course_ids']) ? array_map('intval', $_POST['course_ids']) : array();
         $enrollment_type = isset($_POST['enrollment_type']) ? sanitize_text_field($_POST['enrollment_type']) : 'enroll';
         
@@ -3900,7 +3900,7 @@ class Webhook_Receiver {
             return;
         }
         
-        $webhook_id = sanitize_key($_POST['webhook_id']);
+        $webhook_id = sanitize_key($_POST['webhook_id'] ?? '');
         
         if (empty($webhook_id)) {
             wp_send_json_error(array('message' => 'ID do webhook inválido.'));
@@ -3941,7 +3941,7 @@ class Webhook_Receiver {
             return;
         }
         
-        $webhook_id = sanitize_key($_POST['webhook_id']);
+        $webhook_id = sanitize_key($_POST['webhook_id'] ?? '');
         $course_ids = isset($_POST['course_ids']) ? array_map('intval', $_POST['course_ids']) : array();
         
         if (empty($webhook_id) || empty($course_ids)) {
@@ -3981,7 +3981,7 @@ class Webhook_Receiver {
             return;
         }
         
-        $webhook_id = sanitize_key($_POST['webhook_id']);
+        $webhook_id = sanitize_key($_POST['webhook_id'] ?? '');
         
         if (empty($webhook_id)) {
             wp_send_json_error(array('message' => 'ID do webhook inválido.'));
@@ -4032,10 +4032,10 @@ class Webhook_Receiver {
             return;
         }
         
-        $webhook_id = sanitize_key($_POST['webhook_id']);
-        $product_id = sanitize_text_field($_POST['product_id']);
-        $product_name = sanitize_text_field($_POST['product_name']);
-        $course_id = intval($_POST['course_id']);
+        $webhook_id = sanitize_key($_POST['webhook_id'] ?? '');
+        $product_id = sanitize_text_field($_POST['product_id'] ?? '');
+        $product_name = sanitize_text_field($_POST['product_name'] ?? '');
+        $course_id = intval($_POST['course_id'] ?? 0);
         
         if (empty($webhook_id) || empty($product_id) || empty($product_name) || empty($course_id)) {
             wp_send_json_error(array('message' => 'Todos os campos são obrigatórios.'));
@@ -4087,7 +4087,7 @@ class Webhook_Receiver {
             return;
         }
         
-        $order_bump_id = intval($_POST['order_bump_id']);
+        $order_bump_id = intval($_POST['order_bump_id'] ?? 0);
         
         if (empty($order_bump_id)) {
             wp_send_json_error(array('message' => 'ID inválido.'));
@@ -4120,7 +4120,7 @@ class Webhook_Receiver {
             return;
         }
         
-        $webhook_id = sanitize_key($_POST['webhook_id']);
+        $webhook_id = sanitize_key($_POST['webhook_id'] ?? '');
         
         if (empty($webhook_id)) {
             wp_send_json_error(array('message' => 'ID do webhook inválido.'));
