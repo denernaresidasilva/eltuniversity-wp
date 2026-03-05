@@ -47,6 +47,14 @@ class Loader {
             \ZapWA\Link_Tracker::init();
         }
 
+        if (class_exists('\ZapWA\Tutor_Integration')) {
+            \ZapWA\Tutor_Integration::init();
+        }
+
+        if (class_exists('\ZapWA\Instagram')) {
+            \ZapWA\Instagram::init();
+        }
+
         if (class_exists('\ZapWA\HealthCheck')) {
             \ZapWA\HealthCheck::init();
         }
@@ -106,6 +114,9 @@ class Loader {
             'Event_Tracker.php',
             'Tag_Manager.php',
             'Link_Tracker.php',
+            'Tutor_Integration.php',
+            'AI_Agent.php',
+            'Instagram.php',
             'HealthCheck.php', // ✅ HEALTH CHECK
         ];
 
