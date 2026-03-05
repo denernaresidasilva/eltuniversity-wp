@@ -55,6 +55,23 @@ class Loader {
 
             add_action('zapwa_process_event_logs', ['\ZapWA\EventLogReader', 'process_pending_events']);
         }
+
+        // Flows module
+        if (class_exists('\ZapWA\Flows\Flow_CPT')) {
+            \ZapWA\Flows\Flow_CPT::register();
+        }
+
+        if (class_exists('\ZapWA\Flows\Flow_Engine')) {
+            \ZapWA\Flows\Flow_Engine::init();
+        }
+
+        if (class_exists('\ZapWA\Flows\Flow_Runner')) {
+            \ZapWA\Flows\Flow_Runner::init();
+        }
+
+        if (class_exists('\ZapWA\Flows\Flow_REST_Controller')) {
+            \ZapWA\Flows\Flow_REST_Controller::init();
+        }
     }
 
     private static function load_post_types() {
@@ -91,6 +108,27 @@ class Loader {
                 require_once $path;
             }
         }
+
+        // Flows module
+        self::load_flows();
+    }
+
+    private static function load_flows() {
+
+        $flows_files = [
+            'flows/class-flow-cpt.php',
+            'flows/class-flow-db.php',
+            'flows/class-flow-engine.php',
+            'flows/class-flow-runner.php',
+            'flows/class-flow-rest-controller.php',
+        ];
+
+        foreach ($flows_files as $file) {
+            $path = plugin_dir_path(__FILE__) . $file;
+            if (file_exists($path)) {
+                require_once $path;
+            }
+        }
     }
 
     private static function load_admin() {
@@ -101,6 +139,8 @@ class Loader {
             'admin/ajax.php',
             'admin/Ajax/EmailPreview.php',
             'admin/Metaboxes/MessageSettings.php',
+            'admin/Pages/Flows.php',
+            'admin/Pages/FlowBuilder.php',
         ];
 
         foreach ($admin_files as $file) {

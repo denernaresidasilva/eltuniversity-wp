@@ -94,6 +94,23 @@ class Installer {
                 \ZapWA\PostTypes\Message::register();
             }
         }
+
+        // Register automation_flow CPT and create flow_runs table
+        $flow_cpt_file = plugin_dir_path(__FILE__) . 'flows/class-flow-cpt.php';
+        $flow_db_file  = plugin_dir_path(__FILE__) . 'flows/class-flow-db.php';
+        if (file_exists($flow_cpt_file)) {
+            require_once $flow_cpt_file;
+        }
+        if (file_exists($flow_db_file)) {
+            require_once $flow_db_file;
+            if (class_exists('\ZapWA\Flows\Flow_DB')) {
+                \ZapWA\Flows\Flow_DB::create_table();
+            }
+        }
+        if (class_exists('\ZapWA\Flows\Flow_CPT')) {
+            \ZapWA\Flows\Flow_CPT::register();
+        }
+
         flush_rewrite_rules();
     }
 
@@ -101,7 +118,8 @@ class Installer {
         // Clear scheduled cron hooks
         wp_clear_scheduled_hook('zapwa_process_queue');
         wp_clear_scheduled_hook('zapwa_process_event_logs');
-        
+        wp_clear_scheduled_hook('zapwa_process_flow');
+
         // Flush rewrite rules
         flush_rewrite_rules();
     }

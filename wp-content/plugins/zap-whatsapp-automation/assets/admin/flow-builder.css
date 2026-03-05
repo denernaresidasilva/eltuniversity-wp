@@ -1,0 +1,469 @@
+/* ============================================================
+   ZapWA — Flow Builder Styles
+   ============================================================ */
+
+/* ---- Flows list page ---- */
+.zapwa-flows-page .zapwa-flows-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 24px;
+}
+
+.zapwa-flows-empty {
+    text-align: center;
+    padding: 60px 20px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.07);
+    margin-top: 24px;
+}
+.zapwa-flows-empty__icon { font-size: 3rem; margin-bottom: 12px; }
+.zapwa-flows-empty h3 { margin: 0 0 8px; color: #075e54; font-size: 1.2rem; }
+.zapwa-flows-empty p  { color: #888; margin: 0 0 20px; }
+
+/* Flow card */
+.zapwa-flow-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.07);
+    padding: 18px;
+    border-left: 4px solid #ccc;
+    transition: box-shadow .2s;
+}
+.zapwa-flow-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,.13); }
+.zapwa-flow-card.is-active  { border-color: #25d366; }
+.zapwa-flow-card.is-inactive{ border-color: #ccc; }
+
+.zapwa-flow-card__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.zapwa-flow-card__title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #075e54;
+    flex: 1;
+}
+.zapwa-flow-card__status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.zapwa-flow-card__status-dot.active   { background: #25d366; }
+.zapwa-flow-card__status-dot.inactive { background: #ccc; }
+
+.zapwa-flow-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+    font-size: .82rem;
+    color: #666;
+}
+.zapwa-flow-status-badge {
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.zapwa-flow-status-badge.active   { background: #c8e6c9; color: #2e7d32; }
+.zapwa-flow-status-badge.inactive { background: #f5f5f5; color: #888; }
+
+.zapwa-flow-card__actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+/* ============================================================
+   Builder page layout
+   ============================================================ */
+.zapwa-builder-page {
+    margin: 0 -20px 0 -12px;
+    background: #f0f7f4;
+    min-height: 100vh;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Toolbar */
+.zapwa-builder-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 20px;
+    background: #075e54;
+    color: #fff;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 32px;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+.zapwa-builder-toolbar__left,
+.zapwa-builder-toolbar__center,
+.zapwa-builder-toolbar__right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.zapwa-builder-toolbar__center { flex: 1; justify-content: center; }
+.zapwa-builder-toolbar__right  { margin-left: auto; }
+
+.zapwa-builder-back {
+    background: rgba(255,255,255,.15);
+    color: #fff !important;
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 6px;
+    padding: 5px 12px;
+    text-decoration: none;
+    font-size: .85rem;
+}
+.zapwa-builder-back:hover { background: rgba(255,255,255,.25); }
+
+.zapwa-builder-title {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.35);
+    color: #fff;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: .95rem;
+    font-weight: 600;
+    width: 220px;
+}
+.zapwa-builder-title::placeholder { color: rgba(255,255,255,.6); }
+.zapwa-builder-title:focus { outline: none; background: rgba(255,255,255,.2); }
+
+.zapwa-builder-toolbar__label { font-size: .82rem; color: rgba(255,255,255,.8); }
+
+.zapwa-builder-select {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.35);
+    color: #fff;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: .85rem;
+}
+.zapwa-builder-select option { color: #333; background: #fff; }
+
+.zapwa-builder-status-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: .85rem;
+}
+.zapwa-toggle-label { color: rgba(255,255,255,.9); }
+
+.zapwa-btn-icon {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.3);
+    color: #fff;
+    border-radius: 6px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+}
+.zapwa-btn-icon:hover { background: rgba(255,255,255,.25); }
+
+.zapwa-btn-primary {
+    background: #25d366;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 18px;
+    font-size: .9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s;
+}
+.zapwa-btn-primary:hover { background: #1ebe59; }
+
+/* Main layout */
+.zapwa-builder-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    height: calc(100vh - 104px);
+}
+
+/* Palette */
+.zapwa-builder-palette {
+    width: 170px;
+    min-width: 170px;
+    background: #fff;
+    border-right: 1px solid #e0e0e0;
+    padding: 14px 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.zapwa-palette-title {
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: #888;
+    margin-bottom: 4px;
+}
+.zapwa-palette-node {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 9px 10px;
+    cursor: grab;
+    font-size: .85rem;
+    font-weight: 600;
+    color: #333;
+    transition: background .15s, box-shadow .15s;
+    user-select: none;
+}
+.zapwa-palette-node:hover    { background: #e8f5e9; border-color: #25d366; box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+.zapwa-palette-node:active   { cursor: grabbing; }
+.zapwa-node-icon             { font-size: 1.1rem; }
+.zapwa-palette-hint {
+    font-size: .72rem;
+    color: #aaa;
+    text-align: center;
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+/* Canvas */
+.zapwa-builder-canvas-wrap {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    background: #f5f9f7;
+    background-image: radial-gradient(circle, #c8e6c9 1px, transparent 1px);
+    background-size: 28px 28px;
+    cursor: default;
+}
+.zapwa-builder-canvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 4000px;
+    height: 4000px;
+    transform-origin: 0 0;
+}
+
+/* SVG edges layer */
+.zapwa-edges-svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    overflow: visible;
+}
+.zapwa-edge-path {
+    fill: none;
+    stroke: #128c7e;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    marker-end: url(#zapwa-arrow);
+}
+.zapwa-edge-path.is-drawing {
+    stroke: #25d366;
+    stroke-dasharray: 6 4;
+}
+.zapwa-edge-delete-zone {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 14;
+    cursor: pointer;
+    pointer-events: stroke;
+}
+.zapwa-edge-delete-zone:hover + .zapwa-edge-path { stroke: #e53935; }
+
+/* Nodes */
+.zapwa-nodes-layer {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+}
+.zapwa-node {
+    position: absolute;
+    min-width: 160px;
+    max-width: 220px;
+    background: #fff;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.1);
+    cursor: move;
+    user-select: none;
+    transition: box-shadow .15s;
+}
+.zapwa-node:hover    { box-shadow: 0 6px 20px rgba(0,0,0,.15); }
+.zapwa-node.selected { border-color: #1e88e5; box-shadow: 0 0 0 3px rgba(30,136,229,.25); }
+
+/* Node type colours */
+.zapwa-node[data-type="trigger"]       { border-color: #1e88e5; }
+.zapwa-node[data-type="send_whatsapp"] { border-color: #25d366; }
+.zapwa-node[data-type="send_email"]    { border-color: #fb8c00; }
+.zapwa-node[data-type="delay"]         { border-color: #ab47bc; }
+.zapwa-node[data-type="condition"]     { border-color: #e53935; }
+.zapwa-node[data-type="end"]           { border-color: #555; }
+
+.zapwa-node__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px 7px;
+    border-bottom: 1px solid #eee;
+    font-weight: 700;
+    font-size: .85rem;
+}
+.zapwa-node[data-type="trigger"]       .zapwa-node__header { background: #e3f2fd; color: #0d47a1; }
+.zapwa-node[data-type="send_whatsapp"] .zapwa-node__header { background: #e8f5e9; color: #1b5e20; }
+.zapwa-node[data-type="send_email"]    .zapwa-node__header { background: #fff3e0; color: #e65100; }
+.zapwa-node[data-type="delay"]         .zapwa-node__header { background: #f3e5f5; color: #6a1b9a; }
+.zapwa-node[data-type="condition"]     .zapwa-node__header { background: #ffebee; color: #b71c1c; }
+.zapwa-node[data-type="end"]           .zapwa-node__header { background: #f5f5f5; color: #333; }
+
+.zapwa-node__body {
+    padding: 8px 12px;
+    font-size: .78rem;
+    color: #555;
+    line-height: 1.4;
+}
+.zapwa-node__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 8px;
+    border-top: 1px solid #f0f0f0;
+}
+
+/* Connection ports */
+.zapwa-port {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    border: 2.5px solid #888;
+    background: #fff;
+    cursor: crosshair;
+    transition: background .1s, border-color .1s;
+    flex-shrink: 0;
+}
+.zapwa-port:hover     { background: #25d366; border-color: #25d366; }
+.zapwa-port.is-input  { cursor: default; }
+.zapwa-port.is-output { cursor: crosshair; }
+
+.zapwa-node__delete {
+    background: none;
+    border: none;
+    color: #e53935;
+    cursor: pointer;
+    font-size: .85rem;
+    padding: 2px 4px;
+    line-height: 1;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity .15s;
+}
+.zapwa-node:hover .zapwa-node__delete { opacity: 1; }
+.zapwa-node__delete:hover { background: #ffebee; }
+
+/* Settings panel */
+.zapwa-builder-settings {
+    width: 280px;
+    min-width: 240px;
+    background: #fff;
+    border-left: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+.zapwa-settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #075e54;
+    color: #fff;
+    font-weight: 600;
+    font-size: .9rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+.zapwa-settings-close {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+.zapwa-settings-close:hover { opacity: .7; }
+.zapwa-settings-body {
+    padding: 16px;
+    flex: 1;
+}
+
+.zapwa-field { margin-bottom: 14px; }
+.zapwa-field label {
+    display: block;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+.zapwa-field input[type="text"],
+.zapwa-field input[type="number"],
+.zapwa-field select,
+.zapwa-field textarea {
+    width: 100%;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: .85rem;
+    box-sizing: border-box;
+    color: #333;
+    background: #fafafa;
+    transition: border-color .15s;
+}
+.zapwa-field input:focus,
+.zapwa-field select:focus,
+.zapwa-field textarea:focus { border-color: #25d366; outline: none; background: #fff; }
+.zapwa-field textarea { min-height: 80px; resize: vertical; }
+
+/* Save notice */
+.zapwa-save-notice {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #075e54;
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-size: .9rem;
+    font-weight: 600;
+    box-shadow: 0 4px 16px rgba(0,0,0,.25);
+    z-index: 9999;
+    transition: opacity .3s;
+}
+.zapwa-save-notice.error { background: #c62828; }
+
+/* Canvas drop highlight */
+.zapwa-builder-canvas-wrap.drag-over {
+    background-color: #e8f5e9;
+}
+
+/* Shortcuts shortcut link on dashboard */
+.zapwa-shortcut[href*="zap-wa-flows"] .icon::before { content: "🔀"; }
