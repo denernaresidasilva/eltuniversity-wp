@@ -49,7 +49,7 @@ class AdminMenu {
         }
 
         $url     = ZAP_WA_URL . 'assets/admin/';
-        $version = '1.2.0';
+        $version = '1.3.0';
 
         wp_enqueue_style(
             'zapwa-admin',
@@ -81,8 +81,8 @@ class AdminMenu {
     }
 
     /**
-     * Outputs the floating quick-action buttons and the email-preview modal
-     * in the admin footer — only on ZapWA plugin pages.
+     * Outputs the floating quick-action buttons, the email-preview modal,
+     * and the WhatsApp preview modal in the admin footer — only on ZapWA plugin pages.
      */
     public static function render_floating_nav() {
 
@@ -107,6 +107,7 @@ class AdminMenu {
                     onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
         </div>
 
+        <!-- Email preview modal -->
         <div id="zapwa-email-preview-modal"
              class="zapwa-modal-overlay"
              style="display:none;"
@@ -128,6 +129,40 @@ class AdminMenu {
                     <iframe id="zapwa-email-preview-frame"
                             title="<?php esc_attr_e('Preview do E-mail', 'zap-whatsapp-automation'); ?>"
                             style="width:100%;height:100%;border:none;display:none;"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- WhatsApp preview modal (rendered in footer to avoid CSS transform stacking issues) -->
+        <div id="zapwa-wa-preview-modal"
+             class="zapwa-modal-overlay"
+             style="display:none;"
+             role="dialog"
+             aria-modal="true"
+             aria-label="<?php esc_attr_e('Preview WhatsApp', 'zap-whatsapp-automation'); ?>">
+            <div class="zapwa-modal zapwa-modal--wa">
+                <div class="zapwa-modal-header zapwa-modal-header--green">
+                    <span>&#x1F4AC; <?php esc_html_e('Preview WhatsApp', 'zap-whatsapp-automation'); ?></span>
+                    <button type="button"
+                            class="zapwa-modal-close"
+                            id="zapwa-wa-modal-close"
+                            aria-label="<?php esc_attr_e('Fechar', 'zap-whatsapp-automation'); ?>">&#10005;</button>
+                </div>
+                <div class="zapwa-modal-body zapwa-modal-body--wa">
+                    <div class="zapwa-phone-header">
+                        <div class="zapwa-phone-avatar">&#x1F916;</div>
+                        <div>
+                            <div class="zapwa-phone-name"><?php echo esc_html(get_bloginfo('name') ?: __('Meu Site', 'zap-whatsapp-automation')); ?></div>
+                            <div class="zapwa-phone-status">online</div>
+                        </div>
+                    </div>
+                    <div class="zapwa-phone-body">
+                        <div class="zapwa-bubble">
+                            <div id="zapwa-wa-modal-text">
+                                <span class="zapwa-bubble-empty"><?php esc_html_e('Escreva a mensagem para ver o preview...', 'zap-whatsapp-automation'); ?></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -202,32 +237,6 @@ class AdminMenu {
             </div>
 
         </div><!-- /.zapwa-editor-wrap -->
-
-        <!-- Inline WhatsApp preview modal triggered from toolbar -->
-        <div id="zapwa-wa-preview-modal" class="zapwa-modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-label="<?php esc_attr_e( 'Preview WhatsApp', 'zap-whatsapp-automation' ); ?>">
-            <div class="zapwa-modal zapwa-modal--wa">
-                <div class="zapwa-modal-header zapwa-modal-header--green">
-                    <span>💬 <?php esc_html_e( 'Preview WhatsApp', 'zap-whatsapp-automation' ); ?></span>
-                    <button type="button" class="zapwa-modal-close" id="zapwa-wa-modal-close" aria-label="<?php esc_attr_e( 'Fechar', 'zap-whatsapp-automation' ); ?>">✕</button>
-                </div>
-                <div class="zapwa-modal-body zapwa-modal-body--wa">
-                    <div class="zapwa-phone-header">
-                        <div class="zapwa-phone-avatar">🤖</div>
-                        <div>
-                            <div class="zapwa-phone-name"><?php echo esc_html( get_bloginfo( 'name' ) ?: __( 'Meu Site', 'zap-whatsapp-automation' ) ); ?></div>
-                            <div class="zapwa-phone-status">online</div>
-                        </div>
-                    </div>
-                    <div class="zapwa-phone-body">
-                        <div class="zapwa-bubble">
-                            <div id="zapwa-wa-modal-text">
-                                <span class="zapwa-bubble-empty"><?php esc_html_e( 'Escreva a mensagem para ver o preview...', 'zap-whatsapp-automation' ); ?></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
         <?php
     }
 

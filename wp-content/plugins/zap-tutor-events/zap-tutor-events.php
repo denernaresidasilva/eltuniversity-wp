@@ -2,7 +2,7 @@
 /**
  * Plugin Name: ZAP Events Tutor
  * Description: Camada de eventos padronizados do Tutor LMS para automações externas.
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: ZAP Automação
  * Requires at least: 5.8
  * Requires PHP: 7.4
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
  */
 define('ZAP_EVENTS_PATH', plugin_dir_path(__FILE__));
 define('ZAP_EVENTS_URL', plugin_dir_url(__FILE__));
-define('ZAP_EVENTS_VERSION', '1.1.0');
+define('ZAP_EVENTS_VERSION', '1.1.1');
 
 /**
  * Enable debug mode

@@ -60,12 +60,16 @@ class QueuePage {
             </div>
 
             <div class="zapwa-stats-grid">
-                <div class="zapwa-stat">
+                <div class="zapwa-stat zapwa-stat--info">
                     <div class="zapwa-stat__num"><?php echo number_format_i18n($total_all); ?></div>
                     <div class="zapwa-stat__label">Total</div>
                 </div>
-                <?php foreach ($status_labels as $slug => $info): ?>
-                    <div class="zapwa-stat">
+                <?php
+                $status_to_accent = [ 'pending' => 'warn', 'completed' => 'ok', 'failed' => 'error' ];
+                foreach ($status_labels as $slug => $info):
+                    $accent = $status_to_accent[$slug] ?? '';
+                ?>
+                    <div class="zapwa-stat<?php echo $accent ? ' zapwa-stat--' . esc_attr($accent) : ''; ?>">
                         <div class="zapwa-stat__num"><?php echo number_format_i18n($summary[$slug] ?? 0); ?></div>
                         <div class="zapwa-stat__label"><?php echo esc_html($info['label']); ?></div>
                     </div>
