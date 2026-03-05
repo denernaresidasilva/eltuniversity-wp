@@ -39,6 +39,6 @@ class Variables {
                                   ),
         ];
 
-        return str_replace(array_keys($vars), array_values($vars), $text);
+        return str_replace(array_keys($vars), array_values($vars), (string) ($text ?? ''));
     }
 }
