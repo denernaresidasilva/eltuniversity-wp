@@ -11,6 +11,7 @@ class AdminMenu {
 
         self::load_pages();
         add_action('admin_menu', [self::class, 'register_menu']);
+        add_action('load-admin_page_zap-wa-flow-builder', [self::class, 'set_flow_builder_title']);
         add_action('admin_enqueue_scripts', [self::class, 'enqueue_assets']);
         add_action('admin_footer', [self::class, 'render_floating_nav']);
         // Messages list: inject header + "Nova Mensagem" button
@@ -52,6 +53,26 @@ class AdminMenu {
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
         $page = isset($_GET['page']) ? sanitize_key(wp_unslash($_GET['page'])) : '';
         return $page === 'zap-wa-flow-builder';
+    }
+
+    /**
+     * Sets the page title for the hidden Flow Builder admin page.
+     *
+     * The Flow Builder is registered with an empty parent slug so it does not
+     * appear in the WordPress admin sidebar. This means WordPress's
+     * get_admin_page_title() cannot resolve its title from the menu structure,
+     * leaving the global $title as null. Setting it here — before
+     * admin-header.php is loaded — prevents the
+     * "strip_tags(): Passing null" PHP 8.1 deprecation notice.
+     */
+    public static function set_flow_builder_title() {
+        global $title;
+        // Only set the title if it has not already been resolved (null or empty string).
+        // Using empty() is intentional: it safely handles both the uninitialized-global
+        // case and the empty-string case without triggering PHP notices.
+        if (empty($title)) {
+            $title = __('Builder de Fluxo', 'zap-whatsapp-automation');
+        }
     }
 
     public static function enqueue_assets($hook) {
@@ -335,7 +356,7 @@ class AdminMenu {
 
         // SUBMENU FLOW BUILDER (hidden — opened programmatically)
         add_submenu_page(
-            null,
+            '',
             __('Builder de Fluxo', 'zap-whatsapp-automation'),
             __('Builder de Fluxo', 'zap-whatsapp-automation'),
             'manage_options',
