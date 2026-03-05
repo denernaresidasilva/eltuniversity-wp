@@ -65,9 +65,9 @@ class QueuePage {
                     <div class="zapwa-stat__label">Total</div>
                 </div>
                 <?php
-                $stat_accent = [ 'pending' => 'warn', 'completed' => 'ok', 'failed' => 'error' ];
+                $status_to_accent = [ 'pending' => 'warn', 'completed' => 'ok', 'failed' => 'error' ];
                 foreach ($status_labels as $slug => $info):
-                    $accent = $stat_accent[$slug] ?? '';
+                    $accent = $status_to_accent[$slug] ?? '';
                 ?>
                     <div class="zapwa-stat<?php echo $accent ? ' zapwa-stat--' . esc_attr($accent) : ''; ?>">
                         <div class="zapwa-stat__num"><?php echo number_format_i18n($summary[$slug] ?? 0); ?></div>
