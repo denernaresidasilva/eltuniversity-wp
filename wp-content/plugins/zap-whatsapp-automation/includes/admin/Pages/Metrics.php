@@ -178,6 +178,10 @@ class Metrics {
                     <span class="icon">🤖</span>
                     <span class="label">Automações</span>
                 </a>
+                <a href="<?php echo esc_url(admin_url('admin.php?page=zap-wa-flows')); ?>" class="zapwa-shortcut">
+                    <span class="icon">🔀</span>
+                    <span class="label">Fluxos</span>
+                </a>
                 <a href="<?php echo esc_url(admin_url('admin.php?page=zap-wa-queue')); ?>" class="zapwa-shortcut">
                     <span class="icon">📦</span>
                     <span class="label">Fila</span>

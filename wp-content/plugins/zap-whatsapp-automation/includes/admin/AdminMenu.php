@@ -17,6 +17,9 @@ class AdminMenu {
         add_action('admin_notices', ['ZapWA\\Admin\\Pages\\Messages', 'render_list_header']);
         // Message editor: inject WhatsApp toolbar between title and content editor
         add_action('edit_form_after_title', [self::class, 'render_wa_editor_toolbar']);
+        // Flows: delete and toggle actions
+        add_action('admin_post_zapwa_delete_flow', [self::class, 'handle_delete_flow']);
+        add_action('admin_post_zapwa_toggle_flow', [self::class, 'handle_toggle_flow']);
     }
 
     /**
@@ -40,6 +43,15 @@ class AdminMenu {
         }
 
         return $is_zapwa_pt || $is_zapwa_pg;
+    }
+
+    /**
+     * Returns true when the current page is the flow builder.
+     */
+    private static function is_flow_builder_page() {
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+        $page = isset($_GET['page']) ? sanitize_key(wp_unslash($_GET['page'])) : '';
+        return $page === 'zap-wa-flow-builder';
     }
 
     public static function enqueue_assets($hook) {
@@ -78,6 +90,26 @@ class AdminMenu {
                 'close'               => __('Fechar', 'zap-whatsapp-automation'),
             ],
         ]);
+
+        // Load flow builder assets only on builder and flows list pages.
+        if (self::is_flow_builder_page() || sanitize_key(wp_unslash($_GET['page'] ?? '')) === 'zap-wa-flows') {
+            wp_enqueue_style(
+                'zapwa-flow-builder',
+                $url . 'flow-builder.css',
+                ['zapwa-admin'],
+                $version
+            );
+        }
+
+        if (self::is_flow_builder_page()) {
+            wp_enqueue_script(
+                'zapwa-flow-builder',
+                $url . 'flow-builder.js',
+                [],
+                $version,
+                true
+            );
+        }
     }
 
     /**
@@ -287,6 +319,26 @@ class AdminMenu {
             'edit.php?post_type=zapwa_message'
         );
 
+        // SUBMENU FLUXOS
+        add_submenu_page(
+            'zap-wa-metrics',
+            __('Fluxos', 'zap-whatsapp-automation'),
+            '🔀 ' . __('Fluxos', 'zap-whatsapp-automation'),
+            'manage_options',
+            'zap-wa-flows',
+            ['ZapWA\\Admin\\Pages\\Flows', 'render']
+        );
+
+        // SUBMENU FLOW BUILDER (hidden — opened programmatically)
+        add_submenu_page(
+            null,
+            __('Builder de Fluxo', 'zap-whatsapp-automation'),
+            __('Builder de Fluxo', 'zap-whatsapp-automation'),
+            'manage_options',
+            'zap-wa-flow-builder',
+            ['ZapWA\\Admin\\Pages\\FlowBuilder', 'render']
+        );
+
         // SUBMENU CONEXÃO
         add_submenu_page(
             'zap-wa-metrics',
@@ -334,5 +386,57 @@ class AdminMenu {
             'zap-wa-settings',
             ['ZapWA\\Admin\\Pages\\Settings', 'render']
         );
+    }
+
+    // -------------------------------------------------------------------------
+    // Flow admin actions (delete / toggle)
+    // -------------------------------------------------------------------------
+
+    public static function handle_delete_flow() {
+
+        if (!current_user_can('manage_options')) {
+            wp_die(__('Sem permissão', 'zap-whatsapp-automation'));
+        }
+
+        $flow_id = isset($_GET['flow_id']) ? absint($_GET['flow_id']) : 0;
+
+        if (!$flow_id || !isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'zapwa_delete_flow_' . $flow_id)) {
+            wp_die(__('Requisição inválida', 'zap-whatsapp-automation'));
+        }
+
+        $post = get_post($flow_id);
+        if ($post && $post->post_type === 'automation_flow') {
+            wp_delete_post($flow_id, true);
+        }
+
+        wp_redirect(admin_url('admin.php?page=zap-wa-flows&deleted=1'));
+        exit;
+    }
+
+    public static function handle_toggle_flow() {
+
+        if (!current_user_can('manage_options')) {
+            wp_die(__('Sem permissão', 'zap-whatsapp-automation'));
+        }
+
+        $flow_id = isset($_GET['flow_id']) ? absint($_GET['flow_id']) : 0;
+
+        if (!$flow_id || !isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'zapwa_toggle_flow_' . $flow_id)) {
+            wp_die(__('Requisição inválida', 'zap-whatsapp-automation'));
+        }
+
+        $post = get_post($flow_id);
+        if ($post && $post->post_type === 'automation_flow') {
+            $current = get_post_meta($flow_id, '_flow_status', true);
+            $new     = ($current === 'active') ? 'inactive' : 'active';
+            update_post_meta($flow_id, '_flow_status', $new);
+            wp_update_post([
+                'ID'          => $flow_id,
+                'post_status' => ($new === 'active') ? 'publish' : 'draft',
+            ]);
+        }
+
+        wp_redirect(admin_url('admin.php?page=zap-wa-flows&toggled=1'));
+        exit;
     }
 }
