@@ -17,6 +17,17 @@ class Settings {
             $enabled = !$current;
         }
 
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['zapwa_save_ai_settings']) && check_admin_referer('zapwa_save_ai_settings')) {
+            if (!current_user_can('manage_options')) { return; }
+
+            update_option('zapwa_openai_api_key',        sanitize_text_field(wp_unslash($_POST['zapwa_openai_api_key'] ?? '')));
+            update_option('zapwa_gemini_api_key',         sanitize_text_field(wp_unslash($_POST['zapwa_gemini_api_key'] ?? '')));
+            update_option('zapwa_elevenlabs_api_key',     sanitize_text_field(wp_unslash($_POST['zapwa_elevenlabs_api_key'] ?? '')));
+            update_option('zapwa_instagram_access_token', sanitize_text_field(wp_unslash($_POST['zapwa_instagram_access_token'] ?? '')));
+            update_option('zapwa_instagram_page_id',      sanitize_text_field(wp_unslash($_POST['zapwa_instagram_page_id'] ?? '')));
+            $ai_saved = true;
+        }
+
         $logging_enabled = (bool) get_option('zapwa_logging_enabled', true);
         ?>
         <div class="wrap zapwa-page">
@@ -80,6 +91,45 @@ class Settings {
                     </div>
                 </div>
             </div>
+
+        </div>
+
+        <!-- AI Settings card -->
+        <div class="zapwa-card">
+            <div class="zapwa-card-hdr">🤖 <?php esc_html_e('Configurações de IA', 'zap-whatsapp-automation'); ?></div>
+            <div class="zapwa-card-body">
+                <?php if (isset($ai_saved)): ?>
+                    <div class="notice notice-success inline"><p>✅ <?php esc_html_e('Configurações de IA salvas.', 'zap-whatsapp-automation'); ?></p></div>
+                <?php endif; ?>
+                <form method="post">
+                    <?php wp_nonce_field('zapwa_save_ai_settings'); ?>
+                    <input type="hidden" name="zapwa_save_ai_settings" value="1">
+                    <table class="form-table">
+                        <tr>
+                            <th><?php esc_html_e('OpenAI API Key', 'zap-whatsapp-automation'); ?></th>
+                            <td><input type="password" name="zapwa_openai_api_key" class="regular-text" value="<?php echo esc_attr(get_option('zapwa_openai_api_key', '')); ?>" autocomplete="off" /></td>
+                        </tr>
+                        <tr>
+                            <th><?php esc_html_e('Gemini API Key', 'zap-whatsapp-automation'); ?></th>
+                            <td><input type="password" name="zapwa_gemini_api_key" class="regular-text" value="<?php echo esc_attr(get_option('zapwa_gemini_api_key', '')); ?>" autocomplete="off" /></td>
+                        </tr>
+                        <tr>
+                            <th><?php esc_html_e('ElevenLabs API Key', 'zap-whatsapp-automation'); ?></th>
+                            <td><input type="password" name="zapwa_elevenlabs_api_key" class="regular-text" value="<?php echo esc_attr(get_option('zapwa_elevenlabs_api_key', '')); ?>" autocomplete="off" /></td>
+                        </tr>
+                        <tr>
+                            <th><?php esc_html_e('Instagram Access Token', 'zap-whatsapp-automation'); ?></th>
+                            <td><input type="password" name="zapwa_instagram_access_token" class="regular-text" value="<?php echo esc_attr(get_option('zapwa_instagram_access_token', '')); ?>" autocomplete="off" /></td>
+                        </tr>
+                        <tr>
+                            <th><?php esc_html_e('Instagram Page ID', 'zap-whatsapp-automation'); ?></th>
+                            <td><input type="text" name="zapwa_instagram_page_id" class="regular-text" value="<?php echo esc_attr(get_option('zapwa_instagram_page_id', '')); ?>" /></td>
+                        </tr>
+                    </table>
+                    <p class="submit"><button type="submit" class="zapwa-btn zapwa-btn-primary">💾 <?php esc_html_e('Salvar Configurações de IA', 'zap-whatsapp-automation'); ?></button></p>
+                </form>
+            </div>
+        </div>
 
         </div>
         <?php

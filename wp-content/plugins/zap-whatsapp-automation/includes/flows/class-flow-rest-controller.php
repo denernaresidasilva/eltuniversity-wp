@@ -274,6 +274,7 @@ class Flow_REST_Controller extends WP_REST_Controller {
         $text_fields = [
             'trigger_type', 'message', 'subject', 'body',
             'delay_unit', 'condition_type', 'value', 'label',
+            'tag', 'url', 'method',
         ];
 
         foreach ($text_fields as $field) {
@@ -284,6 +285,18 @@ class Flow_REST_Controller extends WP_REST_Controller {
 
         if (isset($data['delay_amount'])) {
             $safe['delay_amount'] = absint($data['delay_amount']);
+        }
+
+        if (isset($data['agent_id'])) {
+            $safe['agent_id'] = absint($data['agent_id']);
+        }
+
+        if (isset($data['headers']) && is_array($data['headers'])) {
+            $safe_headers = [];
+            foreach ($data['headers'] as $k => $v) {
+                $safe_headers[sanitize_text_field($k)] = sanitize_text_field($v);
+            }
+            $safe['headers'] = $safe_headers;
         }
 
         return $safe;

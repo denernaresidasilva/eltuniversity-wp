@@ -43,6 +43,18 @@ class Loader {
             \ZapWA\Cron::init();
         }
 
+        if (class_exists('\ZapWA\Link_Tracker')) {
+            \ZapWA\Link_Tracker::init();
+        }
+
+        if (class_exists('\ZapWA\Tutor_Integration')) {
+            \ZapWA\Tutor_Integration::init();
+        }
+
+        if (class_exists('\ZapWA\Instagram')) {
+            \ZapWA\Instagram::init();
+        }
+
         if (class_exists('\ZapWA\HealthCheck')) {
             \ZapWA\HealthCheck::init();
         }
@@ -72,6 +84,10 @@ class Loader {
         if (class_exists('\ZapWA\Flows\Flow_REST_Controller')) {
             \ZapWA\Flows\Flow_REST_Controller::init();
         }
+
+        if (class_exists('\ZapWA\Video_Tracker')) {
+            \ZapWA\Video_Tracker::init();
+        }
     }
 
     private static function load_post_types() {
@@ -99,6 +115,13 @@ class Loader {
             'QRCodeGenerator.php', // ✅ QR CODE GENERATOR
             'Cron.php',
             'Metrics.php', // ✅ MÉTRICAS
+            'Event_Tracker.php',
+            'Tag_Manager.php',
+            'Link_Tracker.php',
+            'Tutor_Integration.php',
+            'AI_Agent.php',
+            'Instagram.php',
+            'Video_Tracker.php',
             'HealthCheck.php', // ✅ HEALTH CHECK
         ];
 

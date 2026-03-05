@@ -57,6 +57,49 @@ class Installer {
             \ZapWA\EventLogReader::create_table();
         }
 
+        // Event tracker table
+        if (class_exists('\ZapWA\Event_Tracker')) {
+            \ZapWA\Event_Tracker::create_table();
+        }
+
+        // Tag manager tables
+        if (class_exists('\ZapWA\Tag_Manager')) {
+            \ZapWA\Tag_Manager::create_tables();
+        }
+
+        // Link tracker table
+        if (class_exists('\ZapWA\Link_Tracker')) {
+            \ZapWA\Link_Tracker::create_table();
+        }
+
+        // AI Agent tables
+        if (class_exists('\ZapWA\AI_Agent')) {
+            \ZapWA\AI_Agent::create_tables();
+        }
+
+        // Default AI settings
+        if (get_option('zapwa_openai_api_key') === false) {
+            add_option('zapwa_openai_api_key', '');
+        }
+        if (get_option('zapwa_gemini_api_key') === false) {
+            add_option('zapwa_gemini_api_key', '');
+        }
+        if (get_option('zapwa_elevenlabs_api_key') === false) {
+            add_option('zapwa_elevenlabs_api_key', '');
+        }
+        if (get_option('zapwa_elevenlabs_voice_id') === false) {
+            add_option('zapwa_elevenlabs_voice_id', '21m00Tcm4TlvDq8ikWAM');
+        }
+        if (get_option('zapwa_instagram_access_token') === false) {
+            add_option('zapwa_instagram_access_token', '');
+        }
+        if (get_option('zapwa_instagram_page_id') === false) {
+            add_option('zapwa_instagram_page_id', '');
+        }
+        if (get_option('zapwa_instagram_verify_token') === false) {
+            add_option('zapwa_instagram_verify_token', wp_generate_password(32, false));
+        }
+
         // Set default options with standardized names
         if (get_option('zapwa_evolution_url') === false) {
             add_option('zapwa_evolution_url', '');
@@ -105,6 +148,7 @@ class Installer {
             require_once $flow_db_file;
             if (class_exists('\ZapWA\Flows\Flow_DB')) {
                 \ZapWA\Flows\Flow_DB::create_table();
+                \ZapWA\Flows\Flow_DB::create_stats_table();
             }
         }
         if (class_exists('\ZapWA\Flows\Flow_CPT')) {
