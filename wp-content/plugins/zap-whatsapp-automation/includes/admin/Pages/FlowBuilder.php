@@ -40,11 +40,18 @@ class FlowBuilder {
         $flows_url = esc_url(admin_url('admin.php?page=zap-wa-flows'));
 
         $trigger_types = apply_filters('zapwa_flow_trigger_types', [
-            'course_enrolled'   => __('Inscrição em Curso', 'zap-whatsapp-automation'),
-            'course_completed'  => __('Conclusão de Curso', 'zap-whatsapp-automation'),
-            'user_registered'   => __('Novo Cadastro', 'zap-whatsapp-automation'),
-            'tag_added'         => __('Tag Adicionada', 'zap-whatsapp-automation'),
-            'payment_complete'  => __('Pagamento Confirmado', 'zap-whatsapp-automation'),
+            'course_enrolled'    => __('Inscrição em Curso', 'zap-whatsapp-automation'),
+            'course_completed'   => __('Conclusão de Curso', 'zap-whatsapp-automation'),
+            'lesson_completed'   => __('Aula Concluída', 'zap-whatsapp-automation'),
+            'user_registered'    => __('Novo Cadastro', 'zap-whatsapp-automation'),
+            'tag_added'          => __('Tag Adicionada', 'zap-whatsapp-automation'),
+            'tag_removed'        => __('Tag Removida', 'zap-whatsapp-automation'),
+            'payment_complete'   => __('Pagamento Confirmado', 'zap-whatsapp-automation'),
+            'link_clicked'       => __('Link Clicado', 'zap-whatsapp-automation'),
+            'video_completed'    => __('Vídeo Assistido', 'zap-whatsapp-automation'),
+            'instagram_comment'  => __('Comentário no Instagram', 'zap-whatsapp-automation'),
+            'instagram_dm'       => __('DM no Instagram', 'zap-whatsapp-automation'),
+            'webhook_received'   => __('Webhook Recebido', 'zap-whatsapp-automation'),
         ]);
         ?>
         <div class="wrap zapwa-page zapwa-builder-page" id="zapwa-flow-builder-wrap">
@@ -115,6 +122,26 @@ class FlowBuilder {
                         <span class="zapwa-node-icon">🏁</span>
                         <span><?php esc_html_e('Fim', 'zap-whatsapp-automation'); ?></span>
                     </div>
+                    <!-- Add Tag -->
+                    <div class="zapwa-palette-node" draggable="true" data-node-type="add_tag">
+                        <span class="zapwa-node-icon">🏷️</span>
+                        <span><?php esc_html_e('Adicionar Tag', 'zap-whatsapp-automation'); ?></span>
+                    </div>
+                    <!-- Remove Tag -->
+                    <div class="zapwa-palette-node" draggable="true" data-node-type="remove_tag">
+                        <span class="zapwa-node-icon">🗑️</span>
+                        <span><?php esc_html_e('Remover Tag', 'zap-whatsapp-automation'); ?></span>
+                    </div>
+                    <!-- Webhook -->
+                    <div class="zapwa-palette-node" draggable="true" data-node-type="webhook">
+                        <span class="zapwa-node-icon">🌐</span>
+                        <span><?php esc_html_e('Webhook', 'zap-whatsapp-automation'); ?></span>
+                    </div>
+                    <!-- AI Agent -->
+                    <div class="zapwa-palette-node" draggable="true" data-node-type="ai_agent">
+                        <span class="zapwa-node-icon">🤖</span>
+                        <span><?php esc_html_e('Agente IA', 'zap-whatsapp-automation'); ?></span>
+                    </div>
 
                     <div class="zapwa-palette-hint">
                         <?php esc_html_e('Arraste os blocos para o canvas', 'zap-whatsapp-automation'); ?>
@@ -160,6 +187,98 @@ class FlowBuilder {
                 'saveError'      => __('Erro ao salvar o fluxo. Tente novamente.', 'zap-whatsapp-automation'),
                 'deleteConfirm'  => __('Remover este bloco?', 'zap-whatsapp-automation'),
                 'connectHelp'    => __('Clique em um pino de saída para iniciar uma conexão', 'zap-whatsapp-automation'),
+            ],
+            'nodeConfigs'  => [
+                'trigger' => [
+                    'label'  => __('Gatilho', 'zap-whatsapp-automation'),
+                    'icon'   => '⚡',
+                    'color'  => '#10b981',
+                    'fields' => [
+                        ['name' => 'trigger_type', 'label' => 'Tipo de Gatilho', 'type' => 'select', 'options' => $trigger_types],
+                    ],
+                ],
+                'send_whatsapp' => [
+                    'label'  => __('Enviar WhatsApp', 'zap-whatsapp-automation'),
+                    'icon'   => '💬',
+                    'color'  => '#25d366',
+                    'fields' => [
+                        ['name' => 'message', 'label' => 'Mensagem', 'type' => 'textarea'],
+                    ],
+                ],
+                'send_email' => [
+                    'label'  => __('Enviar Email', 'zap-whatsapp-automation'),
+                    'icon'   => '✉️',
+                    'color'  => '#3b82f6',
+                    'fields' => [
+                        ['name' => 'subject', 'label' => 'Assunto', 'type' => 'text'],
+                        ['name' => 'body',    'label' => 'Corpo',   'type' => 'textarea'],
+                    ],
+                ],
+                'delay' => [
+                    'label'  => __('Delay', 'zap-whatsapp-automation'),
+                    'icon'   => '⏳',
+                    'color'  => '#f59e0b',
+                    'fields' => [
+                        ['name' => 'delay_amount', 'label' => 'Quantidade', 'type' => 'number'],
+                        ['name' => 'delay_unit',   'label' => 'Unidade',    'type' => 'select', 'options' => ['seconds' => 'Segundos', 'minutes' => 'Minutos', 'hours' => 'Horas', 'days' => 'Dias']],
+                    ],
+                ],
+                'condition' => [
+                    'label'  => __('Condição', 'zap-whatsapp-automation'),
+                    'icon'   => '🔀',
+                    'color'  => '#8b5cf6',
+                    'fields' => [
+                        ['name' => 'condition_type', 'label' => 'Tipo', 'type' => 'select', 'options' => [
+                            'has_tag'          => 'Tem Tag',
+                            'course_enrolled'  => 'Inscrito em Curso',
+                            'course_completed' => 'Curso Concluído',
+                            'link_clicked'     => 'Clicou em Link',
+                            'video_watched'    => 'Assistiu Vídeo',
+                        ]],
+                        ['name' => 'value', 'label' => 'Valor', 'type' => 'text'],
+                    ],
+                ],
+                'add_tag' => [
+                    'label'  => __('Adicionar Tag', 'zap-whatsapp-automation'),
+                    'icon'   => '🏷️',
+                    'color'  => '#059669',
+                    'fields' => [
+                        ['name' => 'tag', 'label' => 'Tag (slug)', 'type' => 'text'],
+                    ],
+                ],
+                'remove_tag' => [
+                    'label'  => __('Remover Tag', 'zap-whatsapp-automation'),
+                    'icon'   => '🗑️',
+                    'color'  => '#dc2626',
+                    'fields' => [
+                        ['name' => 'tag', 'label' => 'Tag (slug)', 'type' => 'text'],
+                    ],
+                ],
+                'webhook' => [
+                    'label'  => __('Webhook', 'zap-whatsapp-automation'),
+                    'icon'   => '🌐',
+                    'color'  => '#0891b2',
+                    'fields' => [
+                        ['name' => 'url',    'label' => 'URL',          'type' => 'text'],
+                        ['name' => 'method', 'label' => 'Método',       'type' => 'select', 'options' => ['POST' => 'POST', 'GET' => 'GET', 'PUT' => 'PUT', 'PATCH' => 'PATCH']],
+                        ['name' => 'body',   'label' => 'Body (JSON)',  'type' => 'textarea'],
+                    ],
+                ],
+                'ai_agent' => [
+                    'label'  => __('Agente IA', 'zap-whatsapp-automation'),
+                    'icon'   => '🤖',
+                    'color'  => '#7c3aed',
+                    'fields' => [
+                        ['name' => 'agent_id', 'label' => 'ID do Agente', 'type' => 'number'],
+                        ['name' => 'prompt',   'label' => 'Prompt',       'type' => 'textarea'],
+                    ],
+                ],
+                'end' => [
+                    'label'  => __('Fim', 'zap-whatsapp-automation'),
+                    'icon'   => '🏁',
+                    'color'  => '#64748b',
+                    'fields' => [],
+                ],
             ],
         ]); ?>;
         </script>
