@@ -31,7 +31,7 @@ class Settings {
      */
     public static function add_settings_page() {
         add_submenu_page(
-            'zap-tutor-events',
+            null,
             'Configurações',
             'Configurações',
             'manage_options',
@@ -196,10 +196,22 @@ class Settings {
                         <div class="zap-api-endpoints">
                             <p class="zap-field-desc"><strong>Endpoints:</strong></p>
                             <ul class="zap-api-list">
-                                <li><code>GET <?php echo rest_url('zap-events/v1/logs'); ?></code> — Listar eventos</li>
-                                <li><code>GET <?php echo rest_url('zap-events/v1/stats'); ?></code> — Estatísticas</li>
-                                <li><code>GET <?php echo rest_url('zap-events/v1/events'); ?></code> — Tipos de eventos</li>
-                                <li><code>POST <?php echo rest_url('zap-events/v1/test'); ?></code> — Disparar evento de teste</li>
+                                <li>
+                                    <code>GET <?php echo esc_html( rest_url('zap-events/v1/logs') ); ?></code> — Listar eventos
+                                    <a class="zap-api-link" href="<?php echo esc_url( rest_url('zap-events/v1/logs') ); ?>" target="_blank" rel="noopener noreferrer">Abrir endpoint</a>
+                                </li>
+                                <li>
+                                    <code>GET <?php echo esc_html( rest_url('zap-events/v1/stats') ); ?></code> — Estatísticas
+                                    <a class="zap-api-link" href="<?php echo esc_url( rest_url('zap-events/v1/stats') ); ?>" target="_blank" rel="noopener noreferrer">Abrir endpoint</a>
+                                </li>
+                                <li>
+                                    <code>GET <?php echo esc_html( rest_url('zap-events/v1/events') ); ?></code> — Tipos de eventos
+                                    <a class="zap-api-link" href="<?php echo esc_url( rest_url('zap-events/v1/events') ); ?>" target="_blank" rel="noopener noreferrer">Abrir endpoint</a>
+                                </li>
+                                <li>
+                                    <code>POST <?php echo esc_html( rest_url('zap-events/v1/test') ); ?></code> — Disparar evento de teste
+                                    <a class="zap-api-link" href="<?php echo esc_url( rest_url('zap-events/v1/test') ); ?>" target="_blank" rel="noopener noreferrer">Abrir endpoint</a>
+                                </li>
                             </ul>
                         </div>
                     </div>
