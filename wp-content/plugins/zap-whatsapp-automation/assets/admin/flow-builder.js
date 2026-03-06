@@ -110,15 +110,21 @@
         state.nodes = nodes.map(function (n) {
             return {
                 id:       String(n.id),
-                type:     n.type || 'trigger',
+                type:     n.type || 'send_whatsapp',
                 data:     n.data || {},
                 position: { x: n.position.x || 0, y: n.position.y || 0 },
             };
-        });
+        }).filter(function (n) { return n.type !== 'trigger'; });
 
         state.edges = edges.map(function (e) {
             return { id: e.id || uid(), source: String(e.source), target: String(e.target), label: e.label || '' };
+        }).filter(function (e) {
+            return getNodeById(e.source) && getNodeById(e.target);
         });
+
+        if (state.nodes.length === 0) {
+            addNode('send_whatsapp', 220, 140);
+        }
 
         // Compute next ID from existing nodes
         state.nodes.forEach(function (n) {
@@ -167,7 +173,7 @@
             e.preventDefault();
             canvasWrap.classList.remove('drag-over');
             var nodeType = e.dataTransfer.getData('zapwa-node-type');
-            if (!nodeType) return;
+            if (!nodeType || nodeType === 'trigger') return;
 
             var rect = canvasWrap.getBoundingClientRect();
             var x = (e.clientX - rect.left - state.offsetX) / state.scale;
@@ -313,9 +319,6 @@
         var html = '';
 
         switch (type) {
-            case 'trigger':
-                html += field('Tipo de Gatilho', 'select', 'trigger_type', d.trigger_type || '', triggerTypeOptions(d.trigger_type));
-                break;
             case 'send_whatsapp':
                 html += field('Mensagem', 'textarea', 'message', d.message || '');
                 break;
@@ -331,7 +334,10 @@
                 break;
             case 'condition':
                 html += field('Condição', 'select', 'condition_type', d.condition_type || 'has_tag', [
-                    ['has_tag', 'Possui Tag'], ['has_purchased_course', 'Inscrito no Curso'],
+                    ['has_tag', 'Possui Tag'],
+                    ['has_purchased_course', 'Inscrito no Curso'],
+                    ['message_contains', 'Mensagem contém palavra/frase'],
+                    ['message_equals', 'Mensagem igual a palavra/frase'],
                 ]);
                 html += field('Valor', 'text', 'value', d.value || '');
                 break;
@@ -399,7 +405,6 @@
 
     function defaultNodeData(type) {
         switch (type) {
-            case 'trigger':       return { trigger_type: Object.keys(data.triggerTypes || {})[0] || '' };
             case 'send_whatsapp': return { message: 'Olá {user_name}, ...' };
             case 'send_email':    return { subject: 'Assunto do email', body: 'Corpo do email' };
             case 'delay':         return { delay_amount: 1, delay_unit: 'minutes' };
@@ -466,8 +471,8 @@
         var footer = document.createElement('div');
         footer.className = 'zapwa-node__footer';
 
-        // Input port (all nodes except trigger)
-        if (node.type !== 'trigger') {
+        // Input port (all nodes except end)
+        if (node.type !== 'end') {
             var inPort = createPort(node.id, 'input', '');
             footer.appendChild(inPort);
         } else {
@@ -588,8 +593,6 @@
     function buildNodeBodyText(node) {
         var d = node.data;
         switch (node.type) {
-            case 'trigger':
-                return '⚡ ' + esc(triggerLabel(d.trigger_type) || d.trigger_type || '—');
             case 'send_whatsapp':
                 return truncate(d.message || '', 60);
             case 'send_email':
@@ -819,7 +822,6 @@
 
     function nodeLabel(type) {
         var labels = {
-            trigger:       'Gatilho',
             send_whatsapp: 'Enviar WhatsApp',
             send_email:    'Enviar Email',
             delay:         'Delay',
@@ -831,7 +833,6 @@
 
     function nodeIcon(type) {
         var icons = {
-            trigger:       '⚡',
             send_whatsapp: '💬',
             send_email:    '✉️',
             delay:         '⏳',
@@ -839,11 +840,6 @@
             end:           '🏁',
         };
         return icons[type] || '📦';
-    }
-
-    function triggerLabel(key) {
-        var types = data.triggerTypes || {};
-        return types[key] || key;
     }
 
     // -----------------------------------------------------------------------

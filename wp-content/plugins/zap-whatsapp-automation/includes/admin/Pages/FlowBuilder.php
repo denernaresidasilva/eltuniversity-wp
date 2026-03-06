@@ -97,11 +97,6 @@ class FlowBuilder {
             <div class="zapwa-builder-layout">
                 <div class="zapwa-builder-palette" id="zapwa-node-palette">
                     <div class="zapwa-palette-title"><?php esc_html_e('Blocos', 'zap-whatsapp-automation'); ?></div>
-
-                    <div class="zapwa-palette-node" draggable="true" data-node-type="trigger">
-                        <span class="zapwa-node-icon">⚡</span>
-                        <span><?php esc_html_e('Gatilho', 'zap-whatsapp-automation'); ?></span>
-                    </div>
                     <div class="zapwa-palette-node" draggable="true" data-node-type="send_whatsapp">
                         <span class="zapwa-node-icon">💬</span>
                         <span><?php esc_html_e('Enviar WhatsApp', 'zap-whatsapp-automation'); ?></span>
@@ -189,14 +184,6 @@ class FlowBuilder {
                 'connectHelp'    => __('Clique em um pino de saída para iniciar uma conexão', 'zap-whatsapp-automation'),
             ],
             'nodeConfigs'  => [
-                'trigger' => [
-                    'label'  => __('Gatilho', 'zap-whatsapp-automation'),
-                    'icon'   => '⚡',
-                    'color'  => '#10b981',
-                    'fields' => [
-                        ['name' => 'trigger_type', 'label' => 'Tipo de Gatilho', 'type' => 'select', 'options' => $trigger_types],
-                    ],
-                ],
                 'send_whatsapp' => [
                     'label'  => __('Enviar WhatsApp', 'zap-whatsapp-automation'),
                     'icon'   => '💬',
@@ -234,6 +221,8 @@ class FlowBuilder {
                             'course_completed' => 'Curso Concluído',
                             'link_clicked'     => 'Clicou em Link',
                             'video_watched'    => 'Assistiu Vídeo',
+                            'message_contains' => 'Mensagem contém',
+                            'message_equals'   => 'Mensagem igual',
                         ]],
                         ['name' => 'value', 'label' => 'Valor', 'type' => 'text'],
                     ],

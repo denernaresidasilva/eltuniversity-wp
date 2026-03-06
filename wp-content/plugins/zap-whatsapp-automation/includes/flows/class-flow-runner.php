@@ -147,7 +147,7 @@ class Flow_Runner {
                 return 'ok';
 
             case 'condition':
-                return self::execute_condition($data, $context);
+                return self::execute_condition($data, $context, $run);
 
             case 'add_tag':
                 $tag = sanitize_text_field($data['tag'] ?? '');
@@ -255,7 +255,7 @@ class Flow_Runner {
         return 'ok';
     }
 
-    private static function execute_condition(array $data, array $context) {
+    private static function execute_condition(array $data, array $context, $run) {
         $condition_type = sanitize_text_field($data['condition_type'] ?? 'has_tag');
         $value          = sanitize_text_field($data['value'] ?? '');
         $user_id        = (int) ($context['user_id'] ?? 0);
@@ -339,6 +339,21 @@ class Flow_Runner {
                 } else {
                     $result = false;
                 }
+                break;
+
+            case 'message_contains':
+                $latest_text = self::get_latest_trigger_message_text($run, $user_id);
+                $needle      = self::normalize_compare_text($value);
+                $haystack    = self::normalize_compare_text($latest_text);
+                $contains    = function_exists('mb_strpos') ? (mb_strpos($haystack, $needle) !== false) : (strpos($haystack, $needle) !== false);
+                $result      = ($needle !== '' && $haystack !== '' && $contains);
+                break;
+
+            case 'message_equals':
+                $latest_text = self::get_latest_trigger_message_text($run, $user_id);
+                $left        = self::normalize_compare_text($latest_text);
+                $right       = self::normalize_compare_text($value);
+                $result      = ($left !== '' && $right !== '' && $left === $right);
                 break;
 
             default:
@@ -489,6 +504,46 @@ class Flow_Runner {
         }
 
         return $matching_edges[0]['target'] ?? null;
+    }
+
+
+    private static function get_latest_trigger_message_text($run, $user_id) {
+        if (!$user_id || !class_exists('\ZapWA\Event_Tracker')) {
+            return '';
+        }
+
+        $flow_id = isset($run->flow_id) ? absint($run->flow_id) : 0;
+        if (!$flow_id) {
+            return '';
+        }
+
+        $trigger_type = sanitize_text_field((string) get_post_meta($flow_id, '_flow_trigger', true));
+        if (!$trigger_type) {
+            return '';
+        }
+
+        $events = \ZapWA\Event_Tracker::get_events($user_id, $trigger_type, 1);
+        if (empty($events)) {
+            return '';
+        }
+
+        $event    = $events[0];
+        $metadata = json_decode((string) ($event->metadata ?? ''), true);
+        if (is_array($metadata) && !empty($metadata['text'])) {
+            return sanitize_textarea_field((string) $metadata['text']);
+        }
+
+        return sanitize_textarea_field((string) ($event->event_value ?? ''));
+    }
+
+    private static function normalize_compare_text($text) {
+        $text = is_scalar($text) ? (string) $text : '';
+        $text = wp_strip_all_tags($text);
+        $text = preg_replace('/\s+/u', ' ', $text);
+
+        return function_exists('mb_strtolower')
+            ? trim(mb_strtolower((string) $text))
+            : trim(strtolower((string) $text));
     }
 
     private static function delay_to_seconds(array $data) {
