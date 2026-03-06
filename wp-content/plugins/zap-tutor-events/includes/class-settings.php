@@ -31,7 +31,7 @@ class Settings {
      */
     public static function add_settings_page() {
         add_submenu_page(
-            'zap-tutor-events',
+            null,
             'Configurações',
             'Configurações',
             'manage_options',

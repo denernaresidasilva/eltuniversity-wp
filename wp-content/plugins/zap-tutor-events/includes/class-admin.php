@@ -143,27 +143,19 @@ class Admin {
             56
         );
 
+        // Mantém as páginas registradas, mas ocultas no menu lateral do WP-admin.
+        // Assim evitamos o submenu visual (flyout), sem quebrar URLs/callbacks existentes.
         add_submenu_page(
-            'zap-tutor-events',
-            'Dashboard',
-            'Dashboard',
-            'manage_options',
-            'zap-tutor-events',
-            [Dashboard::class, 'render_dashboard']
-        );
-
-        // Webhooks management (new dedicated tab)
-        add_submenu_page(
-            'zap-tutor-events',
+            null,
             'Webhooks',
-            '🔗 Webhooks',
+            'Webhooks',
             'manage_options',
             'zap-tutor-events-webhooks',
             [WebhooksPage::class, 'render']
         );
 
         add_submenu_page(
-            'zap-tutor-events',
+            null,
             'Logs',
             'Logs',
             'manage_options',
@@ -172,7 +164,7 @@ class Admin {
         );
 
         add_submenu_page(
-            'zap-tutor-events',
+            null,
             'Logs de Webhook',
             'Logs de Webhook',
             'manage_options',
