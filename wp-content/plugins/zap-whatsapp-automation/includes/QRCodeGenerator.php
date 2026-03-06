@@ -48,6 +48,10 @@ class QRCodeGenerator {
             return null;
         }
 
+        if (!empty($body['pairingCode']) && is_string($body['pairingCode'])) {
+            return ['type' => 'code', 'value' => $body['pairingCode']];
+        }
+
         if (!empty($body['code']) && is_string($body['code'])) {
             return ['type' => 'code', 'value' => $body['code']];
         }
@@ -55,6 +59,12 @@ class QRCodeGenerator {
         $candidate_paths = [
             ['qrcode', 'base64'],
             ['qrcode', 'code'],
+            ['instance', 'qrcode', 'base64'],
+            ['instance', 'qrcode', 'code'],
+            ['data', 'qrcode', 'base64'],
+            ['data', 'qrcode', 'code'],
+            ['data', 'qr'],
+            ['data', 'qrCode'],
             ['base64'],
             ['qr'],
             ['qrCode'],
@@ -104,7 +114,10 @@ class QRCodeGenerator {
      */
     private static function request_connect_endpoint($full_url, $api_token) {
         $request_options = [
-            'headers' => ['apikey' => $api_token],
+            'headers' => [
+                'apikey' => $api_token,
+                'Authorization' => 'Bearer ' . $api_token,
+            ],
             'timeout' => 20,
         ];
 
@@ -113,6 +126,9 @@ class QRCodeGenerator {
         if (!is_wp_error($response) && wp_remote_retrieve_response_code($response) !== 405) {
             return $response;
         }
+
+        $request_options['headers']['Content-Type'] = 'application/json';
+        $request_options['body'] = wp_json_encode(new \stdClass());
 
         return wp_remote_post($full_url, $request_options);
     }
