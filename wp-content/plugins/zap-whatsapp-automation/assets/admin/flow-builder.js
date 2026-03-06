@@ -334,7 +334,10 @@
                 break;
             case 'condition':
                 html += field('Condição', 'select', 'condition_type', d.condition_type || 'has_tag', [
-                    ['has_tag', 'Possui Tag'], ['has_purchased_course', 'Inscrito no Curso'],
+                    ['has_tag', 'Possui Tag'],
+                    ['has_purchased_course', 'Inscrito no Curso'],
+                    ['message_contains', 'Mensagem contém palavra/frase'],
+                    ['message_equals', 'Mensagem igual a palavra/frase'],
                 ]);
                 html += field('Valor', 'text', 'value', d.value || '');
                 break;

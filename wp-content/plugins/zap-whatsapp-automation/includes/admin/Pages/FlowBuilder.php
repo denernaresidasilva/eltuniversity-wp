@@ -221,6 +221,8 @@ class FlowBuilder {
                             'course_completed' => 'Curso Concluído',
                             'link_clicked'     => 'Clicou em Link',
                             'video_watched'    => 'Assistiu Vídeo',
+                            'message_contains' => 'Mensagem contém',
+                            'message_equals'   => 'Mensagem igual',
                         ]],
                         ['name' => 'value', 'label' => 'Valor', 'type' => 'text'],
                     ],
