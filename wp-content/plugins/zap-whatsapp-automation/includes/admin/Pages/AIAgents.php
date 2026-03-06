@@ -34,11 +34,13 @@ class AIAgents {
                     'provider'       => sanitize_key(wp_unslash($_POST['provider'] ?? 'openai')),
                     'model'          => sanitize_text_field(wp_unslash($_POST['model'] ?? 'gpt-4o-mini')),
                     'system_prompt'  => sanitize_textarea_field(wp_unslash($_POST['system_prompt'] ?? '')),
+                    'knowledge_base' => sanitize_textarea_field(wp_unslash($_POST['knowledge_base'] ?? '')),
+                    'resources_text' => sanitize_textarea_field(wp_unslash($_POST['resources_text'] ?? '')),
                     'temperature'    => min(2, max(0, (float) ($_POST['temperature'] ?? 0.7))),
                     'memory_enabled' => isset($_POST['memory_enabled']) ? 1 : 0,
                     'voice_enabled'  => isset($_POST['voice_enabled']) ? 1 : 0,
                     'created_at'     => current_time('mysql'),
-                ], ['%s','%s','%s','%s','%f','%d','%d','%s']);
+                ], ['%s','%s','%s','%s','%s','%s','%f','%d','%d','%s']);
                 $action_notice = esc_html__('Agente criado com sucesso.', 'zap-whatsapp-automation');
             } elseif ($ai_action === 'delete') {
                 $agent_id = absint($_POST['agent_id'] ?? 0);
@@ -93,6 +95,20 @@ class AIAgents {
                                 <td><textarea name="system_prompt" rows="4" class="large-text"></textarea></td>
                             </tr>
                             <tr>
+                                <th><?php esc_html_e('Base FAQ / Treinamento', 'zap-whatsapp-automation'); ?></th>
+                                <td>
+                                    <textarea name="knowledge_base" rows="6" class="large-text" placeholder="Ex: perguntas frequentes, regras de atendimento, tom de voz, políticas..."></textarea>
+                                    <p class="description"><?php esc_html_e('Use este campo para ensinar o agente além do prompt principal.', 'zap-whatsapp-automation'); ?></p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><?php esc_html_e('Documentos e PDFs', 'zap-whatsapp-automation'); ?></th>
+                                <td>
+                                    <textarea name="resources_text" rows="4" class="large-text" placeholder="Cole links de Google Drive, PDFs, docs, base de conhecimento etc (um por linha)"></textarea>
+                                    <p class="description"><?php esc_html_e('Você pode adicionar URLs de materiais para referência do agente.', 'zap-whatsapp-automation'); ?></p>
+                                </td>
+                            </tr>
+                            <tr>
                                 <th><?php esc_html_e('Temperature', 'zap-whatsapp-automation'); ?></th>
                                 <td><input type="number" name="temperature" value="0.7" min="0" max="2" step="0.1" /></td>
                             </tr>
@@ -124,6 +140,7 @@ class AIAgents {
                                     <th><?php esc_html_e('Nome', 'zap-whatsapp-automation'); ?></th>
                                     <th><?php esc_html_e('Provedor', 'zap-whatsapp-automation'); ?></th>
                                     <th><?php esc_html_e('Modelo', 'zap-whatsapp-automation'); ?></th>
+                                    <th><?php esc_html_e('Conhecimento', 'zap-whatsapp-automation'); ?></th>
                                     <th><?php esc_html_e('Memória', 'zap-whatsapp-automation'); ?></th>
                                     <th><?php esc_html_e('Voz', 'zap-whatsapp-automation'); ?></th>
                                     <th><?php esc_html_e('Ações', 'zap-whatsapp-automation'); ?></th>
@@ -136,6 +153,7 @@ class AIAgents {
                                         <td><strong><?php echo esc_html($agent->name); ?></strong></td>
                                         <td><?php echo esc_html(strtoupper($agent->provider)); ?></td>
                                         <td><code><?php echo esc_html($agent->model); ?></code></td>
+                                        <td><?php echo (!empty($agent->knowledge_base) || !empty($agent->resources_text)) ? '✅' : '❌'; ?></td>
                                         <td><?php echo $agent->memory_enabled ? '✅' : '❌'; ?></td>
                                         <td><?php echo $agent->voice_enabled ? '✅' : '❌'; ?></td>
                                         <td>

@@ -9,6 +9,10 @@ class Loader {
 
     public static function init() {
 
+        if (class_exists('\ZapWA\Installer')) {
+            \ZapWA\Installer::maybe_upgrade_schema();
+        }
+
         self::load_post_types();
         self::load_core();
 
