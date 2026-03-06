@@ -7,6 +7,8 @@ if (!defined('ABSPATH')) {
 
 class Installer {
 
+    const SCHEMA_VERSION = '1.1.0';
+
     public static function activate() {
         global $wpdb;
 
@@ -129,6 +131,8 @@ class Installer {
             add_option('zapwa_logging_enabled', true);
         }
 
+        update_option('zapwa_schema_version', self::SCHEMA_VERSION, false);
+
         // Register CPT and flush rewrite rules
         $cpt_file = plugin_dir_path(__FILE__) . 'PostTypes/Message.php';
         if (file_exists($cpt_file)) {
@@ -166,5 +170,20 @@ class Installer {
 
         // Flush rewrite rules
         flush_rewrite_rules();
+    }
+
+    /**
+     * Garante que todas as tabelas necessárias existam mesmo quando
+     * o plugin é atualizado sem desativar/ativar.
+     */
+    public static function maybe_upgrade_schema() {
+        $current = get_option('zapwa_schema_version', '');
+
+        if ($current === self::SCHEMA_VERSION) {
+            return;
+        }
+
+        self::activate();
+        update_option('zapwa_schema_version', self::SCHEMA_VERSION, false);
     }
 }

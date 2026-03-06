@@ -17,6 +17,8 @@ class AI_Agent {
             provider VARCHAR(20) NOT NULL DEFAULT 'openai',
             model VARCHAR(100) NOT NULL DEFAULT '',
             system_prompt LONGTEXT NULL,
+            knowledge_base LONGTEXT NULL,
+            resources_text LONGTEXT NULL,
             temperature DECIMAL(3,2) NOT NULL DEFAULT 0.70,
             memory_enabled TINYINT(1) NOT NULL DEFAULT 0,
             voice_enabled TINYINT(1) NOT NULL DEFAULT 0,
@@ -76,10 +78,24 @@ class AI_Agent {
 
         $contact_id = absint($contact_id);
 
-        // Build messages array with system prompt
-        $messages = [];
+        // Build messages array with system prompt + base de conhecimento
+        $messages      = [];
+        $system_chunks = [];
+
         if (!empty($agent->system_prompt)) {
-            $messages[] = ['role' => 'system', 'content' => $agent->system_prompt];
+            $system_chunks[] = trim((string) $agent->system_prompt);
+        }
+
+        if (!empty($agent->knowledge_base)) {
+            $system_chunks[] = "FAQ e Base de Conhecimento:\n" . trim((string) $agent->knowledge_base);
+        }
+
+        if (!empty($agent->resources_text)) {
+            $system_chunks[] = "Documentos e referências (links/PDFs):\n" . trim((string) $agent->resources_text);
+        }
+
+        if (!empty($system_chunks)) {
+            $messages[] = ['role' => 'system', 'content' => implode("\n\n", $system_chunks)];
         }
 
         // Inject conversation memory
