@@ -36,10 +36,11 @@ class Dashboard {
             'smart-webinar-list',
             [ __CLASS__, 'render_list' ]
         );
+        // Hidden page — accessible via URL but not shown in sidebar menu
         add_submenu_page(
-            'smart-webinar',
-            __( 'Novo Webinar', 'smart-webinar' ),
-            __( 'Novo Webinar', 'smart-webinar' ),
+            null,
+            __( 'Editor de Webinar', 'smart-webinar' ),
+            __( 'Editor de Webinar', 'smart-webinar' ),
             'manage_options',
             'smart-webinar-new',
             [ 'SmartWebinar\\Admin\\WebinarEditor', 'render' ]
@@ -59,15 +60,20 @@ class Dashboard {
         wp_enqueue_style( 'sw-admin', SMART_WEBINAR_URL . 'assets/css/admin.css', [], SMART_WEBINAR_VERSION );
         wp_enqueue_script( 'sw-admin', SMART_WEBINAR_URL . 'assets/js/admin.js', [ 'jquery', 'wp-color-picker' ], SMART_WEBINAR_VERSION, true );
         wp_enqueue_style( 'wp-color-picker' );
+        // Media uploader for room appearance step
+        wp_enqueue_media();
         wp_localize_script( 'sw-admin', 'swAdmin', [
             'nonce'   => wp_create_nonce( 'sw_admin_nonce' ),
             'ajaxUrl' => admin_url( 'admin-ajax.php' ),
             'i18n'    => [
-                'confirm_delete'   => __( 'Tem certeza que deseja excluir este webinar?', 'smart-webinar' ),
+                'confirm_delete'   => __( 'Tem certeza que deseja excluir este webinar? Esta ação não pode ser desfeita.', 'smart-webinar' ),
                 'saving'           => __( 'Salvando…', 'smart-webinar' ),
                 'saved'            => __( 'Salvo!', 'smart-webinar' ),
                 'error_save'       => __( 'Erro ao salvar', 'smart-webinar' ),
                 'error_connection' => __( 'Erro de conexão.', 'smart-webinar' ),
+                'select_image'     => __( 'Selecionar Imagem', 'smart-webinar' ),
+                'select_video'     => __( 'Selecionar Vídeo', 'smart-webinar' ),
+                'use_file'         => __( 'Usar este arquivo', 'smart-webinar' ),
             ],
         ] );
     }
@@ -128,6 +134,11 @@ class Dashboard {
             echo '<p>' . esc_html__( 'Nenhum webinar criado ainda.', 'smart-webinar' ) . '</p>';
             return;
         }
+        $mode_labels = [
+            'live'     => __( 'Ao Vivo', 'smart-webinar' ),
+            'evergreen' => __( 'Evergreen', 'smart-webinar' ),
+            'ondemand' => __( 'On Demand', 'smart-webinar' ),
+        ];
         echo '<table class="wp-list-table widefat fixed striped sw-table">';
         echo '<thead><tr>';
         foreach ( [ 'ID', __( 'Título', 'smart-webinar' ), __( 'Modo', 'smart-webinar' ), __( 'Status', 'smart-webinar' ), __( 'Shortcode', 'smart-webinar' ), __( 'Ações', 'smart-webinar' ) ] as $col ) {
@@ -135,14 +146,18 @@ class Dashboard {
         }
         echo '</tr></thead><tbody>';
         foreach ( $webinars as $w ) {
-            $edit_url = admin_url( 'admin.php?page=smart-webinar-new&webinar_id=' . absint( $w->id ) );
+            $edit_url  = admin_url( 'admin.php?page=smart-webinar-new&webinar_id=' . absint( $w->id ) );
+            $mode_label = $mode_labels[ $w->mode ] ?? esc_html( $w->mode );
             echo '<tr>';
             echo '<td>' . absint( $w->id ) . '</td>';
             echo '<td><a href="' . esc_url( $edit_url ) . '">' . esc_html( $w->title ) . '</a></td>';
-            echo '<td>' . esc_html( $w->mode ) . '</td>';
-            echo '<td><span class="sw-badge sw-badge--' . esc_attr( $w->status ) . '">' . esc_html( $w->status ) . '</span></td>';
+            echo '<td>' . esc_html( $mode_label ) . '</td>';
+            echo '<td><span class="sw-badge sw-badge--' . esc_attr( $w->status ) . '">' . esc_html( ucfirst( $w->status ) ) . '</span></td>';
             echo '<td><code>[smart_webinar id="' . absint( $w->id ) . '"]</code></td>';
-            echo '<td><a href="' . esc_url( $edit_url ) . '" class="button button-small">' . esc_html__( 'Editar', 'smart-webinar' ) . '</a></td>';
+            echo '<td class="sw-table-actions">';
+            echo '<a href="' . esc_url( $edit_url ) . '" class="button button-small">' . esc_html__( 'Editar', 'smart-webinar' ) . '</a> ';
+            echo '<button type="button" class="button button-small sw-delete-webinar" data-id="' . absint( $w->id ) . '" style="color:#a00;border-color:#a00">' . esc_html__( 'Excluir', 'smart-webinar' ) . '</button>';
+            echo '</td>';
             echo '</tr>';
         }
         echo '</tbody></table>';
@@ -174,10 +189,10 @@ class Dashboard {
                         <th><?php esc_html_e( 'Modo Padrão', 'smart-webinar' ); ?></th>
                         <td>
                             <select name="default_mode">
-                                <?php foreach ( [ 'live', 'simulated', 'replay' ] as $m ) : ?>
-                                <option value="<?php echo esc_attr( $m ); ?>"
-                                    <?php selected( $settings['default_mode'] ?? 'simulated', $m ); ?>>
-                                    <?php echo esc_html( ucfirst( $m ) ); ?>
+                                <?php foreach ( [ 'live' => __( 'Ao Vivo', 'smart-webinar' ), 'evergreen' => 'Evergreen', 'ondemand' => 'On Demand' ] as $v => $l ) : ?>
+                                <option value="<?php echo esc_attr( $v ); ?>"
+                                    <?php selected( $settings['default_mode'] ?? 'evergreen', $v ); ?>>
+                                    <?php echo esc_html( $l ); ?>
                                 </option>
                                 <?php endforeach; ?>
                             </select>
