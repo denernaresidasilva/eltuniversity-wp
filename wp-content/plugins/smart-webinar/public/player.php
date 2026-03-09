@@ -5,6 +5,47 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class Player {
 
+    private static function normalize_video_url( string $video_url ): string {
+        $video_url = trim( $video_url );
+        if ( '' === $video_url ) {
+            return '';
+        }
+
+        $parts = wp_parse_url( $video_url );
+        if ( empty( $parts['host'] ) ) {
+            return $video_url;
+        }
+
+        $host = strtolower( $parts['host'] );
+        $path = $parts['path'] ?? '';
+
+        if ( false === strpos( $host, 'youtube.com' ) && false === strpos( $host, 'youtu.be' ) ) {
+            return $video_url;
+        }
+
+        if ( str_contains( $path, '/embed/' ) ) {
+            return $video_url;
+        }
+
+        parse_str( $parts['query'] ?? '', $query );
+        $video_id = $query['v'] ?? '';
+
+        if ( ! $video_id && false !== strpos( $host, 'youtu.be' ) ) {
+            $video_id = trim( $path, '/' );
+        }
+
+        if ( ! $video_id && str_contains( $path, '/live/' ) ) {
+            $chunks = explode( '/', trim( $path, '/' ) );
+            $video_id = end( $chunks );
+        }
+
+        if ( ! $video_id ) {
+            return $video_url;
+        }
+
+        return 'https://www.youtube.com/embed/' . rawurlencode( $video_id );
+    }
+
     public static function init(): void {
         add_shortcode( 'smart_webinar', [ __CLASS__, 'render_shortcode' ] );
         add_action( 'wp_enqueue_scripts', [ __CLASS__, 'enqueue_assets' ] );
@@ -45,6 +86,15 @@ class Player {
             set_transient( $reg_key, 1, 30 * DAY_IN_SECONDS );
         }
 
+        $video_url        = self::normalize_video_url( (string) ( $webinar->video_url ?? '' ) );
+        $thumbnail_url    = esc_url( (string) ( $webinar->thumbnail_url ?? '' ) );
+        $scheduled_at_ts  = ! empty( $webinar->scheduled_at ) ? strtotime( $webinar->scheduled_at ) : 0;
+        $start_in_seconds = max( 0, (int) ( $webinar->countdown_delay ?? 0 ) );
+
+        if ( $scheduled_at_ts ) {
+            $start_in_seconds = max( 0, $scheduled_at_ts - current_time( 'timestamp' ) );
+        }
+
         ob_start();
         ?>
         <div id="sw-webinar-<?php echo absint( $webinar_id ); ?>"
@@ -59,13 +109,13 @@ class Player {
 
             <!-- Countdown -->
             <?php if ( $webinar->mode !== 'live' ) : ?>
-            <div class="sw-countdown-wrapper" id="sw-countdown-<?php echo absint( $webinar_id ); ?>">
+            <div class="sw-countdown-wrapper" id="sw-countdown-<?php echo absint( $webinar_id ); ?>" <?php if ( $thumbnail_url ) : ?>style="background-image:url('<?php echo $thumbnail_url; ?>')"<?php endif; ?>>
                 <div class="sw-countdown-inner">
                     <p class="sw-countdown-label">
                         <?php echo esc_html( $webinar->countdown_text ?? __( 'O webinar começa em:', 'smart-webinar' ) ); ?>
                     </p>
                     <div class="sw-countdown-timer"
-                         data-delay="<?php echo absint( $webinar->countdown_delay ?? 0 ); ?>">
+                         data-delay="<?php echo absint( $start_in_seconds ); ?>">
                         <span class="sw-cd-block"><span class="sw-cd-num" id="sw-cd-h">00</span><small><?php esc_html_e( 'horas', 'smart-webinar' ); ?></small></span>
                         <span class="sw-cd-sep">:</span>
                         <span class="sw-cd-block"><span class="sw-cd-num" id="sw-cd-m">00</span><small><?php esc_html_e( 'min', 'smart-webinar' ); ?></small></span>
@@ -80,11 +130,11 @@ class Player {
             <div class="sw-player-wrapper" id="sw-player-wrapper-<?php echo absint( $webinar_id ); ?>"
                  <?php if ( $webinar->mode !== 'live' ) : ?>style="display:none"<?php endif; ?>>
                 <div class="sw-player-container">
-                    <?php if ( $webinar->video_url ) : ?>
+                    <?php if ( $video_url ) : ?>
                     <iframe
                         id="sw-video-<?php echo absint( $webinar_id ); ?>"
                         class="sw-video-iframe"
-                        src="<?php echo esc_url( $webinar->video_url ); ?>?enablejsapi=1&autoplay=0&controls=<?php echo $webinar->mode === 'simulated' ? '0' : '1'; ?>&rel=0"
+                        src="<?php echo esc_url( $video_url ); ?>?enablejsapi=1&autoplay=0&controls=<?php echo $webinar->mode === 'simulated' ? '0' : '1'; ?>&rel=0"
                         frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen>
@@ -117,10 +167,15 @@ class Player {
 
             <!-- Chat -->
             <div class="sw-chat-section" id="sw-chat-<?php echo absint( $webinar_id ); ?>">
+                <button type="button" class="sw-chat-toggle" data-target="sw-chat-box-<?php echo absint( $webinar_id ); ?>">
+                    <?php esc_html_e( 'Ocultar chat', 'smart-webinar' ); ?>
+                </button>
+                <div id="sw-chat-box-<?php echo absint( $webinar_id ); ?>">
                 <?php
                 $chat = new Chat();
                 echo $chat->render( $webinar_id, $session_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                 ?>
+                </div>
             </div>
         </div>
 
@@ -135,7 +190,7 @@ class Player {
                     'nonce'      => $nonce,
                     'restUrl'    => rest_url( 'webinar/v1/' ),
                     'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
-                    'countdownDelay' => (int) ( $webinar->countdown_delay ?? 0 ),
+                    'countdownDelay' => $start_in_seconds,
                     'offer'      => $offer ? [
                         'showAt'    => (int) $offer->show_at_seconds,
                         'hideAt'    => (int) $offer->hide_at_seconds,
