@@ -740,77 +740,6 @@
     flex-shrink: 0;
 }
 
-/* ----- Floating Navigation Arrows ------------------------------------ */
-.zap-floating-nav {
-    position: fixed;
-    bottom: 28px;
-    left: 24px;
-    right: 24px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    z-index: 9999;
-    pointer-events: none;
-}
-
-.zap-floating-nav__btn {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    background: #1a237e;
-    color: #fff !important;
-    text-decoration: none !important;
-    font-size: 1.3rem;
-    font-weight: 700;
-    box-shadow: 0 4px 16px rgba(26,35,126,.4);
-    transition: background .2s, transform .2s, box-shadow .2s;
-    pointer-events: all;
-}
-
-.zap-floating-nav__btn--next {
-    margin-left: auto;
-}
-
-.zap-floating-nav__btn:hover {
-    background: #3949ab;
-    transform: scale(1.12);
-    box-shadow: 0 6px 20px rgba(57,73,171,.5);
-    color: #fff !important;
-}
-
-.zap-floating-nav__tooltip {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    white-space: nowrap;
-    background: rgba(26,35,126,.92);
-    color: #fff;
-    font-size: .72rem;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 6px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .2s;
-}
-
-.zap-floating-nav__btn--prev .zap-floating-nav__tooltip {
-    left: 58px;
-    right: auto;
-}
-
-.zap-floating-nav__btn--next .zap-floating-nav__tooltip {
-    right: 58px;
-    left: auto;
-}
-
-.zap-floating-nav__btn:hover .zap-floating-nav__tooltip {
-    opacity: 1;
-}
 
 @media (max-width: 768px) {
     .zap-tab-nav {
@@ -827,9 +756,6 @@
         flex-shrink: 0;
     }
     .zap-tab-nav__item { padding: 7px 8px; font-size: .74rem; flex: 1; justify-content: center; }
-    .zap-floating-nav { bottom: 70px; left: 12px; right: 12px; }
-    .zap-floating-nav__btn { width: 44px; height: 44px; font-size: 1.1rem; }
-    .zap-floating-nav__tooltip { display: none; }
     /* Compensate for fixed bottom tab nav */
     .wrap.zap-events-page,
     .wrap.zap-dashboard { padding-bottom: 72px; }
@@ -1250,10 +1176,6 @@
         display: none;
     }
 
-    .zap-floating-nav {
-        display: none;
-    }
-
     .zap-health-grid {
         grid-template-columns: 1fr;
     }
@@ -1284,23 +1206,6 @@
     }
 }
 
-.zap-floating-nav {
-    left: auto;
-    right: 22px;
-    bottom: 86px;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 10px;
-}
-
-.zap-floating-nav__btn--next {
-    margin-left: 0;
-}
-
-.zap-floating-nav__btn--prev .zap-floating-nav__tooltip {
-    left: auto;
-    right: 58px;
-}
 
 /* --- WordPress admin uses 782px as its mobile breakpoint.
        Match that here so the desktop nav hides at the same
@@ -1340,23 +1245,6 @@
     .wrap.zap-dashboard {
         padding-bottom: 72px !important;
     }
-
-    /* Hide floating prev/next arrows — the bottom nav handles navigation. */
-    .zap-floating-nav {
-        display: none !important;
-    }
 }
 
-/* Floating back/next arrows on tablets (783px–1200px): improved positioning. */
-@media (min-width: 783px) and (max-width: 1200px) {
-    .zap-floating-nav {
-        right: 14px;
-        bottom: 24px;
-    }
-    .zap-floating-nav__btn {
-        width: 44px;
-        height: 44px;
-        font-size: 1.15rem;
-    }
-}
 

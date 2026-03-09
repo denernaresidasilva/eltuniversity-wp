@@ -56,14 +56,6 @@ class Admin {
     public static function render_tab_nav( $active_page = '' ) {
         $tabs = self::get_navigation_tabs();
 
-        $current_index = -1;
-        foreach ( $tabs as $i => $tab ) {
-            if ( $tab['page'] === $active_page ) {
-                $current_index = $i;
-                break;
-            }
-        }
-
         echo '<nav class="zap-tab-nav zap-tab-nav--desktop" aria-label="' . esc_attr__( 'Navegação do Plugin', 'zap-tutor-events' ) . '">';
         echo '<div class="zap-tab-nav__title">⚡ ZAP Tutor Events</div>';
         foreach ( $tabs as $i => $tab ) {
@@ -100,34 +92,6 @@ class Admin {
         }
         echo '</nav>';
 
-        // Floating arrows
-        $prev_tab = ( $current_index > 0 ) ? $tabs[ $current_index - 1 ] : null;
-        $next_tab = ( $current_index >= 0 && $current_index < count( $tabs ) - 1 ) ? $tabs[ $current_index + 1 ] : null;
-
-        if ( $prev_tab || $next_tab ) {
-            echo '<div class="zap-floating-nav" aria-hidden="true">';
-            if ( $prev_tab ) {
-                printf(
-                    '<a href="%s" class="zap-floating-nav__btn zap-floating-nav__btn--prev" title="%s" aria-label="%s">&#8592;<span class="zap-floating-nav__tooltip">%s %s</span></a>',
-                    esc_url( admin_url( 'admin.php?page=' . $prev_tab['page'] ) ),
-                    esc_attr( $prev_tab['label'] ),
-                    esc_attr( sprintf( __( 'Ir para %s', 'zap-tutor-events' ), $prev_tab['label'] ) ),
-                    $prev_tab['icon'],
-                    esc_html( $prev_tab['label'] )
-                );
-            }
-            if ( $next_tab ) {
-                printf(
-                    '<a href="%s" class="zap-floating-nav__btn zap-floating-nav__btn--next" title="%s" aria-label="%s">&#8594;<span class="zap-floating-nav__tooltip">%s %s</span></a>',
-                    esc_url( admin_url( 'admin.php?page=' . $next_tab['page'] ) ),
-                    esc_attr( $next_tab['label'] ),
-                    esc_attr( sprintf( __( 'Ir para %s', 'zap-tutor-events' ), $next_tab['label'] ) ),
-                    $next_tab['icon'],
-                    esc_html( $next_tab['label'] )
-                );
-            }
-            echo '</div>';
-        }
     }
 
     public static function menu() {
