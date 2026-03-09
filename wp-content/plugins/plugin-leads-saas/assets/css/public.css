@@ -1,0 +1,135 @@
+/* ========================================
+   Gerenciador de Leads SaaS – Public Form
+   ======================================== */
+
+.wplm-form-wrap {
+  max-width: 520px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.wplm-form {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.07);
+}
+
+.wplm-field {
+  margin-bottom: 16px;
+}
+
+.wplm-field label {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 5px;
+}
+
+.wplm-req {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+.wplm-field input,
+.wplm-field select,
+.wplm-field textarea {
+  width: 100%;
+  padding: 9px 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  font-size: 14px;
+  color: #111827;
+  background: #fff;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+  box-sizing: border-box;
+}
+
+.wplm-field input:focus,
+.wplm-field select:focus,
+.wplm-field textarea:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+}
+
+.wplm-field textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.wplm-field--checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wplm-field--checkbox input {
+  width: auto;
+  margin: 0;
+}
+
+.wplm-field--checkbox label {
+  margin: 0;
+}
+
+.wplm-btn-submit {
+  width: 100%;
+  padding: 11px 20px;
+  background: #6366f1;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, opacity .15s;
+  letter-spacing: .2px;
+}
+
+.wplm-btn-submit:hover {
+  background: #4f46e5;
+}
+
+.wplm-btn-submit:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.wplm-btn-submit.loading::after {
+  content: ' ⟳';
+  animation: wplmSpin .7s linear infinite;
+  display: inline-block;
+}
+
+.wplm-messages {
+  margin-top: 12px;
+  font-size: 13.5px;
+  border-radius: 7px;
+  padding: 0;
+}
+
+.wplm-messages.success {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  padding: 10px 14px;
+}
+
+.wplm-messages.error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+  padding: 10px 14px;
+}
+
+.wplm-error {
+  color: #dc2626;
+  font-style: italic;
+}
+
+@keyframes wplmSpin {
+  to { transform: rotate(360deg); }
+}
