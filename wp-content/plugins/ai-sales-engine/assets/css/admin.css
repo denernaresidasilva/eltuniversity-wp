@@ -1,0 +1,275 @@
+/* ==========================================================================
+   AI Sales Engine – Admin Styles
+   ========================================================================== */
+
+:root {
+    --aise-primary:    #6366f1;
+    --aise-primary-dk: #4f46e5;
+    --aise-success:    #22c55e;
+    --aise-warning:    #f59e0b;
+    --aise-danger:     #ef4444;
+    --aise-bg:         #f8fafc;
+    --aise-surface:    #ffffff;
+    --aise-border:     #e2e8f0;
+    --aise-text:       #1e293b;
+    --aise-muted:      #64748b;
+    --aise-radius:     8px;
+    --aise-shadow:     0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    --aise-shadow-lg:  0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
+}
+
+/* Wrap --------------------------------------------------------------- */
+.aise-wrap {
+    margin: 20px 20px 20px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+    color: var(--aise-text);
+}
+
+/* Page header -------------------------------------------------------- */
+.aise-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.aise-page-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    color: var(--aise-text) !important;
+    margin: 0 0 24px !important;
+}
+
+.aise-page-title .dashicons {
+    font-size: 24px;
+    color: var(--aise-primary);
+}
+
+/* Card --------------------------------------------------------------- */
+.aise-card {
+    background: var(--aise-surface);
+    border: 1px solid var(--aise-border);
+    border-radius: var(--aise-radius);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--aise-shadow);
+}
+
+.aise-card h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 16px;
+    padding: 0;
+    color: var(--aise-text);
+    border: none;
+}
+
+/* Stats grid --------------------------------------------------------- */
+.aise-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.aise-stat-card {
+    background: var(--aise-surface);
+    border: 1px solid var(--aise-border);
+    border-radius: var(--aise-radius);
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: var(--aise-shadow);
+    transition: box-shadow .2s;
+}
+
+.aise-stat-card:hover {
+    box-shadow: var(--aise-shadow-lg);
+}
+
+.aise-stat-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--aise-muted);
+}
+
+.aise-stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--aise-primary);
+}
+
+.aise-loading .aise-stat-value {
+    color: var(--aise-border);
+}
+
+/* Table toolbar ------------------------------------------------------ */
+.aise-table-toolbar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.aise-search-input {
+    flex: 1 1 240px;
+    min-width: 200px;
+    padding: 6px 12px !important;
+    border-radius: 6px !important;
+    border: 1px solid var(--aise-border) !important;
+    font-size: 14px !important;
+}
+
+.aise-select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--aise-border);
+    font-size: 14px;
+    background: #fff;
+}
+
+/* Tables ------------------------------------------------------------- */
+.aise-leads-table th,
+.aise-leads-table td {
+    padding: 10px 14px !important;
+    vertical-align: middle !important;
+}
+
+/* Pagination --------------------------------------------------------- */
+.aise-pagination {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+.aise-pagination button {
+    padding: 4px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--aise-border);
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.aise-pagination button.active {
+    background: var(--aise-primary);
+    color: #fff;
+    border-color: var(--aise-primary);
+}
+
+/* Agents grid -------------------------------------------------------- */
+.aise-agents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.aise-agent-card {
+    background: var(--aise-surface);
+    border: 1px solid var(--aise-border);
+    border-radius: var(--aise-radius);
+    padding: 20px;
+    box-shadow: var(--aise-shadow);
+}
+
+.aise-agent-card h3 {
+    margin: 0 0 6px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.aise-agent-card .aise-role {
+    font-size: 12px;
+    color: var(--aise-muted);
+    margin-bottom: 12px;
+}
+
+/* Kanban board ------------------------------------------------------- */
+.aise-kanban-board {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+}
+
+.aise-kanban-column {
+    flex: 0 0 240px;
+    background: var(--aise-bg);
+    border: 1px solid var(--aise-border);
+    border-radius: var(--aise-radius);
+    padding: 12px;
+}
+
+.aise-kanban-column h3 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin: 0 0 12px;
+    color: var(--aise-muted);
+}
+
+.aise-kanban-card {
+    background: var(--aise-surface);
+    border: 1px solid var(--aise-border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    box-shadow: var(--aise-shadow);
+}
+
+/* Two-column layout -------------------------------------------------- */
+.aise-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 900px) {
+    .aise-two-col {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Badge -------------------------------------------------------------- */
+.aise-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.aise-badge-active   { background: #dcfce7; color: #166534; }
+.aise-badge-inactive { background: #f1f5f9; color: var(--aise-muted); }
+.aise-badge-pending  { background: #fef9c3; color: #92400e; }
+.aise-badge-failed   { background: #fee2e2; color: #991b1b; }
+
+/* Settings form ------------------------------------------------------ */
+.aise-settings-form .form-table th {
+    width: 220px;
+}
+
+/* Responsive --------------------------------------------------------- */
+@media (max-width: 782px) {
+    .aise-stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .aise-page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
