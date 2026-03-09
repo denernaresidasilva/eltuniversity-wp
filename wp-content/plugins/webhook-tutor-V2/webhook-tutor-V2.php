@@ -55,6 +55,9 @@ class Webhook_Receiver {
         
         // AJAX para obter dados do webhook
         add_action('wp_ajax_webhook_receiver_get_webhook_data', array($this, 'ajax_get_webhook_data'));
+        
+        // AJAX para matricular aluno manualmente
+        add_action('wp_ajax_webhook_receiver_manual_enroll', array($this, 'ajax_manual_enroll_student'));
 	add_option('webhook_receiver_user_email_subject', 'Bem-vindo! Seus dados de acesso');
 	add_option('webhook_receiver_user_email_template', 'Olá <strong>(nome)</strong>,<br>Sua conta foi criada! ...');
 
@@ -1491,6 +1494,15 @@ class Webhook_Receiver {
             'manage_options',
             'webhook-receiver-debug',
             array($this, 'debug_page')
+        );
+        
+        add_submenu_page(
+            'webhook-receiver',
+            'Matricular Aluno',
+            '🎓 Matricular Aluno',
+            'manage_options',
+            'webhook-receiver-manual-enroll',
+            array($this, 'manual_enroll_page')
         );
     }
     
@@ -8293,6 +8305,601 @@ public function auto_enroll_courses_callback() {
     </script>
     <?php
 }
+
+    /**
+     * ========================================
+     * PÁGINA DE MATRÍCULA MANUAL DE ALUNOS
+     * ========================================
+     */
+    public function manual_enroll_page() {
+        $courses = get_posts(array(
+            'post_type'   => 'courses',
+            'numberposts' => -1,
+            'post_status' => array('publish', 'future', 'draft'),
+            'orderby'     => 'title',
+            'order'       => 'ASC',
+        ));
+        ?>
+        <div class="wrap webhook-receiver-enroll">
+            <div class="webhook-header">
+                <h1><span class="webhook-icon">🎓</span> Matricular Aluno</h1>
+                <p class="webhook-subtitle">Cadastre e matricule um aluno manualmente nos cursos</p>
+            </div>
+
+            <div id="enroll-notice" style="display:none;"></div>
+
+            <div class="webhook-card enroll-card">
+                <div class="card-header">
+                    <h2><span class="icon">📝</span> Dados do Aluno</h2>
+                </div>
+                <div class="card-content">
+                    <form id="manual-enroll-form">
+                        <?php wp_nonce_field('webhook_receiver_manual_enroll', 'enroll_nonce'); ?>
+
+                        <div class="enroll-fields-grid">
+                            <div class="enroll-field-group">
+                                <label for="enroll-name">Nome Completo <span class="required">*</span></label>
+                                <input type="text" id="enroll-name" name="enroll_name" class="enroll-input" placeholder="Nome do aluno" required />
+                            </div>
+
+                            <div class="enroll-field-group">
+                                <label for="enroll-email">E-mail <span class="required">*</span></label>
+                                <input type="email" id="enroll-email" name="enroll_email" class="enroll-input" placeholder="email@exemplo.com" required />
+                            </div>
+
+                            <div class="enroll-field-group">
+                                <label for="enroll-phone">Telefone</label>
+                                <input type="text" id="enroll-phone" name="enroll_phone" class="enroll-input" placeholder="(11) 99999-9999" />
+                            </div>
+
+                            <div class="enroll-field-group">
+                                <label for="enroll-password">Senha <span class="required">*</span></label>
+                                <div class="password-wrapper">
+                                    <input type="password" id="enroll-password" name="enroll_password" class="enroll-input" placeholder="Senha de acesso" required />
+                                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility()" title="Mostrar/Ocultar senha">👁</button>
+                                </div>
+                                <small class="field-hint">Deixe em branco para gerar senha automática</small>
+                            </div>
+                        </div>
+
+                        <div class="enroll-courses-section">
+                            <h3><span class="icon">📚</span> Selecionar Cursos
+                                <span class="course-counter" id="course-counter">(0 selecionado(s))</span>
+                            </h3>
+                            <p class="form-description">Selecione os cursos nos quais o aluno será matriculado.</p>
+
+                            <?php if (!empty($courses)) : ?>
+                                <div class="enroll-course-search">
+                                    <input type="text" id="course-search-input" placeholder="🔍 Pesquisar cursos..." class="enroll-input" />
+                                </div>
+                                <div class="enroll-course-actions">
+                                    <button type="button" class="webhook-btn small secondary" id="select-all-courses">Selecionar Todos</button>
+                                    <button type="button" class="webhook-btn small secondary" id="deselect-all-courses">Desmarcar Todos</button>
+                                </div>
+                                <div class="enroll-courses-list">
+                                    <?php foreach ($courses as $course) : ?>
+                                        <div class="enroll-course-item" data-title="<?php echo esc_attr(strtolower($course->post_title)); ?>">
+                                            <label class="enroll-course-label">
+                                                <input type="checkbox" name="enroll_courses[]" value="<?php echo esc_attr($course->ID); ?>" class="enroll-course-checkbox" />
+                                                <span class="enroll-course-title"><?php echo esc_html($course->post_title); ?></span>
+                                                <span class="enroll-course-status status-<?php echo esc_attr($course->post_status); ?>"><?php echo esc_html(ucfirst($course->post_status)); ?></span>
+                                            </label>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else : ?>
+                                <p class="no-courses-msg">Nenhum curso encontrado. Crie cursos no Tutor LMS primeiro.</p>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" id="enroll-submit-btn" class="webhook-btn primary large">
+                                <span class="btn-icon">🎓</span> Matricular Aluno
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <style>
+        .webhook-receiver-enroll {
+            background: #f8fafc;
+            margin: 0 -20px 0 -12px;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .webhook-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .webhook-header h1 {
+            font-size: 2.5rem;
+            margin: 0 0 10px 0;
+            font-weight: 700;
+        }
+
+        .webhook-icon {
+            font-size: 2.8rem;
+            margin-right: 15px;
+            vertical-align: middle;
+        }
+
+        .webhook-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin: 0;
+            font-weight: 300;
+        }
+
+        .webhook-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .enroll-card {
+            border-left: 4px solid #667eea;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #f6f9fc 0%, #edf2f7 100%);
+            padding: 20px 30px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.3rem;
+            color: #2d3748;
+        }
+
+        .card-content {
+            padding: 30px;
+        }
+
+        .enroll-fields-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .enroll-field-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .enroll-field-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 6px;
+        }
+
+        .enroll-input {
+            padding: 10px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #2d3748;
+            transition: border-color 0.2s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .enroll-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper .enroll-input {
+            padding-right: 44px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .field-hint {
+            font-size: 0.8rem;
+            color: #718096;
+            margin-top: 4px;
+        }
+
+        .required {
+            color: #e53e3e;
+        }
+
+        .enroll-courses-section {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 25px;
+            margin-bottom: 30px;
+        }
+
+        .enroll-courses-section h3 {
+            font-size: 1.1rem;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .course-counter {
+            font-size: 0.85rem;
+            color: #667eea;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .form-description {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .enroll-course-search {
+            margin-bottom: 12px;
+        }
+
+        .enroll-course-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .enroll-courses-list {
+            max-height: 360px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 8px;
+            background: #f8fafc;
+        }
+
+        .enroll-course-item {
+            border-radius: 8px;
+            transition: background 0.15s;
+        }
+
+        .enroll-course-item:hover {
+            background: #edf2f7;
+        }
+
+        .enroll-course-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .enroll-course-checkbox {
+            width: 16px;
+            height: 16px;
+            accent-color: #667eea;
+            flex-shrink: 0;
+        }
+
+        .enroll-course-title {
+            flex: 1;
+            font-size: 0.95rem;
+            color: #2d3748;
+        }
+
+        .enroll-course-status {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .status-publish { background: #c6f6d5; color: #276749; }
+        .status-draft   { background: #fef3c7; color: #92400e; }
+        .status-future  { background: #bee3f8; color: #2a69ac; }
+
+        .no-courses-msg {
+            color: #718096;
+            font-style: italic;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-start;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .webhook-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .webhook-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.35);
+        }
+
+        .webhook-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102,126,234,0.45);
+        }
+
+        .webhook-btn.primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .webhook-btn.secondary {
+            background: #edf2f7;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+
+        .webhook-btn.secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .webhook-btn.small {
+            padding: 6px 14px;
+            font-size: 0.85rem;
+        }
+
+        .webhook-btn.large {
+            padding: 14px 32px;
+            font-size: 1.05rem;
+        }
+
+        .btn-icon { font-size: 1.1rem; }
+
+        #enroll-notice {
+            margin-bottom: 20px;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        #enroll-notice.success {
+            background: #c6f6d5;
+            color: #276749;
+            border-left: 4px solid #48bb78;
+        }
+
+        #enroll-notice.error {
+            background: #fed7d7;
+            color: #9b2c2c;
+            border-left: 4px solid #fc8181;
+        }
+        </style>
+
+        <script>
+        (function($) {
+            // Toggle password visibility
+            window.togglePasswordVisibility = function() {
+                var input = document.getElementById('enroll-password');
+                input.type = (input.type === 'password') ? 'text' : 'password';
+            };
+
+            // Course search filter
+            $('#course-search-input').on('input', function() {
+                var term = $(this).val().toLowerCase();
+                $('.enroll-course-item').each(function() {
+                    var title = $(this).data('title') || '';
+                    $(this).toggle(title.indexOf(term) !== -1);
+                });
+            });
+
+            // Select / Deselect all
+            $('#select-all-courses').on('click', function() {
+                $('.enroll-course-item:visible .enroll-course-checkbox').prop('checked', true);
+                updateCounter();
+            });
+
+            $('#deselect-all-courses').on('click', function() {
+                $('.enroll-course-item:visible .enroll-course-checkbox').prop('checked', false);
+                updateCounter();
+            });
+
+            // Counter
+            function updateCounter() {
+                var count = $('.enroll-course-checkbox:checked').length;
+                $('#course-counter').text('(' + count + ' selecionado(s))');
+            }
+
+            $(document).on('change', '.enroll-course-checkbox', updateCounter);
+
+            // Form submit
+            $('#manual-enroll-form').on('submit', function(e) {
+                e.preventDefault();
+
+                var $btn = $('#enroll-submit-btn');
+                var $notice = $('#enroll-notice');
+
+                $notice.hide().removeClass('success error');
+                $btn.prop('disabled', true).html('<span class="btn-icon">⏳</span> Matriculando...');
+
+                var courses = [];
+                $('.enroll-course-checkbox:checked').each(function() {
+                    courses.push($(this).val());
+                });
+
+                $.ajax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    data: {
+                        action: 'webhook_receiver_manual_enroll',
+                        enroll_nonce: $('#enroll_nonce').val(),
+                        enroll_name:  $('#enroll-name').val(),
+                        enroll_email: $('#enroll-email').val(),
+                        enroll_phone: $('#enroll-phone').val(),
+                        enroll_password: $('#enroll-password').val(),
+                        enroll_courses: courses
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $notice.addClass('success').html('✅ ' + response.data.message).show();
+                            $('#manual-enroll-form')[0].reset();
+                            $('.enroll-course-checkbox').prop('checked', false);
+                            updateCounter();
+                        } else {
+                            $notice.addClass('error').html('❌ ' + (response.data ? response.data.message : 'Erro desconhecido.')).show();
+                        }
+                    },
+                    error: function() {
+                        $notice.addClass('error').html('❌ Erro de comunicação. Tente novamente.').show();
+                    },
+                    complete: function() {
+                        $btn.prop('disabled', false).html('<span class="btn-icon">🎓</span> Matricular Aluno');
+                        $('html, body').animate({ scrollTop: $notice.offset().top - 80 }, 400);
+                    }
+                });
+            });
+        })(jQuery);
+        </script>
+        <?php
+    }
+
+    /**
+     * ========================================
+     * AJAX: MATRICULAR ALUNO MANUALMENTE
+     * ========================================
+     */
+    public function ajax_manual_enroll_student() {
+        // Verificar nonce
+        if (!isset($_POST['enroll_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['enroll_nonce'])), 'webhook_receiver_manual_enroll')) {
+            wp_send_json_error(array('message' => 'Requisição inválida. Por favor, recarregue a página.'));
+            return;
+        }
+
+        // Verificar permissões
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'Você não tem permissão para realizar esta ação.'));
+            return;
+        }
+
+        // Sanitizar entradas
+        $name     = isset($_POST['enroll_name'])     ? sanitize_text_field(wp_unslash($_POST['enroll_name']))     : '';
+        $email    = isset($_POST['enroll_email'])    ? sanitize_email(wp_unslash($_POST['enroll_email']))         : '';
+        $phone    = isset($_POST['enroll_phone'])    ? sanitize_text_field(wp_unslash($_POST['enroll_phone']))    : '';
+        $password = isset($_POST['enroll_password']) ? wp_unslash($_POST['enroll_password'])                      : '';
+        $courses  = isset($_POST['enroll_courses'])  ? array_map('absint', (array) $_POST['enroll_courses'])      : array();
+
+        // Validar campos obrigatórios
+        if (empty($name)) {
+            wp_send_json_error(array('message' => 'O nome do aluno é obrigatório.'));
+            return;
+        }
+
+        if (empty($email) || !is_email($email)) {
+            wp_send_json_error(array('message' => 'Informe um e-mail válido.'));
+            return;
+        }
+
+        // Gerar senha automática se não foi informada
+        if (empty($password)) {
+            $password = wp_generate_password(12, true);
+        }
+
+        $is_new_user = false;
+
+        if (!email_exists($email)) {
+            // Criar novo usuário
+            $username = sanitize_user($email);
+            // Garantir que o nome de usuário seja único
+            if (username_exists($username)) {
+                $username = $username . '_' . time();
+            }
+
+            $user_id = wp_create_user($username, $password, $email);
+
+            if (is_wp_error($user_id)) {
+                wp_send_json_error(array('message' => 'Erro ao criar usuário: ' . $user_id->get_error_message()));
+                return;
+            }
+
+            // Atualizar nome e dados do usuário
+            $name_parts  = explode(' ', $name, 2);
+            $first_name  = $name_parts[0];
+            $last_name   = isset($name_parts[1]) ? $name_parts[1] : '';
+
+            wp_update_user(array(
+                'ID'           => $user_id,
+                'first_name'   => $first_name,
+                'last_name'    => $last_name,
+                'display_name' => $name,
+            ));
+
+            if (!empty($phone)) {
+                update_user_meta($user_id, 'telefone', $phone);
+            }
+
+            $is_new_user = true;
+
+        } else {
+            // Usuário já existe — apenas matricular
+            $user    = get_user_by('email', $email);
+            $user_id = $user->ID;
+        }
+
+        // Matricular nos cursos selecionados
+        if (!empty($courses)) {
+            $this->enroll_user_in_courses($user_id, $courses);
+            $enrolled_count = count($courses);
+        } else {
+            $enrolled_count = 0;
+        }
+
+        // Montar mensagem de retorno
+        if ($is_new_user) {
+            $msg = sprintf(
+                'Aluno <strong>%s</strong> criado e matriculado em %d curso(s) com sucesso.',
+                esc_html($name),
+                $enrolled_count
+            );
+        } else {
+            $msg = sprintf(
+                'Aluno <strong>%s</strong> (já existente) matriculado em %d curso(s) com sucesso.',
+                esc_html($name),
+                $enrolled_count
+            );
+        }
+
+        wp_send_json_success(array('message' => $msg, 'user_id' => $user_id));
+    }
 }
 
 // Inicializar o plugin
