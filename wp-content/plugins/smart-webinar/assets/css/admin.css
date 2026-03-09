@@ -1,0 +1,63 @@
+/* ── Smart Webinar – Admin Styles ─────────────────────────────────────────── */
+
+.sw-dashboard .sw-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+}
+.sw-stat-card {
+    background: #fff;
+    border: 1px solid #e2e4e7;
+    border-radius: 8px;
+    padding: 20px 16px;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    transition: box-shadow .2s;
+}
+.sw-stat-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+.sw-stat-card .dashicons { font-size: 2rem; color: #6c63ff; margin-bottom: 8px; }
+.sw-stat-value { font-size: 1.9rem; font-weight: 800; color: #1e1e2d; }
+.sw-stat-label { font-size: .78rem; color: #777; margin-top: 4px; text-transform: uppercase; letter-spacing: .05em; }
+
+.sw-table .sw-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: .75rem; font-weight: 600;
+}
+.sw-badge--draft     { background:#f0f0f1; color:#555; }
+.sw-badge--scheduled { background:#fdf1d0; color:#8a6700; }
+.sw-badge--live      { background:#d7f5e3; color:#177245; }
+.sw-badge--ended     { background:#fde8e8; color:#a10000; }
+
+/* ── Wizard ───────────────────────────────────────────────────────────────── */
+.sw-editor .sw-wizard-nav {
+    display: flex; flex-wrap: wrap; gap: 4px; margin: 16px 0 24px;
+    border-bottom: 2px solid #e2e4e7; padding-bottom: 12px;
+}
+.sw-step-btn {
+    background: none; border: 2px solid transparent;
+    padding: 7px 16px; border-radius: 6px; cursor: pointer;
+    font-size: .88rem; font-weight: 500; color: #666;
+    transition: all .15s;
+}
+.sw-step-btn:hover  { background: #f7f7f7; color: #1e1e2d; }
+.sw-step-btn.active { border-color: #6c63ff; color: #6c63ff; background: #f3f2ff; }
+
+.sw-step h2 { margin-top: 0; font-size: 1.15rem; color: #1e1e2d; }
+.sw-editor-footer { display: flex; gap: 10px; margin-top: 24px; padding-top: 16px; border-top: 1px solid #e2e4e7; }
+
+/* ── Chat row builder ─────────────────────────────────────────────────────── */
+.sw-chat-row {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start;
+    background: #f9f9fb; border: 1px solid #e2e4e7; border-radius: 6px;
+    padding: 10px; margin-bottom: 8px;
+}
+.sw-chat-row select  { width: 120px; }
+.sw-chat-row input[type=text]   { flex: 1; min-width: 100px; }
+.sw-chat-row input[type=number] { width: 120px; }
+.sw-chat-row textarea { flex-basis: 100%; resize: vertical; min-height: 56px; }
+.sw-remove-chat-row { align-self: flex-start; }
+
+/* ── Events list ──────────────────────────────────────────────────────────── */
+.sw-events-list { columns: 2; list-style: none; padding: 0; }
+.sw-events-list li { margin-bottom: 6px; }
+.sw-events-list code { background: #f3f2ff; color: #6c63ff; padding: 2px 8px; border-radius: 4px; font-size: .82rem; }
