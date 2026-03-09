@@ -51,7 +51,7 @@ class WebinarEngine {
             'title'        => '',
             'slug'         => '',
             'description'  => '',
-            'mode'         => 'simulated',
+            'mode'         => 'evergreen',
             'video_url'    => '',
             'youtube_id'   => null,
             'status'       => 'draft',
