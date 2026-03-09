@@ -89,6 +89,7 @@ class Player {
         $video_url        = self::normalize_video_url( (string) ( $webinar->video_url ?? '' ) );
         $thumbnail_url    = esc_url( (string) ( $webinar->thumbnail_url ?? '' ) );
         $scheduled_at_ts  = ! empty( $webinar->scheduled_at ) ? strtotime( $webinar->scheduled_at ) : 0;
+        $scheduled_at_iso = $scheduled_at_ts ? gmdate( 'c', (int) $scheduled_at_ts ) : '';
         $start_in_seconds = max( 0, (int) ( $webinar->countdown_delay ?? 0 ) );
 
         if ( $scheduled_at_ts ) {
@@ -100,12 +101,31 @@ class Player {
         <div id="sw-webinar-<?php echo absint( $webinar_id ); ?>"
              class="sw-webinar-wrapper"
              data-webinar-id="<?php echo absint( $webinar_id ); ?>"
+             data-webinar-title="<?php echo esc_attr( get_the_title( $webinar_id ) ); ?>"
              data-session-id="<?php echo esc_attr( $session_id ); ?>"
              data-mode="<?php echo esc_attr( $webinar->mode ); ?>"
              data-duration="<?php echo absint( $webinar->duration ); ?>"
+             data-scheduled-at="<?php echo esc_attr( $scheduled_at_iso ); ?>"
              data-nonce="<?php echo esc_attr( $nonce ); ?>"
              data-rest-url="<?php echo esc_url( rest_url( 'webinar/v1/' ) ); ?>"
              data-ajax-url="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>">
+
+            <div class="sw-app-shell">
+                <header class="sw-app-header">
+                    <div>
+                        <p class="sw-app-kicker"><?php esc_html_e( 'Sala Smart Webinar', 'smart-webinar' ); ?></p>
+                        <h2 class="sw-app-title"><?php echo esc_html( get_the_title( $webinar_id ) ); ?></h2>
+                    </div>
+                    <span class="sw-live-pill sw-live-pill--<?php echo esc_attr( $webinar->mode ); ?>"><?php echo esc_html( ucfirst( (string) $webinar->mode ) ); ?></span>
+                </header>
+
+                <nav class="sw-app-nav" aria-label="<?php esc_attr_e( 'Navegação do webinar', 'smart-webinar' ); ?>">
+                    <button class="sw-nav-btn is-active" data-sw-tab="watch" type="button"><?php esc_html_e( 'Assistir', 'smart-webinar' ); ?></button>
+                    <button class="sw-nav-btn" data-sw-tab="chat" type="button"><?php esc_html_e( 'Chat', 'smart-webinar' ); ?></button>
+                    <button class="sw-nav-btn" data-sw-tab="details" type="button"><?php esc_html_e( 'Detalhes', 'smart-webinar' ); ?></button>
+                </nav>
+
+                <section class="sw-app-panel is-active" data-sw-panel="watch">
 
             <!-- Countdown -->
             <?php if ( $webinar->mode !== 'live' ) : ?>
@@ -164,17 +184,35 @@ class Player {
                 </div>
                 <?php endif; ?>
             </div>
+                </section>
 
-            <!-- Chat -->
-            <div class="sw-chat-section" id="sw-chat-<?php echo absint( $webinar_id ); ?>">
-                <button type="button" class="sw-chat-toggle" data-target="sw-chat-box-<?php echo absint( $webinar_id ); ?>">
-                    <?php esc_html_e( 'Ocultar chat', 'smart-webinar' ); ?>
-                </button>
-                <div id="sw-chat-box-<?php echo absint( $webinar_id ); ?>">
-                <?php
-                $chat = new Chat();
-                echo $chat->render( $webinar_id, $session_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-                ?>
+                <section class="sw-app-panel" data-sw-panel="chat">
+                    <div class="sw-chat-section" id="sw-chat-<?php echo absint( $webinar_id ); ?>">
+                        <button type="button" class="sw-chat-toggle" data-target="sw-chat-box-<?php echo absint( $webinar_id ); ?>">
+                            <?php esc_html_e( 'Ocultar chat', 'smart-webinar' ); ?>
+                        </button>
+                        <div id="sw-chat-box-<?php echo absint( $webinar_id ); ?>">
+                        <?php
+                        $chat = new Chat();
+                        echo $chat->render( $webinar_id, $session_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                        ?>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="sw-app-panel" data-sw-panel="details">
+                    <div class="sw-details-card">
+                        <h3><?php esc_html_e( 'Resumo da transmissão', 'smart-webinar' ); ?></h3>
+                        <ul>
+                            <li><strong><?php esc_html_e( 'Modalidade:', 'smart-webinar' ); ?></strong> <?php echo esc_html( ucfirst( (string) $webinar->mode ) ); ?></li>
+                            <li><strong><?php esc_html_e( 'Duração planejada:', 'smart-webinar' ); ?></strong> <?php echo esc_html( gmdate( 'H:i:s', max( 0, (int) $webinar->duration ) ) ); ?></li>
+                            <?php if ( $scheduled_at_ts ) : ?>
+                            <li><strong><?php esc_html_e( 'Início previsto:', 'smart-webinar' ); ?></strong> <?php echo esc_html( wp_date( 'd/m/Y H:i', (int) $scheduled_at_ts ) ); ?></li>
+                            <?php endif; ?>
+                        </ul>
+                        <p><?php esc_html_e( 'Use a navegação para alternar entre vídeo, chat e informações sem recarregar a página.', 'smart-webinar' ); ?></p>
+                    </div>
+                </section>
                 </div>
             </div>
         </div>
