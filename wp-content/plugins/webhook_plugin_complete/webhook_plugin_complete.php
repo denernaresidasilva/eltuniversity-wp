@@ -1558,9 +1558,9 @@ class Webhook_Receiver {
         add_submenu_page(
             'webhook-receiver-endpoints',
             'Matricular Aluno',
-            '🎓 Matricular Aluno',
+            'Matricular Aluno',
             'manage_options',
-            'webhook-receiver-test',
+            'webhook-receiver-manual-enroll',
             array($this, 'test_webhook_page')
         );
     }
@@ -1598,12 +1598,8 @@ class Webhook_Receiver {
                     <div class="form-row">
                         <div class="form-col">
                             <label for="enroll_phone"><span class="icon">📱</span> Telefone / WhatsApp</label>
-                            <input type="text" name="enroll_phone" id="enroll_phone" placeholder="11999999999">
-                        </div>
-                        <div class="form-col">
-                            <label for="enroll_password"><span class="icon">🔑</span> Senha para login *</label>
-                            <input type="text" name="enroll_password" id="enroll_password" placeholder="Mínimo 6 caracteres" required minlength="6">
-                            <p class="form-description">Se o e-mail já estiver cadastrado, a senha existente será mantida.</p>
+                            <input type="text" name="enroll_phone" id="enroll_phone" placeholder="11999999999" required>
+                            <p class="form-description">Informe o telefone com DDD para salvar no cadastro.</p>
                         </div>
                     </div>
                     
@@ -3735,8 +3731,6 @@ class Webhook_Receiver {
         $name     = sanitize_text_field($_POST['enroll_name'] ?? '');
         $email    = sanitize_email($_POST['enroll_email'] ?? '');
         $phone    = sanitize_text_field($_POST['enroll_phone'] ?? '');
-        // wp_create_user accepts the raw password; only strip control characters to avoid encoding issues
-        $password = isset($_POST['enroll_password']) ? preg_replace('/[\x00-\x1F\x7F]/', '', (string) $_POST['enroll_password']) : '';
         $course_ids = isset($_POST['enroll_course_ids']) ? array_map('intval', $_POST['enroll_course_ids']) : array();
         
         // Validações
@@ -3746,8 +3740,8 @@ class Webhook_Receiver {
         if (empty($email) || !is_email($email)) {
             wp_send_json_error(array('message' => 'E-mail inválido.'));
         }
-        if (empty($password) || strlen($password) < 6) {
-            wp_send_json_error(array('message' => 'Senha deve ter no mínimo 6 caracteres.'));
+        if (empty($phone)) {
+            wp_send_json_error(array('message' => 'Telefone é obrigatório.'));
         }
         if (empty($course_ids)) {
             wp_send_json_error(array('message' => 'Selecione ao menos um curso.'));
@@ -3768,7 +3762,9 @@ class Webhook_Receiver {
             $user_id = $user->ID;
             $details[] = '⚠️ E-mail já cadastrado. Usando usuário existente: ' . $user->display_name;
         } else {
-            // Criar novo usuário com a senha fornecida
+            $password = wp_generate_password(12, true);
+
+            // Criar novo usuário com senha automática
             $user_id = wp_create_user($email, $password, $email);
             
             if (is_wp_error($user_id)) {
