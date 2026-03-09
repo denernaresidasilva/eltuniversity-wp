@@ -14,7 +14,7 @@ class RedirectHandler {
 
     public function check_course_access() {
         // Obtém a URL solicitada do servidor
-        $requested_url = $_SERVER['REQUEST_URI'];
+        $requested_url = isset($_SERVER['REQUEST_URI']) ? wp_unslash($_SERVER['REQUEST_URI']) : '';
         $this->logger->log("URL requisitada: $requested_url");
 
         // Verifica se a URL atual é uma página de curso ou lição com o slug relevante
