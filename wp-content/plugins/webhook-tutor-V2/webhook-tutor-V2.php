@@ -8910,5 +8910,7 @@ public function auto_enroll_courses_callback() {
         wp_send_json_success(array('message' => $msg, 'user_id' => $user_id));
     }
 
+} // end class Webhook_Receiver
+
 // Inicializar o plugin
 $webhook_receiver = new Webhook_Receiver();
