@@ -129,7 +129,11 @@ class TrackingAPI {
         $messages = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore
             "SELECT id, author_name, author_avatar, message, message_type, show_at, sent_at
              FROM {$wpdb->prefix}webinar_chat
-             WHERE webinar_id = %d AND (message_type IN ('recorded','scheduled') OR session_id != '')
+             WHERE webinar_id = %d
+             AND (
+                 message_type IN ('recorded','scheduled')
+                 OR (message_type = 'user' AND session_id != '')
+             )
              AND id > %d
              ORDER BY show_at ASC, sent_at ASC
              LIMIT 50",

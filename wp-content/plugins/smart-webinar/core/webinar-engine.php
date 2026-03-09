@@ -25,7 +25,14 @@ class WebinarEngine {
     }
 
     public static function maybe_handle_conversion(): void {
-        // Track conversion via query string
+        /*
+         * Querystring pixel conversion tracking — intentionally nonce-free.
+         * This endpoint is designed to be called from external redirect URLs
+         * (e.g. payment processor thank-you pages) where a WP nonce cannot
+         * be embedded. The risk is mitigated by requiring both webinar_id and
+         * session_id to be valid, and by recording only a single event per
+         * page load without mutating sensitive data.
+         */
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         if ( isset( $_GET['webinar_conversion'], $_GET['webinar_id'], $_GET['session_id'] ) ) {
             $webinar_id = absint( wp_unslash( $_GET['webinar_id'] ) );
@@ -98,7 +105,7 @@ class WebinarEngine {
         $limit  = absint( $args['limit'] );
         $offset = absint( $args['offset'] );
         // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        return (array) $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}webinars $where ORDER BY $orderby $order LIMIT $limit OFFSET $offset" );
+        return (array) $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}webinars $where ORDER BY $orderby $order LIMIT %d OFFSET %d", $limit, $offset ) );
     }
 
     public static function delete( int $id ): bool {
