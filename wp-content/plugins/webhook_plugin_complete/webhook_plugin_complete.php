@@ -57,7 +57,7 @@ class Webhook_Receiver {
         add_action('wp_ajax_webhook_receiver_get_webhook_data', array($this, 'ajax_get_webhook_data'));
         
         // AJAX para matricular aluno manualmente
-        add_action('wp_ajax_webhook_receiver_manual_enroll', array($this, 'ajax_manual_enroll'));
+        add_action('wp_ajax_webhook_complete_manual_enroll', array($this, 'ajax_manual_enroll'));
         
         add_option('webhook_receiver_user_email_subject', 'Bem-vindo! Seus dados de acesso');
         add_option('webhook_receiver_user_email_template', 'Olá <strong>(nome)</strong>,<br>Sua conta foi criada! ...');
@@ -1560,7 +1560,7 @@ class Webhook_Receiver {
             'Matricular Aluno',
             'Matricular Aluno',
             'manage_options',
-            'webhook-receiver-manual-enroll',
+            'webhook-complete-manual-enroll',
             array($this, 'test_webhook_page')
         );
     }
@@ -1713,7 +1713,7 @@ class Webhook_Receiver {
                 $.ajax({
                     url: ajaxurl,
                     type: 'POST',
-                    data: $(this).serialize() + '&action=webhook_receiver_manual_enroll',
+                    data: $(this).serialize() + '&action=webhook_complete_manual_enroll',
                     success: function(response) {
                         if (response.success) {
                             $('#enroll-result').html(
