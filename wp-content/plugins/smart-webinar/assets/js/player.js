@@ -22,6 +22,7 @@
 
             this._bindBeforeUnload();
             this._bindChatToggle();
+            this._bindAppNavigation();
         },
 
         _startCountdown: function () {
@@ -180,6 +181,30 @@
                 var isHidden = box.style.display === 'none';
                 box.style.display = isHidden ? '' : 'none';
                 button.textContent = isHidden ? 'Ocultar chat' : 'Exibir chat';
+            });
+        },
+
+
+        _bindAppNavigation: function () {
+            var root = document.querySelector('[data-webinar-id="' + this.config.webinarId + '"]');
+            if (!root) return;
+
+            var navButtons = root.querySelectorAll('[data-sw-tab]');
+            var panels = root.querySelectorAll('[data-sw-panel]');
+            if (!navButtons.length || !panels.length) return;
+
+            navButtons.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var target = btn.getAttribute('data-sw-tab');
+
+                    navButtons.forEach(function (item) {
+                        item.classList.toggle('is-active', item === btn);
+                    });
+
+                    panels.forEach(function (panel) {
+                        panel.classList.toggle('is-active', panel.getAttribute('data-sw-panel') === target);
+                    });
+                });
             });
         },
 
