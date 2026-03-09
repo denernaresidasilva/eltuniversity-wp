@@ -8799,14 +8799,19 @@ public function auto_enroll_courses_callback() {
      * ========================================
      */
     public function ajax_manual_enroll_student() {
+        // Capturar qualquer saída acidental que possa corromper a resposta JSON
+        ob_start();
+
         // Verificar nonce
         if (!isset($_POST['enroll_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['enroll_nonce'])), 'webhook_receiver_manual_enroll')) {
+            ob_end_clean();
             wp_send_json_error(array('message' => 'Requisição inválida. Por favor, recarregue a página.'));
             return;
         }
 
         // Verificar permissões
         if (!current_user_can('manage_options')) {
+            ob_end_clean();
             wp_send_json_error(array('message' => 'Você não tem permissão para realizar esta ação.'));
             return;
         }
@@ -8820,11 +8825,13 @@ public function auto_enroll_courses_callback() {
 
         // Validar campos obrigatórios
         if (empty($name)) {
+            ob_end_clean();
             wp_send_json_error(array('message' => 'O nome do aluno é obrigatório.'));
             return;
         }
 
         if (empty($email) || !is_email($email)) {
+            ob_end_clean();
             wp_send_json_error(array('message' => 'Informe um e-mail válido.'));
             return;
         }
@@ -8847,6 +8854,7 @@ public function auto_enroll_courses_callback() {
             $user_id = wp_create_user($username, $password, $email);
 
             if (is_wp_error($user_id)) {
+                ob_end_clean();
                 wp_send_json_error(array('message' => 'Erro ao criar usuário: ' . $user_id->get_error_message()));
                 return;
             }
@@ -8898,9 +8906,9 @@ public function auto_enroll_courses_callback() {
             );
         }
 
+        ob_end_clean();
         wp_send_json_success(array('message' => $msg, 'user_id' => $user_id));
     }
-}
 
 // Inicializar o plugin
 $webhook_receiver = new Webhook_Receiver();
