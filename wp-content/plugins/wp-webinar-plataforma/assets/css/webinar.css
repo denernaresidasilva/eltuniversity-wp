@@ -1,0 +1,486 @@
+/* =====================================================
+   Plataforma de Webinars – Frontend Webinar CSS
+===================================================== */
+
+:root {
+  --ww-primary    : #6366f1;
+  --ww-danger     : #ef4444;
+  --ww-text       : #1e293b;
+  --ww-muted      : #64748b;
+  --ww-surface    : #ffffff;
+  --ww-border     : #e2e8f0;
+  --ww-dark       : #0f172a;
+  --ww-radius     : 10px;
+}
+
+/* ── Inscription form ────────────────────────── */
+.ww-inscricao-wrapper {
+  max-width  : 480px;
+  margin     : 40px auto;
+  padding    : 0 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.ww-inscricao-box {
+  background   : var(--ww-surface);
+  border       : 1px solid var(--ww-border);
+  border-radius: 14px;
+  padding      : 36px 32px;
+  box-shadow   : 0 4px 24px rgba(0,0,0,.09);
+}
+
+.ww-inscricao-titulo {
+  font-size    : 22px;
+  font-weight  : 700;
+  color        : var(--ww-text);
+  margin-bottom: 8px;
+  line-height  : 1.3;
+}
+
+.ww-inscricao-desc {
+  font-size    : 15px;
+  color        : var(--ww-muted);
+  margin-bottom: 24px;
+  line-height  : 1.6;
+}
+
+.ww-form-group {
+  margin-bottom: 18px;
+}
+
+.ww-label {
+  display      : block;
+  font-size    : 13px;
+  font-weight  : 600;
+  color        : var(--ww-text);
+  margin-bottom: 6px;
+}
+
+.ww-input {
+  width        : 100%;
+  padding      : 11px 14px;
+  border       : 1px solid var(--ww-border);
+  border-radius: 8px;
+  font-size    : 15px;
+  color        : var(--ww-text);
+  outline      : none;
+  transition   : border-color .15s, box-shadow .15s;
+  box-sizing   : border-box;
+}
+
+.ww-input:focus {
+  border-color: var(--ww-primary);
+  box-shadow  : 0 0 0 3px rgba(99,102,241,.12);
+}
+
+.ww-btn {
+  display        : inline-flex;
+  align-items    : center;
+  justify-content: center;
+  padding        : 12px 24px;
+  border         : none;
+  border-radius  : 8px;
+  cursor         : pointer;
+  font-size      : 15px;
+  font-weight    : 600;
+  transition     : all .15s;
+  text-decoration: none;
+}
+
+.ww-btn-primary {
+  background: var(--ww-primary);
+  color     : #fff;
+}
+.ww-btn-primary:hover:not(:disabled) { background: #4f46e5; }
+
+.ww-btn-secondary {
+  background: #f1f5f9;
+  color     : var(--ww-text);
+}
+
+.ww-btn-block {
+  width: 100%;
+}
+
+.ww-btn:disabled {
+  opacity: .6;
+  cursor : not-allowed;
+}
+
+.ww-alert {
+  padding      : 12px 16px;
+  border-radius: 8px;
+  font-size    : 14px;
+  margin-bottom: 16px;
+}
+
+.ww-alert-success {
+  background: #d1fae5;
+  color     : #065f46;
+  border    : 1px solid #a7f3d0;
+}
+
+.ww-alert-error {
+  background: #fee2e2;
+  color     : #991b1b;
+  border    : 1px solid #fca5a5;
+}
+
+/* ── Player wrapper ──────────────────────────── */
+.ww-player-wrapper {
+  max-width  : 960px;
+  margin     : 0 auto;
+  padding    : 0 16px 40px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ── Watching bar ────────────────────────────── */
+.ww-watching-bar {
+  display    : flex;
+  align-items: center;
+  gap        : 6px;
+  padding    : 8px 0;
+  font-size  : 14px;
+  color      : var(--ww-muted);
+  font-weight: 500;
+}
+
+.ww-dot {
+  display      : inline-block;
+  width        : 8px;
+  height       : 8px;
+  border-radius: 50%;
+  background   : var(--ww-danger);
+  animation    : ww-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes ww-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: .4; }
+}
+
+.ww-watching-count {
+  font-weight: 700;
+  color      : var(--ww-text);
+}
+
+/* ── Video container ─────────────────────────── */
+.ww-video-container {
+  position     : relative;
+  aspect-ratio : 16/9;
+  background   : #000;
+  border-radius: 12px;
+  overflow     : hidden;
+  margin-bottom: 0;
+}
+
+.ww-video-container #ww-youtube-player,
+.ww-video-container iframe {
+  position: absolute;
+  top     : 0;
+  left    : 0;
+  width   : 100%;
+  height  : 100%;
+  border  : 0;
+}
+
+/* ── Custom controls ─────────────────────────── */
+.ww-controls {
+  position  : absolute;
+  bottom    : 0;
+  left      : 0;
+  right     : 0;
+  display   : flex;
+  align-items: center;
+  gap       : 10px;
+  padding   : 10px 14px;
+  background: linear-gradient(transparent, rgba(0,0,0,.7));
+  opacity   : 0;
+  transition: opacity .3s;
+  z-index   : 10;
+}
+
+.ww-video-container:hover .ww-controls {
+  opacity: 1;
+}
+
+.ww-btn-play,
+.ww-btn-fullscreen {
+  background: transparent;
+  border    : none;
+  cursor    : pointer;
+  color     : #fff;
+  padding   : 0;
+  display   : flex;
+  align-items: center;
+}
+
+.ww-btn-play svg,
+.ww-btn-fullscreen svg {
+  width : 24px;
+  height: 24px;
+}
+
+.ww-progress-bar {
+  flex         : 1;
+  height       : 4px;
+  background   : rgba(255,255,255,.3);
+  border-radius: 2px;
+  cursor       : pointer;
+  position     : relative;
+}
+
+.ww-progress-fill {
+  height       : 4px;
+  background   : var(--ww-primary);
+  border-radius: 2px;
+  max-width    : 100%;
+  pointer-events: none;
+}
+
+.ww-time {
+  color    : #fff;
+  font-size: 12px;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+/* ── Chat wrapper ────────────────────────────── */
+.ww-chat-wrapper {
+  background   : var(--ww-surface);
+  border       : 1px solid var(--ww-border);
+  border-radius: 12px;
+  overflow     : hidden;
+  margin-top   : 16px;
+  display      : flex;
+  flex-direction: column;
+  height       : 320px;
+}
+
+.ww-chat-header {
+  padding     : 12px 16px;
+  border-bottom: 1px solid var(--ww-border);
+  font-size   : 14px;
+  font-weight : 600;
+  color       : var(--ww-text);
+  background  : #f8fafc;
+}
+
+.ww-chat-messages {
+  flex      : 1;
+  overflow-y: auto;
+  padding   : 12px;
+  display   : flex;
+  flex-direction: column;
+  gap       : 10px;
+}
+
+.ww-chat-item {
+  display: flex;
+  gap    : 8px;
+}
+
+.ww-chat-own {
+  flex-direction: row-reverse;
+}
+
+.ww-chat-avatar {
+  width        : 30px;
+  height       : 30px;
+  border-radius: 50%;
+  background   : var(--ww-primary);
+  color        : #fff;
+  font-size    : 13px;
+  font-weight  : 600;
+  display      : flex;
+  align-items  : center;
+  justify-content: center;
+  flex-shrink  : 0;
+}
+
+.ww-chat-body {
+  max-width: 75%;
+}
+
+.ww-chat-author {
+  font-size  : 12px;
+  color      : var(--ww-muted);
+  display    : block;
+  margin-bottom: 3px;
+}
+
+.ww-chat-text {
+  background   : #f1f5f9;
+  border-radius: 8px;
+  padding      : 8px 12px;
+  font-size    : 14px;
+  color        : var(--ww-text);
+  line-height  : 1.4;
+}
+
+.ww-chat-own .ww-chat-text {
+  background: var(--ww-primary);
+  color     : #fff;
+}
+
+.ww-chat-input-row {
+  display     : flex;
+  gap         : 8px;
+  padding     : 10px 12px;
+  border-top  : 1px solid var(--ww-border);
+  background  : #f8fafc;
+}
+
+.ww-chat-input {
+  flex        : 1;
+  padding     : 8px 12px;
+  border      : 1px solid var(--ww-border);
+  border-radius: 8px;
+  font-size   : 14px;
+  outline     : none;
+}
+
+.ww-chat-input:focus {
+  border-color: var(--ww-primary);
+}
+
+.ww-btn-chat-send {
+  padding      : 8px 16px;
+  background   : var(--ww-primary);
+  color        : #fff;
+  border       : none;
+  border-radius: 8px;
+  cursor       : pointer;
+  font-size    : 14px;
+  font-weight  : 600;
+}
+
+/* ── Notifications ───────────────────────────── */
+.ww-notifications {
+  position: fixed;
+  bottom  : 24px;
+  right   : 24px;
+  z-index : 9999;
+  display : flex;
+  flex-direction: column;
+  gap     : 8px;
+}
+
+.ww-notification {
+  background   : var(--ww-dark);
+  color        : #fff;
+  padding      : 10px 16px;
+  border-radius: 8px;
+  font-size    : 14px;
+  box-shadow   : 0 4px 16px rgba(0,0,0,.2);
+  animation    : ww-slide-in .3s ease;
+}
+
+@keyframes ww-slide-in {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+/* ── Automation overlays ─────────────────────── */
+.ww-automation-overlays {
+  position   : fixed;
+  bottom     : 24px;
+  left       : 50%;
+  transform  : translateX(-50%);
+  z-index    : 9998;
+  display    : flex;
+  flex-direction: column;
+  gap        : 10px;
+  align-items: center;
+}
+
+.ww-oferta-wrapper {
+  background   : var(--ww-surface);
+  border       : 2px solid var(--ww-danger);
+  border-radius: 12px;
+  padding      : 16px 20px;
+  box-shadow   : 0 8px 32px rgba(0,0,0,.18);
+  text-align   : center;
+  position     : relative;
+  min-width    : 280px;
+  animation    : ww-pop-in .4s cubic-bezier(.175,.885,.32,1.275);
+}
+
+@keyframes ww-pop-in {
+  from { transform: scale(.7); opacity: 0; }
+  to   { transform: scale(1);  opacity: 1; }
+}
+
+.ww-oferta-btn {
+  display      : inline-block;
+  padding      : 12px 28px;
+  border-radius: 8px;
+  color        : #fff;
+  font-size    : 16px;
+  font-weight  : 700;
+  text-decoration: none;
+  cursor       : pointer;
+  transition   : opacity .15s;
+}
+
+.ww-oferta-btn:hover {
+  opacity: .9;
+  color  : #fff;
+}
+
+.ww-oferta-close {
+  position  : absolute;
+  top       : 8px;
+  right     : 10px;
+  background: transparent;
+  border    : none;
+  cursor    : pointer;
+  font-size : 18px;
+  color     : var(--ww-muted);
+  line-height: 1;
+}
+
+/* ── Popup ───────────────────────────────────── */
+.ww-popup-backdrop {
+  position  : fixed;
+  inset     : 0;
+  background: rgba(0,0,0,.5);
+  z-index   : 9999;
+  display   : flex;
+  align-items: center;
+  justify-content: center;
+  padding   : 20px;
+}
+
+.ww-popup-box {
+  background   : var(--ww-surface);
+  border-radius: 12px;
+  padding      : 28px 32px;
+  max-width    : 420px;
+  width        : 100%;
+  text-align   : center;
+  box-shadow   : 0 20px 60px rgba(0,0,0,.25);
+  display      : flex;
+  flex-direction: column;
+  gap          : 14px;
+}
+
+.ww-popup-box p {
+  font-size  : 16px;
+  font-weight: 500;
+  color      : var(--ww-text);
+  line-height: 1.5;
+}
+
+/* ── Responsive ──────────────────────────────── */
+@media (max-width: 640px) {
+  .ww-inscricao-box {
+    padding: 24px 18px;
+  }
+  .ww-player-wrapper {
+    padding: 0 8px 24px;
+  }
+  .ww-chat-wrapper {
+    height: 260px;
+  }
+}
