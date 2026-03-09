@@ -8,6 +8,23 @@ class Dashboard {
     public static function init(): void {
         add_action( 'admin_menu', [ __CLASS__, 'register_menu' ] );
         add_action( 'admin_enqueue_scripts', [ __CLASS__, 'enqueue_assets' ] );
+        add_action( 'load-admin_page_smart-webinar-new', [ __CLASS__, 'set_editor_page_title' ] );
+    }
+
+    /**
+     * Sets the page title for the hidden "Editor de Webinar" admin page.
+     *
+     * Because the editor is registered with a null parent slug it does not
+     * appear in the sidebar, so WordPress's get_admin_page_title() cannot
+     * resolve the title, leaving the global $title as null.  Setting it here —
+     * before admin-header.php is loaded — prevents the
+     * "strip_tags(): Passing null" PHP 8.1 deprecation notice.
+     */
+    public static function set_editor_page_title(): void {
+        global $title;
+        if ( empty( $title ) ) {
+            $title = __( 'Editor de Webinar', 'smart-webinar' );
+        }
     }
 
     public static function register_menu(): void {

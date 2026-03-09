@@ -325,11 +325,11 @@ class SubscriberManager {
             exit;
         }
         
-        $username = sanitize_text_field($_POST['username']);
-        $email = sanitize_email($_POST['email']);
-        $first_name = sanitize_text_field($_POST['first_name']);
-        $last_name = sanitize_text_field($_POST['last_name']);
-        $password = $_POST['password'];
+        $username = sanitize_text_field($_POST['username'] ?? '');
+        $email = sanitize_email($_POST['email'] ?? '');
+        $first_name = sanitize_text_field($_POST['first_name'] ?? '');
+        $last_name = sanitize_text_field($_POST['last_name'] ?? '');
+        $password = $_POST['password'] ?? '';
         $send_notification = isset($_POST['send_notification']);
         
         // Validações
@@ -378,11 +378,11 @@ class SubscriberManager {
             exit;
         }
         
-        $user_id = intval($_POST['user_id']);
-        $email = sanitize_email($_POST['email']);
-        $first_name = sanitize_text_field($_POST['first_name']);
-        $last_name = sanitize_text_field($_POST['last_name']);
-        $password = $_POST['password'];
+        $user_id = intval($_POST['user_id'] ?? 0);
+        $email = sanitize_email($_POST['email'] ?? '');
+        $first_name = sanitize_text_field($_POST['first_name'] ?? '');
+        $last_name = sanitize_text_field($_POST['last_name'] ?? '');
+        $password = $_POST['password'] ?? '';
         
         // Verificar se o email já existe para outro usuário
         $existing_user = get_user_by('email', $email);

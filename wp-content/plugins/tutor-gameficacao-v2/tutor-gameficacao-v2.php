@@ -746,7 +746,7 @@ class TutorLMSGamificationSimple {
         if (!wp_verify_nonce($_POST['nonce'], 'tlg_nonce') || !current_user_can('manage_options')) {
             wp_send_json_error('Sem permissão');
         }
-        $type = sanitize_text_field($_POST['type']);
+        $type = sanitize_text_field($_POST['type'] ?? '');
         if ($type === 'test') {
             wp_send_json_success('Teste OK!');
             return;
@@ -755,18 +755,18 @@ class TutorLMSGamificationSimple {
         $table = $wpdb->prefix . 'tutor_gamification';
         $data = array(
             'type' => $type,
-            'lesson_id' => intval($_POST['lesson_id'])
+            'lesson_id' => intval($_POST['lesson_id'] ?? 0)
         );
         if ($type === 'status') {
-            $data['status_name'] = sanitize_text_field($_POST['status_name']);
+            $data['status_name'] = sanitize_text_field($_POST['status_name'] ?? '');
             $data['status_data'] = serialize(array(
-                'icon' => sanitize_text_field($_POST['status_icon']),
-                'color' => sanitize_hex_color($_POST['status_color']),
-                'text_color' => ($_POST['status_text_color'] === 'black') ? 'black' : 'white',
-                'description' => sanitize_textarea_field($_POST['status_description'])
+                'icon' => sanitize_text_field($_POST['status_icon'] ?? ''),
+                'color' => sanitize_hex_color($_POST['status_color'] ?? ''),
+                'text_color' => (($_POST['status_text_color'] ?? '') === 'black') ? 'black' : 'white',
+                'description' => sanitize_textarea_field($_POST['status_description'] ?? '')
             ));
         } elseif ($type === 'prerequisite') {
-            $data['required_lesson_id'] = intval($_POST['required_lesson_id']);
+            $data['required_lesson_id'] = intval($_POST['required_lesson_id'] ?? 0);
         }
         $result = $wpdb->insert($table, $data);
         if ($result) {

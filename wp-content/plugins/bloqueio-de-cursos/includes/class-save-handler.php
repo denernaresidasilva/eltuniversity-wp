@@ -69,7 +69,7 @@ class SaveHandler {
         check_ajax_referer('tutor_lms_redirect_nonce', 'security');
 
         $course_id = intval($_POST['course_id']);
-        $redirect_type = sanitize_text_field($_POST['redirect_type']);
+        $redirect_type = sanitize_text_field($_POST['redirect_type'] ?? '');
 
         if ($course_id && in_array($redirect_type, ['page', 'url'])) {
             update_post_meta($course_id, '_redirect_type', $redirect_type);
@@ -84,7 +84,7 @@ class SaveHandler {
         check_ajax_referer('tutor_lms_redirect_nonce', 'security');
 
         $course_id = intval($_POST['course_id']);
-        $selected_slug = sanitize_text_field($_POST['selected_slug']);
+        $selected_slug = sanitize_text_field($_POST['selected_slug'] ?? '');
 
         if ($course_id && $selected_slug) {
             update_post_meta($course_id, '_selected_slug', $selected_slug);
