@@ -1292,45 +1292,6 @@
     );
   }
 
-  /* ============================================================
-     Sidebar Navigation
-  ============================================================ */
-  var PAGES = [
-    { key: 'dashboard',  label: 'Dashboard',  icon: '📊', slug: 'leads-saas' },
-    { key: 'listas',     label: 'Listas',      icon: '📋', slug: 'leads-saas-listas' },
-    { key: 'leads',      label: 'Leads',       icon: '👥', slug: 'leads-saas-leads' },
-    { key: 'tags',       label: 'Etiquetas',   icon: '🏷', slug: 'leads-saas-tags' },
-    { key: 'automacoes', label: 'Automações',  icon: '⚡', slug: 'leads-saas-automacoes' },
-  ];
-
-  function Sidebar({ activePage, onNavigate }) {
-    return el('aside', { className: 'ls-sidebar' },
-      el('div', { className: 'ls-sidebar-logo' },
-        el('h1', null,
-          el('span', { style: { fontSize: 18 } }, '⚡'),
-          'Leads SaaS',
-          el('span', null, 'PRO')
-        )
-      ),
-      el('nav', { className: 'ls-nav' },
-        PAGES.map(function(p) {
-          return el('button', {
-            key: p.key,
-            className: 'ls-nav-item' + (activePage === p.key ? ' active' : ''),
-            onClick: function() { onNavigate(p.key); }
-          },
-            el('span', { className: 'ls-nav-icon' }, p.icon),
-            p.label
-          );
-        }),
-        el('div', { className: 'ls-nav-separator' }),
-        el('div', { style: { padding: '8px 20px' } },
-          el('div', { className: 'ls-text-muted', style: { fontSize: 11 } }, 'v' + LEADS_SAAS_VERSION)
-        )
-      )
-    );
-  }
-
   var LEADS_SAAS_VERSION = '1.0.0';
 
   /* ============================================================
@@ -1345,18 +1306,8 @@
     return 'dashboard';
   }
 
-  function pageTitles() {
-    return {
-      dashboard:  'Dashboard',
-      listas:     'Listas',
-      leads:      'Leads',
-      tags:       'Etiquetas',
-      automacoes: 'Automações',
-    };
-  }
-
   function App() {
-    var [page, setPage] = useState(getInitialPage());
+    var page = getInitialPage();
 
     function renderPage() {
       switch (page) {
@@ -1369,17 +1320,8 @@
       }
     }
 
-    return el('div', { className: 'ls-layout' },
-      el(Sidebar, { activePage: page, onNavigate: setPage }),
-      el('div', { className: 'ls-main' },
-        el('div', { className: 'ls-topbar' },
-          el('h2', { className: 'ls-topbar-title' }, pageTitles()[page] || 'Dashboard'),
-          el('div', { className: 'ls-topbar-actions' })
-        ),
-        el('div', { className: 'ls-page-content' },
-          renderPage()
-        )
-      )
+    return el('div', { className: 'ls-page-content' },
+      renderPage()
     );
   }
 
