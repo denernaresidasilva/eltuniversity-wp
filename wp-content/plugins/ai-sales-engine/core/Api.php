@@ -118,6 +118,62 @@ class Api {
                 'permission_callback' => [ self::class, 'auth_check' ],
             ],
         ] );
+
+        // Pipelines.
+        register_rest_route( $ns, '/pipelines', [
+            [
+                'methods'             => 'GET',
+                'callback'            => [ self::class, 'get_pipelines' ],
+                'permission_callback' => [ self::class, 'auth_check' ],
+            ],
+            [
+                'methods'             => 'POST',
+                'callback'            => [ self::class, 'create_pipeline' ],
+                'permission_callback' => [ self::class, 'auth_check' ],
+            ],
+        ] );
+
+        // Pipeline board (stages + leads).
+        register_rest_route( $ns, '/pipelines/(?P<id>\d+)/board', [
+            'methods'             => 'GET',
+            'callback'            => [ self::class, 'get_pipeline_board' ],
+            'permission_callback' => [ self::class, 'auth_check' ],
+        ] );
+
+        // Move lead in pipeline.
+        register_rest_route( $ns, '/pipelines/(?P<id>\d+)/move', [
+            'methods'             => 'POST',
+            'callback'            => [ self::class, 'move_pipeline_lead' ],
+            'permission_callback' => [ self::class, 'auth_check' ],
+        ] );
+
+        // Single automation toggle.
+        register_rest_route( $ns, '/automations/(?P<id>\d+)', [
+            [
+                'methods'             => 'PUT',
+                'callback'            => [ self::class, 'update_automation' ],
+                'permission_callback' => [ self::class, 'auth_check' ],
+            ],
+            [
+                'methods'             => 'DELETE',
+                'callback'            => [ self::class, 'delete_automation' ],
+                'permission_callback' => [ self::class, 'auth_check' ],
+            ],
+        ] );
+
+        // Single agent delete.
+        register_rest_route( $ns, '/agents/(?P<id>\d+)', [
+            'methods'             => 'DELETE',
+            'callback'            => [ self::class, 'delete_agent' ],
+            'permission_callback' => [ self::class, 'auth_check' ],
+        ] );
+
+        // Single list delete.
+        register_rest_route( $ns, '/lists/(?P<id>\d+)', [
+            'methods'             => 'DELETE',
+            'callback'            => [ self::class, 'delete_list' ],
+            'permission_callback' => [ self::class, 'auth_check' ],
+        ] );
     }
 
     // -------------------------------------------------------------------------
@@ -307,5 +363,92 @@ class Api {
             return new \WP_REST_Response( [ 'error' => 'Could not create agent.' ], 500 );
         }
         return new \WP_REST_Response( [ 'id' => $id ], 201 );
+    }
+
+    /** DELETE /agents/{id} */
+    public static function delete_agent( \WP_REST_Request $request ): \WP_REST_Response {
+        global $wpdb;
+        $id = absint( $request->get_param( 'id' ) );
+        $wpdb->delete( $wpdb->prefix . 'ai_agents', [ 'id' => $id ] );
+        return new \WP_REST_Response( [ 'success' => true ], 200 );
+    }
+
+    /** GET /pipelines */
+    public static function get_pipelines( \WP_REST_Request $request ): \WP_REST_Response {
+        $pipelines = \AISalesEngine\Modules\Pipelines\PipelineManager::list_all();
+        return new \WP_REST_Response( $pipelines, 200 );
+    }
+
+    /** POST /pipelines */
+    public static function create_pipeline( \WP_REST_Request $request ): \WP_REST_Response {
+        $name        = sanitize_text_field( wp_unslash( $request->get_param( 'name' )        ?? '' ) );
+        $description = sanitize_textarea_field( wp_unslash( $request->get_param( 'description' ) ?? '' ) );
+        $stages_raw  = sanitize_textarea_field( wp_unslash( $request->get_param( 'stages' ) ?? '' ) );
+
+        if ( ! $name ) {
+            return new \WP_REST_Response( [ 'error' => 'name is required.' ], 400 );
+        }
+
+        $id = \AISalesEngine\Modules\Pipelines\PipelineManager::create( $name, $description );
+        if ( ! $id ) {
+            return new \WP_REST_Response( [ 'error' => 'Could not create pipeline.' ], 500 );
+        }
+
+        // Create stages if provided (newline-separated).
+        if ( $stages_raw ) {
+            $stage_names = array_filter( array_map( 'trim', explode( "\n", $stages_raw ) ) );
+            foreach ( array_values( $stage_names ) as $pos => $stage_name ) {
+                \AISalesEngine\Modules\Pipelines\PipelineManager::add_stage( $id, $stage_name, $pos );
+            }
+        }
+
+        return new \WP_REST_Response( [ 'id' => $id ], 201 );
+    }
+
+    /** GET /pipelines/{id}/board */
+    public static function get_pipeline_board( \WP_REST_Request $request ): \WP_REST_Response {
+        $pipeline_id = absint( $request->get_param( 'id' ) );
+        $board       = \AISalesEngine\Modules\Pipelines\PipelineManager::get_board( $pipeline_id );
+        return new \WP_REST_Response( $board, 200 );
+    }
+
+    /** POST /pipelines/{id}/move */
+    public static function move_pipeline_lead( \WP_REST_Request $request ): \WP_REST_Response {
+        $pipeline_id = absint( $request->get_param( 'id' ) );
+        $lead_id     = absint( $request->get_param( 'lead_id' ) );
+        $stage_id    = absint( $request->get_param( 'stage_id' ) );
+        if ( ! $lead_id || ! $stage_id ) {
+            return new \WP_REST_Response( [ 'error' => 'lead_id and stage_id are required.' ], 400 );
+        }
+        \AISalesEngine\Modules\Pipelines\PipelineManager::move_lead( $lead_id, $pipeline_id, $stage_id );
+        return new \WP_REST_Response( [ 'success' => true ], 200 );
+    }
+
+    /** PUT /automations/{id} */
+    public static function update_automation( \WP_REST_Request $request ): \WP_REST_Response {
+        global $wpdb;
+        $id     = absint( $request->get_param( 'id' ) );
+        $status = sanitize_text_field( wp_unslash( $request->get_param( 'status' ) ?? '' ) );
+        if ( ! in_array( $status, [ 'active', 'inactive' ], true ) ) {
+            return new \WP_REST_Response( [ 'error' => 'Invalid status.' ], 400 );
+        }
+        $wpdb->update( $wpdb->prefix . 'ai_automations', [ 'status' => $status ], [ 'id' => $id ] );
+        return new \WP_REST_Response( [ 'success' => true ], 200 );
+    }
+
+    /** DELETE /automations/{id} */
+    public static function delete_automation( \WP_REST_Request $request ): \WP_REST_Response {
+        global $wpdb;
+        $id = absint( $request->get_param( 'id' ) );
+        $wpdb->delete( $wpdb->prefix . 'ai_automations', [ 'id' => $id ] );
+        return new \WP_REST_Response( [ 'success' => true ], 200 );
+    }
+
+    /** DELETE /lists/{id} */
+    public static function delete_list( \WP_REST_Request $request ): \WP_REST_Response {
+        global $wpdb;
+        $id = absint( $request->get_param( 'id' ) );
+        $wpdb->delete( $wpdb->prefix . 'ai_lists', [ 'id' => $id ] );
+        return new \WP_REST_Response( [ 'success' => true ], 200 );
     }
 }

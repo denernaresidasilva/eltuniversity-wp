@@ -17,65 +17,68 @@ class Agents {
             <div class="aise-page-header">
                 <h1 class="aise-page-title">
                     <span class="dashicons dashicons-superhero"></span>
-                    <?php esc_html_e( 'AI Agents', 'ai-sales-engine' ); ?>
+                    <?php esc_html_e( 'Agentes de IA', 'ai-sales-engine' ); ?>
                 </h1>
-                <button class="button button-primary" id="aise-add-agent-btn">
-                    + <?php esc_html_e( 'New Agent', 'ai-sales-engine' ); ?>
+                <button class="aise-btn aise-btn-primary" id="aise-add-agent-btn">
+                    <span class="dashicons dashicons-plus"></span>
+                    <?php esc_html_e( 'Novo Agente', 'ai-sales-engine' ); ?>
                 </button>
             </div>
 
             <div class="aise-agents-grid" id="aise-agents-grid">
-                <p><?php esc_html_e( 'Loading agents…', 'ai-sales-engine' ); ?></p>
+                <p class="aise-loading-row"><?php esc_html_e( 'Carregando agentes…', 'ai-sales-engine' ); ?></p>
             </div>
 
-            <div class="aise-card" id="aise-agent-form-card" style="display:none;">
-                <h2><?php esc_html_e( 'Agent Configuration', 'ai-sales-engine' ); ?></h2>
-                <form id="aise-agent-form">
-                    <table class="form-table">
-                        <tr>
-                            <th><label for="agent-name"><?php esc_html_e( 'Name', 'ai-sales-engine' ); ?></label></th>
-                            <td><input type="text" id="agent-name" name="name" class="regular-text" required /></td>
-                        </tr>
-                        <tr>
-                            <th><label for="agent-role"><?php esc_html_e( 'Role', 'ai-sales-engine' ); ?></label></th>
-                            <td><input type="text" id="agent-role" name="role" class="regular-text" /></td>
-                        </tr>
-                        <tr>
-                            <th><label for="agent-goal"><?php esc_html_e( 'Goal', 'ai-sales-engine' ); ?></label></th>
-                            <td><textarea id="agent-goal" name="goal" rows="3" class="large-text"></textarea></td>
-                        </tr>
-                        <tr>
-                            <th><label for="agent-personality"><?php esc_html_e( 'Personality', 'ai-sales-engine' ); ?></label></th>
-                            <td><textarea id="agent-personality" name="personality" rows="3" class="large-text"></textarea></td>
-                        </tr>
-                        <tr>
-                            <th><label for="agent-training"><?php esc_html_e( 'Training Prompt', 'ai-sales-engine' ); ?></label></th>
-                            <td><textarea id="agent-training" name="training_prompt" rows="6" class="large-text"></textarea></td>
-                        </tr>
-                        <tr>
-                            <th><?php esc_html_e( 'Features', 'ai-sales-engine' ); ?></th>
-                            <td>
-                                <label>
-                                    <input type="checkbox" name="voice_enabled" value="1" />
-                                    <?php esc_html_e( 'Voice enabled', 'ai-sales-engine' ); ?>
-                                </label>
-                                &nbsp;&nbsp;
-                                <label>
-                                    <input type="checkbox" name="image_enabled" value="1" />
-                                    <?php esc_html_e( 'Image generation enabled', 'ai-sales-engine' ); ?>
-                                </label>
-                            </td>
-                        </tr>
-                    </table>
-                    <p>
-                        <button type="submit" class="button button-primary">
-                            <?php esc_html_e( 'Save Agent', 'ai-sales-engine' ); ?>
-                        </button>
-                        <button type="button" class="button" id="aise-agent-cancel-btn">
-                            <?php esc_html_e( 'Cancel', 'ai-sales-engine' ); ?>
-                        </button>
-                    </p>
-                </form>
+            <!-- Modal: Novo/Editar Agente -->
+            <div class="aise-modal" id="aise-agent-modal" style="display:none;">
+                <div class="aise-modal-backdrop"></div>
+                <div class="aise-modal-dialog aise-modal-lg">
+                    <div class="aise-modal-header">
+                        <h3><?php esc_html_e( 'Configuração do Agente', 'ai-sales-engine' ); ?></h3>
+                        <button class="aise-modal-close" aria-label="<?php esc_attr_e( 'Fechar', 'ai-sales-engine' ); ?>">&#x2715;</button>
+                    </div>
+                    <div class="aise-modal-body">
+                        <form id="aise-agent-form">
+                            <div class="aise-form-row">
+                                <label for="agent-name"><?php esc_html_e( 'Nome', 'ai-sales-engine' ); ?></label>
+                                <input type="text" id="agent-name" name="name" class="aise-input" required />
+                            </div>
+                            <div class="aise-form-row">
+                                <label for="agent-role"><?php esc_html_e( 'Função', 'ai-sales-engine' ); ?></label>
+                                <input type="text" id="agent-role" name="role" class="aise-input" />
+                            </div>
+                            <div class="aise-form-row">
+                                <label for="agent-goal"><?php esc_html_e( 'Objetivo', 'ai-sales-engine' ); ?></label>
+                                <textarea id="agent-goal" name="goal" rows="3" class="aise-input"></textarea>
+                            </div>
+                            <div class="aise-form-row">
+                                <label for="agent-personality"><?php esc_html_e( 'Personalidade', 'ai-sales-engine' ); ?></label>
+                                <textarea id="agent-personality" name="personality" rows="3" class="aise-input"></textarea>
+                            </div>
+                            <div class="aise-form-row">
+                                <label for="agent-training"><?php esc_html_e( 'Prompt de Treinamento', 'ai-sales-engine' ); ?></label>
+                                <textarea id="agent-training" name="training_prompt" rows="6" class="aise-input"></textarea>
+                            </div>
+                            <div class="aise-form-row">
+                                <label><?php esc_html_e( 'Recursos', 'ai-sales-engine' ); ?></label>
+                                <div class="aise-checkboxes">
+                                    <label class="aise-checkbox-label">
+                                        <input type="checkbox" name="voice_enabled" value="1" />
+                                        <span><?php esc_html_e( 'Voz habilitada', 'ai-sales-engine' ); ?></span>
+                                    </label>
+                                    <label class="aise-checkbox-label">
+                                        <input type="checkbox" name="image_enabled" value="1" />
+                                        <span><?php esc_html_e( 'Geração de imagem habilitada', 'ai-sales-engine' ); ?></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="aise-modal-footer">
+                        <button class="aise-btn aise-btn-ghost aise-modal-close"><?php esc_html_e( 'Cancelar', 'ai-sales-engine' ); ?></button>
+                        <button class="aise-btn aise-btn-primary" id="aise-agent-save-btn"><?php esc_html_e( 'Salvar Agente', 'ai-sales-engine' ); ?></button>
+                    </div>
+                </div>
             </div>
         </div>
         <?php
