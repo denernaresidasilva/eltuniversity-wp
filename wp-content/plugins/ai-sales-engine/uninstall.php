@@ -26,7 +26,9 @@ $tables = [
 ];
 
 foreach ( $tables as $table ) {
-    $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}{$table}" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+    $table_name = esc_sql( $wpdb->prefix . $table );
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+    $wpdb->query( "DROP TABLE IF EXISTS `{$table_name}`" );
 }
 
 delete_option( 'ai_sales_engine_version' );
