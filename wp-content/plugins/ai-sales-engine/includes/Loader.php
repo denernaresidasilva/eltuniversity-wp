@@ -12,9 +12,21 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Loader {
 
     /**
+     * Load the plugin text domain for translations.
+     */
+    public static function load_textdomain(): void {
+        load_plugin_textdomain(
+            'ai-sales-engine',
+            false,
+            dirname( plugin_basename( AI_SALES_ENGINE_FILE ) ) . '/languages'
+        );
+    }
+
+    /**
      * Load all files and boot each module.
      */
     public static function init(): void {
+        add_action( 'init', [ self::class, 'load_textdomain' ] );
         // Core
         require_once AI_SALES_ENGINE_PATH . 'core/Database.php';
         require_once AI_SALES_ENGINE_PATH . 'core/EventDispatcher.php';
