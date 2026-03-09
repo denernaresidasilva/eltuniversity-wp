@@ -848,40 +848,6 @@
   }
 
   /* ─────────────────────────────────────────
-     Sidebar nav
-  ───────────────────────────────────────── */
-  function Sidebar(_ref) {
-    var current = _ref.current, onNavigate = _ref.onNavigate;
-    var items = [
-      { key: 'dashboard',    icon: '📊', label: 'Dashboard' },
-      { key: 'webinars',     icon: '🎥', label: 'Webinars' },
-      { key: 'participantes',icon: '👥', label: 'Participantes' },
-      { key: 'chat',         icon: '💬', label: 'Chat' },
-      { key: 'automacoes',   icon: '⚡', label: 'Automações' },
-      { key: 'analytics',    icon: '📈', label: 'Analytics' },
-      { key: 'configuracoes',icon: '⚙️', label: 'Configurações' },
-    ];
-    return el('aside', { className: 'ww-sidebar' },
-      el('div', { className: 'ww-sidebar-brand' },
-        el('span', { className: 'ww-sidebar-icon' }, '🎬'),
-        el('span', { className: 'ww-sidebar-title' }, 'Webinars')
-      ),
-      el('nav', { className: 'ww-sidebar-nav' },
-        items.map(function(item) {
-          return el('button', {
-            key     : item.key,
-            className: 'ww-nav-item' + (current === item.key ? ' active' : ''),
-            onClick : function() { onNavigate(item.key); }
-          },
-            el('span', { className: 'ww-nav-icon' }, item.icon),
-            el('span', null, item.label)
-          );
-        })
-      )
-    );
-  }
-
-  /* ─────────────────────────────────────────
      Root App
   ───────────────────────────────────────── */
   function App() {
@@ -895,8 +861,7 @@
       'analytics'  : 'analytics',
       'configuracoes': 'configuracoes',
     };
-    var _p = useState(pageMap[rawPage] || 'dashboard');
-    var page = _p[0], setPage = _p[1];
+    var page = pageMap[rawPage] || 'dashboard';
 
     var pages = {
       dashboard    : el(DashboardPage),
@@ -908,11 +873,8 @@
       configuracoes: el(ConfiguracoesPage),
     };
 
-    return el('div', { className: 'ww-app' },
-      el(Sidebar, { current: page, onNavigate: setPage }),
-      el('main', { className: 'ww-main' },
-        pages[page] || el(DashboardPage)
-      )
+    return el('main', { className: 'ww-main' },
+      pages[page] || el(DashboardPage)
     );
   }
 
