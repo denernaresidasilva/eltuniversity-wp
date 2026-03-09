@@ -31,6 +31,9 @@
     justify-content: center;
     min-height: 220px;
     background: linear-gradient(135deg, var(--sw-dark) 0%, #0f3460 100%);
+    background-size: cover;
+    background-position: center;
+    position: relative;
     padding: 40px 20px;
 }
 .sw-countdown-inner { text-align: center; }
@@ -139,6 +142,25 @@
 .sw-anim-pulse  { animation: sw-pulse  1.5s infinite; }
 .sw-anim-shake  { animation: sw-shake  .6s infinite; }
 .sw-anim-slide  { animation: sw-slide  .5s forwards; }
+
+.sw-countdown-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+}
+.sw-countdown-inner { position: relative; z-index: 1; }
+
+.sw-chat-toggle {
+    width: 100%;
+    border: 0;
+    cursor: pointer;
+    padding: 10px 14px;
+    text-align: left;
+    background: rgba(255,255,255,.08);
+    color: #fff;
+    font-weight: 600;
+}
 
 /* ── Chat ────────────────────────────────────────────────────────────────── */
 .sw-chat-section { border-top: 1px solid rgba(255,255,255,.06); }

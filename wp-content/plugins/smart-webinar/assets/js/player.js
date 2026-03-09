@@ -21,6 +21,7 @@
             }
 
             this._bindBeforeUnload();
+            this._bindChatToggle();
         },
 
         _startCountdown: function () {
@@ -107,6 +108,10 @@
                     SWChat.stopPolling();
                     self._stopProgressLoop();
                     self._dispatchEvent('replay_available');
+
+                    if (self.config.mode !== 'live') {
+                        self._restartCountdownCycle();
+                    }
                     break;
             }
         },
@@ -159,6 +164,33 @@
             if (visible && offer.hideAt > 0 && currentTime >= offer.hideAt) {
                 offerEl.style.display = 'none';
             }
+        },
+
+
+
+        _bindChatToggle: function () {
+            var button = document.querySelector('[data-target="sw-chat-box-' + this.config.webinarId + '"]');
+            if (!button) return;
+
+            button.addEventListener('click', function () {
+                var targetId = button.getAttribute('data-target');
+                var box = document.getElementById(targetId);
+                if (!box) return;
+
+                var isHidden = box.style.display === 'none';
+                box.style.display = isHidden ? '' : 'none';
+                button.textContent = isHidden ? 'Ocultar chat' : 'Exibir chat';
+            });
+        },
+
+        _restartCountdownCycle: function () {
+            var wrapper = document.getElementById('sw-countdown-' + this.config.webinarId);
+            var playerWrp = document.getElementById('sw-player-wrapper-' + this.config.webinarId);
+
+            if (playerWrp) playerWrp.style.display = 'none';
+            if (wrapper) wrapper.style.display = 'flex';
+
+            this._startCountdown();
         },
 
         _dispatchEvent: function (event) {

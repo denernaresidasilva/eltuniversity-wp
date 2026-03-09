@@ -78,9 +78,12 @@ class WebinarEditor {
                                 </select>
                             </td></tr>
                         <tr><th><?php esc_html_e( 'URL do Vídeo / YouTube Embed', 'smart-webinar' ); ?></th>
-                            <td><input type="url" name="video_url" class="large-text"
-                                value="<?php echo esc_attr( $webinar->video_url ?? '' ); ?>"
-                                placeholder="https://www.youtube.com/embed/VIDEO_ID"></td></tr>
+                            <td>
+                                <input type="url" name="video_url" class="large-text"
+                                    value="<?php echo esc_attr( $webinar->video_url ?? '' ); ?>"
+                                    placeholder="https://www.youtube.com/watch?v=VIDEO_ID">
+                                <p class="description"><?php esc_html_e( 'Aceita links do YouTube nos formatos watch, live, youtu.be ou embed.', 'smart-webinar' ); ?></p>
+                            </td></tr>
                         <tr><th><?php esc_html_e( 'YouTube Video ID (para comentários)', 'smart-webinar' ); ?></th>
                             <td><input type="text" name="youtube_id" class="regular-text"
                                 value="<?php echo esc_attr( $webinar->youtube_id ?? '' ); ?>"></td></tr>
