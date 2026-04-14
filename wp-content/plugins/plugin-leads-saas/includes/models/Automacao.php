@@ -53,7 +53,9 @@ class Automacao {
             'nome'            => sanitize_text_field( $data['nome'] ?? '' ),
             'trigger_key'     => sanitize_key( $data['trigger'] ?? '' ),
             'acoes_json'      => isset( $data['acoes'] ) ? wp_json_encode( $data['acoes'] ) : '[]',
-            'conditions_json' => isset( $data['conditions'] ) ? wp_json_encode( $data['conditions'] ) : null,
+            'conditions_json' => array_key_exists( 'conditions', $data ) && $data['conditions'] !== null
+                                    ? wp_json_encode( $data['conditions'] )
+                                    : null,
             'ativo'           => isset( $data['ativo'] ) ? (int) $data['ativo'] : 1,
             'created_at'      => current_time( 'mysql' ),
         ] );

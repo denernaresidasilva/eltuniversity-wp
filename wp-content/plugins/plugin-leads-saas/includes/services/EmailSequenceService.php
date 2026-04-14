@@ -121,7 +121,7 @@ class EmailSequenceService {
             EmailSequence::update_queue_status(
                 (int) $item['id'],
                 'sent',
-                [ 'sent_at' => current_time( 'mysql', 1 ) ]
+                [ 'sent_at' => gmdate( 'Y-m-d H:i:s' ) ]
             );
             self::schedule_next_step( $item, $step );
         } else {

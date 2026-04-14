@@ -27,7 +27,7 @@ class EmailSequenceController {
             ],
         ] );
 
-        register_rest_route( Routes::NAMESPACE, '/email/open/(?P<token>[a-zA-Z0-9]+)', [
+        register_rest_route( Routes::NAMESPACE, '/email/open/(?P<token>[a-zA-Z0-9]{32})', [
             [
                 'methods'             => 'GET',
                 'callback'            => [ self::class, 'track_open' ],

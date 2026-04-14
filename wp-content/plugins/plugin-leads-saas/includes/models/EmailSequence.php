@@ -37,7 +37,7 @@ class EmailSequence {
             $wpdb->insert( $t, [
                 'lista_id'   => $lista_id,
                 'nome'       => '',
-                'created_at' => current_time( 'mysql' ),
+                'created_at' => gmdate( 'Y-m-d H:i:s' ),
             ] );
             $row = [ 'id' => (int) $wpdb->insert_id, 'lista_id' => $lista_id, 'nome' => '' ];
         }
@@ -136,7 +136,7 @@ class EmailSequence {
             'open_token'     => $data['open_token'],
             'prev_queue_id'  => isset( $data['prev_queue_id'] ) ? (int) $data['prev_queue_id'] : null,
             'wait_open_until'=> $data['wait_open_until'] ?? null,
-            'created_at'     => current_time( 'mysql' ),
+            'created_at'     => gmdate( 'Y-m-d H:i:s' ),
         ] );
         return (int) $wpdb->insert_id;
     }
@@ -145,7 +145,7 @@ class EmailSequence {
     public static function get_pending_queue(): array {
         global $wpdb;
         $t   = self::table_queue();
-        $now = current_time( 'mysql', 1 );
+        $now = gmdate( 'Y-m-d H:i:s' );
         return $wpdb->get_results(
             $wpdb->prepare( "SELECT * FROM $t WHERE status = 'pending' AND scheduled_at <= %s LIMIT 50", $now ),
             ARRAY_A
@@ -185,7 +185,7 @@ class EmailSequence {
         if ( $row['opened_at'] ) {
             return true; // already recorded
         }
-        $wpdb->update( $t, [ 'opened_at' => current_time( 'mysql', 1 ) ], [ 'id' => $row['id'] ] );
+        $wpdb->update( $t, [ 'opened_at' => gmdate( 'Y-m-d H:i:s' ) ], [ 'id' => $row['id'] ] );
         return true;
     }
 }

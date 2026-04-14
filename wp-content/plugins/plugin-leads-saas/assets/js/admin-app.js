@@ -393,7 +393,7 @@
                       style: { fontSize: 11, background: '#f3f4f6', padding: '2px 6px', borderRadius: 4, wordBreak: 'break-all', cursor: 'pointer' },
                       title: 'Clique para copiar',
                       onClick: function() {
-                        navigator.clipboard.writeText(webhookUrl).then(function() { showAlert('success', 'Webhook URL copiada!'); });
+                        navigator.clipboard.writeText(webhookUrl).then(function() { showAlert('success', 'Webhook URL copiada!'); }).catch(function() { showAlert('error', 'Não foi possível copiar. Copie manualmente: ' + webhookUrl); });
                       }
                     }, webhookUrl)
                   ),
@@ -402,7 +402,7 @@
                       style: { fontSize: 11, background: '#f3f4f6', padding: '2px 6px', borderRadius: 4, cursor: 'pointer' },
                       title: 'Clique para copiar',
                       onClick: function() {
-                        navigator.clipboard.writeText(shortcode).then(function() { showAlert('success', 'Shortcode copiado!'); });
+                        navigator.clipboard.writeText(shortcode).then(function() { showAlert('success', 'Shortcode copiado!'); }).catch(function() { showAlert('error', 'Não foi possível copiar. Copie manualmente: ' + shortcode); });
                       }
                     }, shortcode)
                   ),
