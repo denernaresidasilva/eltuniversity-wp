@@ -1,64 +1,901 @@
+/* ============================================================
+   Lead SaaS Admin — Hotmart-like Dark + Orange Theme
+   ============================================================ */
+
 :root {
-    --ls-accent: #FF6A00;
-    --ls-accent-dark: #E85F00;
-    --ls-bg: #0F0F10;
-    --ls-surface: #161618;
-    --ls-surface-2: #1D1D20;
-    --ls-border: #2A2A2E;
-    --ls-text: #F5F5F7;
-    --ls-muted: #B6B6BD;
+  /* ── Brand / Accent ── */
+  --ls-primary:        #FF6A00;
+  --ls-primary-dark:   #E85F00;
+  --ls-primary-light:  rgba(255, 106, 0, 0.14);
 
-    /* Status Colors */
-    --ls-success: #22C55E;
-    --ls-warning: #F59E0B;
-    --ls-danger: #EF4444;
+  /* ── Status ── */
+  --ls-success:        #22C55E;
+  --ls-success-bg:     rgba(34, 197, 94, 0.12);
+  --ls-warning:        #F59E0B;
+  --ls-warning-bg:     rgba(245, 158, 11, 0.12);
+  --ls-danger:         #EF4444;
+  --ls-danger-bg:      rgba(239, 68, 68, 0.12);
+
+  /* ── Dark Surfaces ── */
+  --ls-gray-50:        #0F0F10;   /* page background */
+  --ls-gray-100:       #161618;   /* card / surface */
+  --ls-gray-200:       #1D1D20;   /* surface-2 / table head */
+  --ls-gray-400:       #B6B6BD;   /* muted / placeholder */
+  --ls-gray-600:       #D0D0D6;   /* secondary text */
+  --ls-gray-700:       #ECECF1;   /* primary text */
+  --ls-gray-900:       #F5F5F7;   /* headings / strong text */
+
+  /* ── Aliases ── */
+  --ls-white:          #161618;   /* "white" card surface in dark */
+  --ls-border:         #2A2A2E;
+
+  /* ── Radius / Shadow ── */
+  --ls-radius:         10px;
+  --ls-shadow:         0 1px 0 rgba(255,255,255,.04),
+                       0 10px 25px rgba(0,0,0,.35);
+  --ls-shadow-lg:      0 20px 55px rgba(0,0,0,.55);
+
+  /* ── Typography ── */
+  --ls-font:           -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* General Style Adjustments */
-body {
-    background-color: var(--ls-bg);
-    color: var(--ls-text);
+/* ============================================================
+   Base / App Shell
+   ============================================================ */
+
+#leads-saas-app {
+  font-family: var(--ls-font);
+  background: var(--ls-gray-50);
+  color: var(--ls-gray-700);
+  min-height: 100vh;
 }
-a {
-    color: var(--ls-accent);
+
+#leads-saas-app a {
+  color: var(--ls-primary);
+  text-decoration: none;
 }
-a:hover, a:focus {
-    color: var(--ls-accent-dark);
-    text-decoration: underline;
+
+#leads-saas-app a:hover,
+#leads-saas-app a:focus {
+  color: var(--ls-primary-dark);
+  text-decoration: underline;
 }
-.button {
-    background-color: var(--ls-accent);
-    color: var(--ls-text);
+
+/* ============================================================
+   Page Layout
+   ============================================================ */
+
+.ls-page-content {
+  padding: 24px;
+  max-width: 1200px;
 }
-.button:hover {
-    background-color: var(--ls-accent-dark);
+
+.ls-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
-/* Table Styles */
-.table {
-    background-color: var(--ls-surface);
-    border: 1px solid var(--ls-border);
+
+.ls-page-header__title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ls-gray-900);
+  margin: 0;
 }
-.table th {
-    background-color: var(--ls-surface-2);
-    color: var(--ls-text);
+
+/* ============================================================
+   Cards
+   ============================================================ */
+
+.ls-card {
+  background: var(--ls-gray-100);
+  border: 1px solid var(--ls-border);
+  border-radius: var(--ls-radius);
+  box-shadow: var(--ls-shadow);
+  overflow: hidden;
 }
-.table td {
-    border-top: 1px solid var(--ls-border);
+
+.ls-card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--ls-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
-/* Modal Styles */
-.modal {
-    background-color: var(--ls-surface);
-    color: var(--ls-text);
+
+.ls-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ls-gray-900);
+  margin: 0;
 }
-.modal-header {
-    border-bottom: 1px solid var(--ls-border);
+
+.ls-card-body {
+  padding: 20px;
 }
-/* Builder Palette / Canvas */
-.builder-canvas {
-    background-color: var(--ls-surface-2);
+
+/* ============================================================
+   Metrics Grid
+   ============================================================ */
+
+.ls-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
 }
-/* Spinner Visibility on Dark */
-.spinner {
-    color: var(--ls-accent);
+
+.ls-metric-card {
+  background: var(--ls-gray-100);
+  border: 1px solid var(--ls-border);
+  border-radius: var(--ls-radius);
+  padding: 20px;
+  box-shadow: var(--ls-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
-/* Additional hover/focus states can be adjusted as necessary */
+
+.ls-metric-card__label {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  color: var(--ls-gray-400);
+}
+
+.ls-metric-card__value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ls-gray-900);
+  line-height: 1;
+}
+
+.ls-metric-card__badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: var(--ls-primary-light);
+  color: var(--ls-primary);
+  width: fit-content;
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+
+.ls-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background .15s, border-color .15s, opacity .15s, box-shadow .15s;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.ls-btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+/* Primary */
+.ls-btn-primary {
+  background: var(--ls-primary);
+  color: #fff;
+  border-color: var(--ls-primary);
+}
+
+.ls-btn-primary:hover:not(:disabled) {
+  background: var(--ls-primary-dark);
+  border-color: var(--ls-primary-dark);
+  color: #fff;
+  text-decoration: none;
+}
+
+.ls-btn-primary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255,106,0,.35);
+}
+
+/* Outline */
+.ls-btn-outline {
+  background: transparent;
+  color: var(--ls-gray-700);
+  border-color: var(--ls-border);
+}
+
+.ls-btn-outline:hover:not(:disabled) {
+  background: rgba(255,255,255,.06);
+  color: var(--ls-gray-900);
+  text-decoration: none;
+}
+
+/* Danger */
+.ls-btn-danger {
+  background: var(--ls-danger);
+  color: #fff;
+  border-color: var(--ls-danger);
+}
+
+.ls-btn-danger:hover:not(:disabled) {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Small modifier */
+.ls-btn-sm {
+  padding: 5px 11px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+/* ============================================================
+   Form Elements
+   ============================================================ */
+
+.ls-form-group {
+  margin-bottom: 16px;
+}
+
+.ls-form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ls-gray-700);
+  margin-bottom: 6px;
+}
+
+.ls-input,
+.ls-select,
+.ls-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  background: #101012;
+  color: var(--ls-gray-900);
+  border: 1px solid var(--ls-border);
+  border-radius: 7px;
+  font-size: 14px;
+  font-family: var(--ls-font);
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+  box-sizing: border-box;
+}
+
+.ls-input::placeholder,
+.ls-textarea::placeholder {
+  color: var(--ls-gray-400);
+}
+
+.ls-input:focus,
+.ls-select:focus,
+.ls-textarea:focus {
+  border-color: var(--ls-primary);
+  box-shadow: 0 0 0 3px rgba(255,106,0,.18);
+}
+
+.ls-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.ls-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23B6B6BD' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+}
+
+/* ============================================================
+   Search Bar
+   ============================================================ */
+
+.ls-search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ls-search-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--ls-gray-400);
+  pointer-events: none;
+}
+
+.ls-search-bar .ls-input {
+  padding-left: 34px;
+}
+
+/* ============================================================
+   Table
+   ============================================================ */
+
+.ls-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--ls-border);
+  border-radius: var(--ls-radius);
+}
+
+.ls-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  background: var(--ls-gray-100);
+}
+
+.ls-table th {
+  background: var(--ls-gray-200);
+  color: var(--ls-gray-400);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--ls-border);
+  white-space: nowrap;
+}
+
+.ls-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--ls-border);
+  color: var(--ls-gray-700);
+  vertical-align: middle;
+}
+
+.ls-table tr:last-child td {
+  border-bottom: none;
+}
+
+.ls-table tbody tr:hover td {
+  background: rgba(255,255,255,.04);
+}
+
+/* ============================================================
+   Badges
+   ============================================================ */
+
+.ls-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: .2px;
+}
+
+.ls-badge-primary {
+  background: var(--ls-primary-light);
+  color: var(--ls-primary);
+}
+
+.ls-badge-success {
+  background: var(--ls-success-bg);
+  color: var(--ls-success);
+}
+
+/* ============================================================
+   Tags
+   ============================================================ */
+
+.ls-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--ls-gray-200);
+  color: var(--ls-gray-700);
+  border: 1px solid var(--ls-border);
+}
+
+.ls-tag-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ls-primary);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Alerts
+   ============================================================ */
+
+.ls-alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  margin-bottom: 16px;
+  border: 1px solid transparent;
+}
+
+.ls-alert-success {
+  background: var(--ls-success-bg);
+  color: var(--ls-success);
+  border-color: rgba(34,197,94,.25);
+}
+
+.ls-alert-warning {
+  background: var(--ls-warning-bg);
+  color: var(--ls-warning);
+  border-color: rgba(245,158,11,.25);
+}
+
+.ls-alert-danger {
+  background: var(--ls-danger-bg);
+  color: var(--ls-danger);
+  border-color: rgba(239,68,68,.25);
+}
+
+/* ============================================================
+   Modals
+   ============================================================ */
+
+.ls-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+}
+
+.ls-modal {
+  background: var(--ls-gray-100);
+  border: 1px solid var(--ls-border);
+  border-radius: var(--ls-radius);
+  box-shadow: var(--ls-shadow-lg);
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.ls-modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--ls-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ls-modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ls-gray-900);
+  margin: 0;
+}
+
+.ls-modal-close {
+  background: none;
+  border: none;
+  color: var(--ls-gray-400);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  padding: 2px;
+  transition: color .15s;
+}
+
+.ls-modal-close:hover {
+  color: var(--ls-gray-900);
+}
+
+.ls-modal-body {
+  padding: 20px;
+}
+
+.ls-modal-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--ls-border);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ============================================================
+   Pagination
+   ============================================================ */
+
+.ls-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 0;
+  flex-wrap: wrap;
+}
+
+.ls-pagination-info {
+  font-size: 13px;
+  color: var(--ls-gray-400);
+}
+
+/* ============================================================
+   Spinner / Loading
+   ============================================================ */
+
+.ls-spinner {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--ls-border);
+  border-top-color: var(--ls-primary);
+  border-radius: 50%;
+  animation: ls-spin .7s linear infinite;
+}
+
+.ls-loading-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+@keyframes ls-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   Empty State
+   ============================================================ */
+
+.ls-empty-state {
+  text-align: center;
+  padding: 56px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.ls-empty-state__icon {
+  font-size: 48px;
+  line-height: 1;
+  opacity: .5;
+}
+
+.ls-empty-state__title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ls-gray-900);
+  margin: 0;
+}
+
+.ls-empty-state__desc {
+  font-size: 14px;
+  color: var(--ls-gray-400);
+  max-width: 380px;
+  margin: 0;
+}
+
+/* ============================================================
+   Text helpers
+   ============================================================ */
+
+.ls-text-muted {
+  color: var(--ls-gray-400);
+}
+
+.ls-mt-4 {
+  margin-top: 1rem;
+}
+
+/* ============================================================
+   Flex / Grid helpers
+   ============================================================ */
+
+.ls-flex {
+  display: flex;
+  align-items: center;
+}
+
+.ls-gap-2 {
+  gap: 8px;
+}
+
+.ls-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ============================================================
+   Builder — Form Builder
+   ============================================================ */
+
+.ls-builder-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 0;
+  min-height: 480px;
+  border: 1px solid var(--ls-border);
+  border-radius: var(--ls-radius);
+  overflow: hidden;
+}
+
+.ls-builder-palette {
+  background: var(--ls-gray-200);
+  border-right: 1px solid var(--ls-border);
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.ls-palette-item {
+  background: var(--ls-gray-100);
+  border: 1px solid var(--ls-border);
+  border-radius: 7px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  cursor: grab;
+  font-size: 13px;
+  color: var(--ls-gray-700);
+  transition: background .15s, border-color .15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ls-palette-item:hover {
+  background: var(--ls-gray-100);
+  border-color: var(--ls-primary);
+  color: var(--ls-primary);
+}
+
+.ls-builder-canvas {
+  background: var(--ls-gray-50);
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.ls-builder-field-item {
+  background: var(--ls-gray-100);
+  border: 1px solid var(--ls-border);
+  border-radius: 7px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: border-color .15s;
+}
+
+.ls-builder-field-item:hover {
+  border-color: var(--ls-primary);
+}
+
+.ls-builder-field-drag {
+  color: var(--ls-gray-400);
+  cursor: grab;
+  font-size: 16px;
+}
+
+.ls-builder-field-info {
+  flex: 1;
+}
+
+.ls-builder-field-label {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ls-gray-700);
+}
+
+.ls-builder-field-type {
+  font-size: 11px;
+  color: var(--ls-gray-400);
+  margin-top: 2px;
+}
+
+.ls-builder-field-actions {
+  display: flex;
+  gap: 4px;
+}
+
+/* ============================================================
+   Sequence / Automation Flow
+   ============================================================ */
+
+.ls-seq-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+}
+
+.ls-seq-main {
+  min-width: 0;
+}
+
+.ls-seq-sidebar {
+  background: var(--ls-gray-100);
+  border: 1px solid var(--ls-border);
+  border-radius: var(--ls-radius);
+  padding: 16px;
+}
+
+.ls-seq-sidebar__header {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ls-gray-900);
+  margin-bottom: 6px;
+}
+
+.ls-seq-sidebar__desc {
+  font-size: 13px;
+  color: var(--ls-gray-400);
+}
+
+.ls-flow-step {
+  background: var(--ls-gray-100);
+  border: 1px solid var(--ls-border);
+  border-radius: var(--ls-radius);
+  padding: 14px 16px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+
+.ls-flow-step:hover {
+  border-color: var(--ls-primary);
+  background: var(--ls-gray-200);
+}
+
+.ls-flow-step-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--ls-primary-light);
+  color: var(--ls-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.ls-flow-connector {
+  width: 2px;
+  height: 20px;
+  background: var(--ls-border);
+  margin: 0 auto 4px;
+}
+
+/* Saved steps */
+.ls-saved-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ls-saved-step-card {
+  background: var(--ls-gray-200);
+  border: 1px solid var(--ls-border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ls-saved-step-card__num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--ls-primary-light);
+  color: var(--ls-primary);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ls-saved-step-card__subject {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ls-gray-700);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ls-saved-step-card__delay {
+  font-size: 11.5px;
+  color: var(--ls-gray-400);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   Email Preview
+   ============================================================ */
+
+.ls-email-preview {
+  background: var(--ls-gray-200);
+  border: 1px solid var(--ls-border);
+  border-radius: var(--ls-radius);
+  overflow: hidden;
+}
+
+.ls-email-preview__header {
+  background: var(--ls-gray-100);
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--ls-gray-400);
+  border-bottom: 1px solid var(--ls-border);
+}
+
+.ls-email-preview__body {
+  padding: 20px;
+  font-size: 14px;
+  color: var(--ls-gray-700);
+  min-height: 120px;
+}
+
+/* ============================================================
+   Variable List (merge tags)
+   ============================================================ */
+
+.ls-var-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ls-var-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background .12s;
+}
+
+.ls-var-item:hover,
+.ls-var-item--copied {
+  background: var(--ls-primary-light);
+}
+
+.ls-var-item__code {
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--ls-primary);
+  background: rgba(255,106,0,.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.ls-var-item__label {
+  font-size: 12px;
+  color: var(--ls-gray-400);
+}
