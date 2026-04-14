@@ -17,6 +17,16 @@ class WebhookController {
      */
     private const SENSITIVE_KEYS = [ 'password', 'senha', 'token', 'secret', 'api_key', 'apikey', 'access_token', 'card', 'cvv', 'credit' ];
 
+    /**
+     * Profundidade máxima para busca recursiva de e-mail no payload.
+     */
+    private const MAX_EMAIL_SEARCH_DEPTH = 5;
+
+    /**
+     * Chaves de 1º nível verificadas prioritariamente na extração de e-mail.
+     */
+    private const EMAIL_TOP_CANDIDATES = [ 'email', 'buyer_email', 'customer_email', 'user_email', 'contact_email' ];
+
     public static function register_routes(): void {
         $args = [ 'token' => [ 'sanitize_callback' => 'sanitize_text_field' ] ];
 
@@ -102,8 +112,9 @@ class WebhookController {
                 if ( is_array( $decoded ) && ! empty( $decoded ) ) {
                     $body     = $decoded;
                     $strategy = 'raw_json_decode';
-                } elseif ( strpos( $raw, '=' ) !== false ) {
-                    // 4. Fallback final: application/x-www-form-urlencoded como string.
+                } elseif ( JSON_ERROR_NONE !== json_last_error() && strpos( $raw, '=' ) !== false ) {
+                    // 4. Fallback final: application/x-www-form-urlencoded como string
+                    //    (somente quando json_decode falhou com erro real).
                     wp_parse_str( $raw, $parsed );
                     if ( ! empty( $parsed ) ) {
                         $body     = $parsed;
@@ -170,15 +181,14 @@ class WebhookController {
      * @return array{email: string, path: string}
      */
     private static function extract_email_with_path( array $body, string $path = '', int $depth = 0 ): array {
-        if ( $depth > 5 ) {
+        if ( $depth > self::MAX_EMAIL_SEARCH_DEPTH ) {
             return [ 'email' => '', 'path' => '' ];
         }
 
         // Chaves diretas prioritárias (sem aninhamento) verificadas primeiro.
-        $top_candidates = [ 'email', 'buyer_email', 'customer_email', 'user_email', 'contact_email' ];
-        $lower_body     = array_change_key_case( $body, CASE_LOWER );
+        $lower_body = array_change_key_case( $body, CASE_LOWER );
 
-        foreach ( $top_candidates as $key ) {
+        foreach ( self::EMAIL_TOP_CANDIDATES as $key ) {
             if ( ! empty( $lower_body[ $key ] ) && is_string( $lower_body[ $key ] ) ) {
                 $email = sanitize_email( $lower_body[ $key ] );
                 if ( $email ) {
