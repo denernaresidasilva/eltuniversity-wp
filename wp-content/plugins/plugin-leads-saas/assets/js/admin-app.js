@@ -995,7 +995,7 @@
       }
     }
 
-    function insertOrCopy(varValue) {
+    function handleVariableClick(varValue) {
       if (activeBodyRef.current) {
         var info = activeBodyRef.current;
         var domEl = info.el;
@@ -1010,9 +1010,12 @@
           domEl.setSelectionRange(newCursor, newCursor);
         }, 0);
       }
-      navigator.clipboard.writeText(varValue).catch(function() {});
-      setCopyFeedback(varValue);
-      setTimeout(function() { setCopyFeedback(null); }, 2000);
+      navigator.clipboard.writeText(varValue).then(function() {
+        setCopyFeedback(varValue);
+        setTimeout(function() { setCopyFeedback(null); }, 2000);
+      }).catch(function() {
+        showAlert('error', 'Não foi possível copiar. Insira a variável manualmente no campo de texto.');
+      });
     }
 
     function togglePreview(idx) {
@@ -1195,7 +1198,7 @@
         ),
 
         // ── Variables sidebar ───────────────────────────────────
-        el(VariablesSidebar, { onInsert: insertOrCopy, copyFeedback: copyFeedback })
+        el(VariablesSidebar, { onInsert: handleVariableClick, copyFeedback: copyFeedback })
       )
     );
   }
