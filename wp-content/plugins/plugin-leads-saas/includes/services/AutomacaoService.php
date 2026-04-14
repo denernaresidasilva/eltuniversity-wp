@@ -13,6 +13,13 @@ class AutomacaoService {
     public static function fire( string $trigger, array $context = [] ): void {
         $automacoes = Automacao::find_by_trigger( $trigger );
         foreach ( $automacoes as $automacao ) {
+            // Enforce conditions: if automacao has lista_id condition, context must match.
+            $conditions = $automacao['conditions_json'] ?? null;
+            if ( is_array( $conditions ) && isset( $conditions['lista_id'] ) ) {
+                if ( ! isset( $context['lista_id'] ) || (int) $conditions['lista_id'] !== (int) $context['lista_id'] ) {
+                    continue;
+                }
+            }
             self::run_acoes( $automacao['acoes_json'] ?? [], $context );
         }
     }

@@ -20,7 +20,7 @@ define( 'LEADS_SAAS_FILE',        __FILE__ );
 define( 'LEADS_SAAS_DIR',         plugin_dir_path( __FILE__ ) );
 define( 'LEADS_SAAS_URL',         plugin_dir_url( __FILE__ ) );
 define( 'LEADS_SAAS_BASENAME',    plugin_basename( __FILE__ ) );
-define( 'LEADS_SAAS_DB_VERSION',  '1.0.0' );
+define( 'LEADS_SAAS_DB_VERSION',  '1.1.0' );
 
 require_once LEADS_SAAS_DIR . 'includes/Installer.php';
 require_once LEADS_SAAS_DIR . 'includes/Loader.php';

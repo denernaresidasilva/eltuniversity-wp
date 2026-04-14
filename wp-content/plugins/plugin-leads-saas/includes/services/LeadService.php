@@ -15,8 +15,10 @@ class LeadService {
         $id = Lead::create( $data );
 
         if ( $id > 0 ) {
-            AutomacaoService::fire( 'lead_created', [ 'lead_id' => $id, 'lista_id' => (int) ( $data['lista_id'] ?? 0 ) ] );
-            AutomacaoService::fire( 'lead_entered_list', [ 'lead_id' => $id, 'lista_id' => (int) ( $data['lista_id'] ?? 0 ) ] );
+            $lista_id = (int) ( $data['lista_id'] ?? 0 );
+            AutomacaoService::fire( 'lead_created',      [ 'lead_id' => $id, 'lista_id' => $lista_id ] );
+            AutomacaoService::fire( 'lead_entered_list', [ 'lead_id' => $id, 'lista_id' => $lista_id ] );
+            EmailSequenceService::schedule_for_lead( $id, $lista_id );
         }
 
         return $id;
