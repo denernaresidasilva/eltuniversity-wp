@@ -3,7 +3,7 @@
 Plugin Name: Supermembros - Receber Webhook de Qualquer Plataforma
 Description: Plugin para Receber Webhooks de Qualquer Plataforma e Cadastrar Novos Alunos na Supermembros
 Version: 3.0
-Author: Raul Julio da Cruz
+Author: dener naresi
 */
 
 // Se este arquivo é chamado diretamente, aborta.
@@ -58,6 +58,13 @@ class Webhook_Receiver {
         
         // AJAX para matricular aluno manualmente
         add_action('wp_ajax_webhook_receiver_manual_enroll', array($this, 'ajax_manual_enroll_student'));
+        
+        // AJAX para Webhook Lista (Lead SaaS)
+        add_action('wp_ajax_webhook_lista_save', array($this, 'ajax_save_lista_webhook'));
+        add_action('wp_ajax_webhook_lista_delete', array($this, 'ajax_delete_lista_webhook'));
+        add_action('wp_ajax_webhook_lista_get_list', array($this, 'ajax_get_lista_webhooks_list'));
+        add_action('wp_ajax_webhook_lista_save_items', array($this, 'ajax_save_lista_items'));
+        add_action('wp_ajax_webhook_lista_get_items', array($this, 'ajax_get_lista_items'));
 	add_option('webhook_receiver_user_email_subject', 'Bem-vindo! Seus dados de acesso');
 	add_option('webhook_receiver_user_email_template', 'Olá <strong>(nome)</strong>,<br>Sua conta foi criada! ...');
 
@@ -312,6 +319,20 @@ class Webhook_Receiver {
         register_rest_route('webhook-receiver/v1', '/receive/(?P<webhook_id>[a-zA-Z0-9_-]+)', array(
             'methods' => 'POST',
             'callback' => array($this, 'process_specific_webhook'),
+            'permission_callback' => '__return_true',
+            'args' => array(
+                'webhook_id' => array(
+                    'validate_callback' => function($param) {
+                        return is_string($param);
+                    }
+                ),
+            ),
+        ));
+        
+        // Endpoints para webhooks de lista (Lead SaaS)
+        register_rest_route('webhook-receiver/v1', '/lista/(?P<webhook_id>[a-zA-Z0-9_-]+)', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'process_lista_webhook'),
             'permission_callback' => '__return_true',
             'args' => array(
                 'webhook_id' => array(
@@ -1397,11 +1418,36 @@ class Webhook_Receiver {
             KEY webhook_id (webhook_id)
         ) $charset_collate;";
         
+        // Tabela de webhooks de lista (Lead SaaS)
+        $lista_webhooks_table = $wpdb->prefix . 'webhook_lista_endpoints';
+        $lista_webhooks_sql = "CREATE TABLE IF NOT EXISTS $lista_webhooks_table (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            webhook_id varchar(50) NOT NULL,
+            webhook_name varchar(100) NOT NULL,
+            webhook_data longtext DEFAULT NULL,
+            created_at datetime NOT NULL,
+            PRIMARY KEY (id),
+            UNIQUE KEY webhook_id (webhook_id)
+        ) $charset_collate;";
+        
+        // Tabela de associação webhook-lista (Lead SaaS)
+        $lista_items_table = $wpdb->prefix . 'webhook_lista_items';
+        $lista_items_sql = "CREATE TABLE IF NOT EXISTS $lista_items_table (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            webhook_id varchar(50) NOT NULL,
+            lista_id bigint(20) NOT NULL,
+            created_at datetime NOT NULL,
+            PRIMARY KEY (id),
+            KEY webhook_id (webhook_id)
+        ) $charset_collate;";
+        
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
         dbDelta($webhooks_sql);
         dbDelta($webhook_courses_sql);
         dbDelta($order_bumps_sql);
+        dbDelta($lista_webhooks_sql);
+        dbDelta($lista_items_sql);
         
         // Verificar se a coluna webhook_data existe e adicioná-la se não existir
         $column_exists = $wpdb->get_results($wpdb->prepare(
@@ -1504,6 +1550,15 @@ class Webhook_Receiver {
             'webhook-receiver-manual-enroll',
             array($this, 'manual_enroll_page')
         );
+        
+        add_submenu_page(
+            'webhook-receiver',
+            'Webhook Lista',
+            'Webhook Lista',
+            'manage_options',
+            'webhook-receiver-lista',
+            array($this, 'webhook_lista_page')
+        );
     }
     
 
@@ -1516,7 +1571,7 @@ class Webhook_Receiver {
         ?>
         <div class="wrap webhook-receiver-admin">
             <div class="webhook-header">
-                <h1><span class="webhook-icon">🔗</span> Supermembros Webhook</h1>
+                <h1><span class="webhook-icon">🔗</span> Webhook</h1>
                 <p class="webhook-subtitle">Sistema inteligente de recepção e processamento de webhooks</p>
             </div>
             
@@ -8908,6 +8963,838 @@ public function auto_enroll_courses_callback() {
 
         ob_end_clean();
         wp_send_json_success(array('message' => $msg, 'user_id' => $user_id));
+    }
+
+    /**
+     * ========================================
+     * WEBHOOK LISTA - OBTER LISTAS DO LEAD SAAS
+     * ========================================
+     */
+    private function get_lead_saas_listas() {
+        if ( ! $this->is_lead_saas_active() ) {
+            return array();
+        }
+        global $wpdb;
+        $table = $wpdb->prefix . 'lead_listas';
+        $results = $wpdb->get_results( "SELECT id, nome FROM `{$table}` ORDER BY nome ASC", ARRAY_A );
+        return $results ?: array();
+    }
+
+    /**
+     * Verifica se o plugin Lead SaaS está ativo
+     */
+    private function is_lead_saas_active() {
+        global $wpdb;
+        // Verifica se a tabela de listas existe (plugin ativo e instalado)
+        $table = $wpdb->prefix . 'lead_listas';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        return (bool) $wpdb->get_var( $wpdb->prepare(
+            "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = %s AND table_name = %s",
+            DB_NAME,
+            $table
+        ) );
+    }
+
+    /**
+     * ========================================
+     * WEBHOOK LISTA - PÁGINA ADMIN
+     * ========================================
+     */
+    public function webhook_lista_page() {
+        wp_enqueue_script( 'jquery' );
+
+        $lead_saas_active = $this->is_lead_saas_active();
+        $listas           = $lead_saas_active ? $this->get_lead_saas_listas() : array();
+        ?>
+        <div class="wrap webhook-lista-page">
+        <?php if ( ! $lead_saas_active ) : ?>
+            <div class="notice notice-error" style="border-left-color:#e53e3e;padding:15px 20px;margin:20px 0;border-radius:8px;">
+                <p style="font-size:1rem;"><strong>⚠️ Plugin Lead SaaS não encontrado.</strong><br>
+                Para utilizar o <em>Webhook Lista</em>, é necessário ativar o plugin <strong>Gerenciador de Leads SaaS</strong>.</p>
+            </div>
+        </div>
+        <?php
+            return;
+        endif;
+        ?>
+
+        <style>
+        .webhook-lista-page{background:#f8fafc;margin:0 -20px 0 -12px;padding:20px;min-height:100vh}
+        .wl-card{background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.08);margin-bottom:30px;overflow:hidden;transition:all .3s ease;border:1px solid #e2e8f0}
+        .wl-card:hover{transform:translateY(-2px);box-shadow:0 8px 35px rgba(0,0,0,.12)}
+        .wl-card.create-card{border-left:4px solid #48bb78}
+        .wl-card.list-card{border-left:4px solid #667eea}
+        .wl-card-header{background:linear-gradient(135deg,#f7fafc 0%,#edf2f7 100%);padding:20px 30px;border-bottom:1px solid #e2e8f0}
+        .wl-card-header h2{margin:0;font-size:1.4rem;color:#2d3748;font-weight:600}
+        .wl-card-content{padding:30px}
+        .wl-form{background:#f7fafc;padding:30px;border-radius:12px;border:1px solid #e2e8f0}
+        .wl-form-row{display:grid;grid-template-columns:1fr 1fr;gap:25px;margin-bottom:25px}
+        .wl-form-group{margin-bottom:25px}
+        .wl-form-label{display:block;font-weight:600;color:#2d3748;margin-bottom:8px;font-size:.95rem}
+        .wl-form-input{width:100%;padding:12px 16px;border:2px solid #e2e8f0;border-radius:8px;font-size:.95rem;background:#fff;transition:all .3s ease}
+        .wl-form-input:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.1)}
+        .wl-form-description{margin:8px 0 0 0;font-size:.85rem;color:#718096}
+        .wl-items-container{background:#fff;border:2px solid #e2e8f0;border-radius:8px;max-height:250px;overflow-y:auto;padding:15px;margin-bottom:15px}
+        .wl-item-checkbox{display:flex;align-items:center;padding:8px 12px;cursor:pointer;transition:all .3s ease;border-radius:6px;margin-bottom:5px}
+        .wl-item-checkbox:hover{background:#f7fafc}
+        .wl-item-checkbox input[type="checkbox"]{opacity:0;position:absolute;width:0;height:0}
+        .wl-checkmark{width:20px;height:20px;border:2px solid #e2e8f0;border-radius:4px;margin-right:12px;position:relative;transition:all .3s ease;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .wl-item-checkbox input[type="checkbox"]:checked+.wl-checkmark{background:#667eea;border-color:#667eea}
+        .wl-item-checkbox input[type="checkbox"]:checked+.wl-checkmark::after{content:'✓';color:#fff;font-size:.8rem;font-weight:700}
+        .wl-item-title{color:#2d3748;font-weight:500}
+        .wl-item-actions{display:flex;gap:10px;margin-bottom:15px}
+        .wl-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:8px;font-weight:600;transition:all .3s ease;border:none;cursor:pointer;font-size:.95rem}
+        .wl-btn.primary{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff}
+        .wl-btn.primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(102,126,234,.3)}
+        .wl-btn.secondary{background:#e2e8f0;color:#4a5568}
+        .wl-btn.secondary:hover{background:#cbd5e0;transform:translateY(-1px)}
+        .wl-btn.small{padding:8px 12px;font-size:.85rem}
+        .wl-btn.danger{background:#fed7d7;color:#742a2a}
+        .wl-btn.danger:hover{background:#feb2b2}
+        .wl-form-actions{display:flex;align-items:center;gap:15px}
+        .wl-spinner-wrap{display:none;align-items:center;gap:10px;color:#718096;font-size:.9rem}
+        .wl-spinner{width:20px;height:20px;border:2px solid #e2e8f0;border-top:2px solid #667eea;border-radius:50%;animation:wlspin 1s linear infinite}
+        @keyframes wlspin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        .wl-empty-state{text-align:center;padding:40px;color:#718096}
+        .wl-empty-state .wl-empty-icon{font-size:3rem;display:block;margin-bottom:15px}
+        .wl-webhooks-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:25px;margin-top:20px}
+        .wl-webhook-item{background:#fff;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 4px 20px rgba(0,0,0,.08);overflow:hidden;transition:all .3s ease}
+        .wl-webhook-item:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.15)}
+        .wl-webhook-item-header{background:linear-gradient(135deg,#f7fafc 0%,#edf2f7 100%);padding:20px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center}
+        .wl-webhook-name{margin:0;font-size:1.1rem;color:#2d3748;font-weight:600}
+        .wl-status{padding:6px 12px;border-radius:6px;font-size:.8rem;font-weight:600}
+        .wl-status.configured{background:#c6f6d5;color:#22543d}
+        .wl-status.waiting{background:#fef5e7;color:#744210}
+        .wl-webhook-item-content{padding:20px}
+        .wl-info-grid{display:grid;gap:15px;margin-bottom:15px}
+        .wl-info-section .wl-info-label{display:block;font-size:.8rem;font-weight:600;color:#718096;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+        .wl-info-section code{background:#f7fafc;padding:4px 8px;border-radius:4px;border:1px solid #e2e8f0;font-size:.85rem}
+        .wl-url-section{margin-bottom:15px}
+        .wl-url-section .wl-info-label{display:block;font-size:.8rem;font-weight:600;color:#718096;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+        .wl-url-container{display:flex;align-items:center;gap:10px;background:#1a202c;padding:10px 15px;border-radius:8px;border-left:4px solid #667eea}
+        .wl-url-code{flex:1;color:#68d391;font-family:monospace;font-size:.85rem;background:none;padding:0}
+        .wl-webhook-item-footer{padding:15px 20px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center}
+        .wl-modal{position:fixed;top:0;left:0;width:100%;height:100%;z-index:100000;display:none}
+        .wl-modal-backdrop{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
+        .wl-modal-content{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:16px;max-width:800px;width:90%;max-height:90vh;overflow:hidden;box-shadow:0 25px 50px rgba(0,0,0,.25)}
+        .wl-modal-header{background:linear-gradient(135deg,#f7fafc 0%,#edf2f7 100%);padding:25px 30px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center}
+        .wl-modal-header h2{margin:0;font-size:1.4rem;color:#2d3748;font-weight:600;flex:1}
+        .wl-modal-close{background:none;border:none;font-size:1.5rem;color:#718096;cursor:pointer;padding:5px;border-radius:4px;transition:all .3s ease}
+        .wl-modal-close:hover{background:#e2e8f0;color:#2d3748}
+        .wl-modal-body{padding:30px;max-height:60vh;overflow-y:auto}
+        .wl-modal-footer{background:#f7fafc;padding:20px 30px;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;gap:15px;align-items:center}
+        .wl-highlight{color:#667eea;font-weight:700}
+        .wl-listas-form{background:#f7fafc;padding:25px;border-radius:12px;border:1px solid #e2e8f0}
+        .wl-listas-form h3{margin:0 0 20px 0;color:#2d3748;font-weight:600}
+        .wl-modal-items{max-height:200px}
+        </style>
+
+        <div class="wrap webhook-lista-page">
+            <div class="wl-card create-card">
+                <div class="wl-card-header">
+                    <h2><span class="icon">➕</span> Criar Novo Webhook de Lista</h2>
+                </div>
+                <div class="wl-card-content">
+                    <form id="wl-webhook-form" class="wl-form">
+                        <input type="hidden" name="action" value="webhook_lista_save">
+                        <?php wp_nonce_field( 'webhook_lista_save', 'wl_nonce' ); ?>
+
+                        <div class="wl-form-row">
+                            <div class="wl-form-group">
+                                <label for="wl-webhook-name" class="wl-form-label">
+                                    <span class="icon">🏷️</span> Nome do Webhook
+                                </label>
+                                <input type="text" id="wl-webhook-name" name="webhook_name" class="wl-form-input" required>
+                                <p class="wl-form-description">Um nome descritivo para identificar este webhook.</p>
+                            </div>
+                            <div class="wl-form-group">
+                                <label for="wl-webhook-id" class="wl-form-label">
+                                    <span class="icon">🔑</span> ID do Webhook
+                                </label>
+                                <input type="text" id="wl-webhook-id" name="webhook_id" class="wl-form-input" required pattern="[a-zA-Z0-9_-]+">
+                                <p class="wl-form-description">Identificador único (letras, números, traços e sublinhados).</p>
+                            </div>
+                        </div>
+
+                        <div class="wl-form-group">
+                            <label class="wl-form-label">
+                                <span class="icon">📋</span> Listas Lead SaaS
+                            </label>
+                            <div class="wl-items-container">
+                                <?php if ( ! empty( $listas ) ) : ?>
+                                    <?php foreach ( $listas as $lista ) : ?>
+                                        <label class="wl-item-checkbox">
+                                            <input type="checkbox" name="lista_ids[]" value="<?php echo esc_attr( $lista['id'] ); ?>">
+                                            <span class="wl-checkmark"></span>
+                                            <span class="wl-item-title"><?php echo esc_html( $lista['nome'] ); ?></span>
+                                        </label>
+                                    <?php endforeach; ?>
+                                <?php else : ?>
+                                    <div class="wl-empty-state">
+                                        <span class="wl-empty-icon">📋</span>
+                                        <p>Nenhuma lista encontrada no Lead SaaS. Crie uma lista primeiro.</p>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="wl-item-actions">
+                                <button type="button" id="wl-select-all" class="wl-btn secondary small">Selecionar Todos</button>
+                                <button type="button" id="wl-deselect-all" class="wl-btn secondary small">Desmarcar Todos</button>
+                            </div>
+                            <p class="wl-form-description">Selecione as listas nas quais o lead será cadastrado ao disparar este webhook.</p>
+                        </div>
+
+                        <div class="wl-form-actions">
+                            <button type="submit" class="wl-btn primary">
+                                <span>✨</span> Criar Webhook
+                            </button>
+                            <div class="wl-spinner-wrap">
+                                <div class="wl-spinner"></div>
+                                <span>Criando webhook...</span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="wl-card list-card">
+                <div class="wl-card-header">
+                    <h2><span class="icon">📋</span> Webhooks de Lista Existentes</h2>
+                </div>
+                <div class="wl-card-content">
+                    <div id="wl-webhooks-list">
+                        <?php $this->display_lista_webhooks_list(); ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal para gerenciar listas -->
+            <div id="wl-listas-modal" class="wl-modal">
+                <div class="wl-modal-backdrop"></div>
+                <div class="wl-modal-content">
+                    <div class="wl-modal-header">
+                        <h2><span class="icon">📋</span> Gerenciar Listas - <span id="wl-modal-webhook-name" class="wl-highlight"></span></h2>
+                        <button type="button" class="wl-modal-close">✕</button>
+                    </div>
+                    <input type="hidden" id="wl-modal-webhook-id" value="">
+                    <div class="wl-modal-body">
+                        <div class="wl-listas-form">
+                            <h3>Selecione as Listas</h3>
+                            <div class="wl-items-container wl-modal-items">
+                                <?php foreach ( $listas as $lista ) : ?>
+                                    <label class="wl-item-checkbox">
+                                        <input type="checkbox" class="wl-modal-lista-checkbox" name="modal_lista_ids[]" value="<?php echo esc_attr( $lista['id'] ); ?>">
+                                        <span class="wl-checkmark"></span>
+                                        <span class="wl-item-title"><?php echo esc_html( $lista['nome'] ); ?></span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                            <div class="wl-item-actions">
+                                <button type="button" id="wl-modal-select-all" class="wl-btn secondary small">Selecionar Todos</button>
+                                <button type="button" id="wl-modal-deselect-all" class="wl-btn secondary small">Desmarcar Todos</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wl-modal-footer">
+                        <button type="button" id="wl-save-listas" class="wl-btn primary">
+                            <span>💾</span> Salvar Listas
+                        </button>
+                        <button type="button" class="wl-btn secondary wl-close-modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+        jQuery(document).ready(function($) {
+            var isSubmitting = false;
+
+            // Auto-gerar ID com base no nome
+            $('#wl-webhook-name').on('blur', function() {
+                if ($('#wl-webhook-id').val() === '') {
+                    var id = $(this).val().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+                    $('#wl-webhook-id').val(id);
+                }
+            });
+
+            // Selecionar/desmarcar todos (form)
+            $('#wl-select-all').on('click', function() {
+                $('input[name="lista_ids[]"]').prop('checked', true);
+            });
+            $('#wl-deselect-all').on('click', function() {
+                $('input[name="lista_ids[]"]').prop('checked', false);
+            });
+
+            // Selecionar/desmarcar todos (modal)
+            $('#wl-modal-select-all').on('click', function() {
+                $('.wl-modal-lista-checkbox').prop('checked', true);
+            });
+            $('#wl-modal-deselect-all').on('click', function() {
+                $('.wl-modal-lista-checkbox').prop('checked', false);
+            });
+
+            // Enviar formulário via AJAX
+            $('#wl-webhook-form').on('submit', function(e) {
+                e.preventDefault();
+                if (isSubmitting) return;
+
+                if ($('input[name="lista_ids[]"]:checked').length === 0) {
+                    wlNotify('Selecione pelo menos uma lista!', 'error');
+                    return;
+                }
+
+                var form = $(this);
+                var submitBtn = form.find('button[type="submit"]');
+                var spinner  = form.find('.wl-spinner-wrap');
+                isSubmitting = true;
+                submitBtn.hide();
+                spinner.css('display', 'flex');
+
+                $.ajax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    data: form.serialize(),
+                    success: function(response) {
+                        if (response.success) {
+                            form.find('input[type=text]').val('');
+                            form.find('input[type=checkbox]').prop('checked', false);
+                            $('#wl-webhooks-list').html(response.data.html);
+                            wlNotify('Webhook criado com sucesso!', 'success');
+                        } else {
+                            wlNotify('Erro: ' + response.data.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        wlNotify('Erro ao comunicar com o servidor.', 'error');
+                    },
+                    complete: function() {
+                        isSubmitting = false;
+                        submitBtn.show();
+                        spinner.hide();
+                    }
+                });
+            });
+
+            // Abrir modal de gerenciar listas
+            $(document).on('click', '.wl-manage-listas', function() {
+                var webhookId   = $(this).data('webhook-id');
+                var webhookName = $(this).data('webhook-name');
+                $('#wl-modal-webhook-id').val(webhookId);
+                $('#wl-modal-webhook-name').text(webhookName);
+                wlLoadListaItems(webhookId);
+                $('#wl-listas-modal').fadeIn(300);
+            });
+
+            // Salvar listas do modal
+            $('#wl-save-listas').on('click', function() {
+                var webhookId = $('#wl-modal-webhook-id').val();
+                var selected  = [];
+                $('.wl-modal-lista-checkbox:checked').each(function() {
+                    selected.push($(this).val());
+                });
+                if (selected.length === 0) {
+                    alert('Selecione pelo menos uma lista!');
+                    return;
+                }
+                $.ajax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    data: {
+                        action: 'webhook_lista_save_items',
+                        webhook_id: webhookId,
+                        lista_ids: selected,
+                        nonce: '<?php echo esc_js( wp_create_nonce( 'webhook_lista_items' ) ); ?>'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $.ajax({
+                                url: ajaxurl,
+                                type: 'POST',
+                                data: {
+                                    action: 'webhook_lista_get_list',
+                                    nonce: '<?php echo esc_js( wp_create_nonce( 'webhook_lista_save' ) ); ?>'
+                                },
+                                success: function(r) {
+                                    if (r.success) $('#wl-webhooks-list').html(r.data.html);
+                                }
+                            });
+                            alert('Listas atualizadas com sucesso!');
+                            $('#wl-listas-modal').hide();
+                        } else {
+                            alert('Erro: ' + response.data.message);
+                        }
+                    }
+                });
+            });
+
+            // Fechar modal
+            $('.wl-modal-close, .wl-close-modal, .wl-modal-backdrop').on('click', function() {
+                $('#wl-listas-modal').hide();
+            });
+
+            // Excluir webhook
+            $(document).on('click', '.wl-delete-webhook', function() {
+                if (!confirm('Tem certeza que deseja excluir este webhook?')) return;
+                var webhookId = $(this).data('webhook-id');
+                $.ajax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    data: {
+                        action: 'webhook_lista_delete',
+                        webhook_id: webhookId,
+                        nonce: $('#wl_nonce').val()
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $('#wl-webhooks-list').html(response.data.html);
+                            wlNotify('Webhook excluído com sucesso!', 'success');
+                        } else {
+                            wlNotify('Erro: ' + response.data.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        wlNotify('Erro ao comunicar com o servidor.', 'error');
+                    }
+                });
+            });
+
+            // Copiar URL
+            $(document).on('click', '.wl-copy-url', function() {
+                var url = $(this).data('url');
+                var tmp = $('<input>');
+                $('body').append(tmp);
+                tmp.val(url).select();
+                document.execCommand('copy');
+                tmp.remove();
+                var btn = $(this);
+                btn.text('Copiado!');
+                setTimeout(function() { btn.html('<span>📋</span>'); }, 2000);
+            });
+
+            // Notificações
+            function wlNotify(message, type) {
+                var colors = { success: '#48bb78', error: '#f56565', info: '#4299e1' };
+                var icons  = { success: '✅', error: '❌', info: 'ℹ️' };
+                var n = $('<div>' + (icons[type] || 'ℹ️') + ' ' + message + '</div>');
+                n.css({
+                    position: 'fixed', top: '20px', right: '20px',
+                    background: colors[type] || '#4299e1', color: '#fff',
+                    padding: '15px 20px', borderRadius: '8px',
+                    boxShadow: '0 4px 20px rgba(0,0,0,.3)', zIndex: 100001,
+                    fontWeight: '600', transform: 'translateX(100%)', transition: 'transform .3s ease-out'
+                });
+                $('body').append(n);
+                setTimeout(function() { n.css('transform', 'translateX(0)'); }, 100);
+                setTimeout(function() {
+                    n.css('transform', 'translateX(100%)');
+                    setTimeout(function() { n.remove(); }, 300);
+                }, 3000);
+            }
+
+            // Carregar itens do modal
+            function wlLoadListaItems(webhookId) {
+                $.ajax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    data: {
+                        action: 'webhook_lista_get_items',
+                        webhook_id: webhookId,
+                        nonce: '<?php echo esc_js( wp_create_nonce( 'webhook_lista_items' ) ); ?>'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $('.wl-modal-lista-checkbox').prop('checked', false);
+                            $.each(response.data.lista_ids, function(i, id) {
+                                $('.wl-modal-lista-checkbox[value="' + id + '"]').prop('checked', true);
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        </script>
+        </div>
+        <?php
+    }
+
+    /**
+     * ========================================
+     * WEBHOOK LISTA - EXIBIR LISTA DE WEBHOOKS
+     * ========================================
+     */
+    public function display_lista_webhooks_list() {
+        global $wpdb;
+        $endpoints_table = $wpdb->prefix . 'webhook_lista_endpoints';
+        $items_table     = $wpdb->prefix . 'webhook_lista_items';
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        $webhooks = $wpdb->get_results( "SELECT * FROM `{$endpoints_table}` ORDER BY webhook_name ASC" );
+
+        if ( empty( $webhooks ) ) {
+            echo '<div class="wl-empty-state"><span class="wl-empty-icon">📋</span><p>Nenhum webhook de lista configurado.</p></div>';
+            return;
+        }
+
+        echo '<div class="wl-webhooks-grid">';
+        foreach ( $webhooks as $webhook ) {
+            // Obter listas associadas
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+            $lista_ids = $wpdb->get_col( $wpdb->prepare(
+                "SELECT lista_id FROM `{$items_table}` WHERE webhook_id = %s",
+                $webhook->webhook_id
+            ) );
+
+            $lista_names  = array();
+            $listas_table = $wpdb->prefix . 'lead_listas';
+            foreach ( $lista_ids as $lid ) {
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+                $nome = $wpdb->get_var( $wpdb->prepare( "SELECT nome FROM `{$listas_table}` WHERE id = %d", (int) $lid ) );
+                if ( $nome ) {
+                    $lista_names[] = $nome;
+                }
+            }
+
+            $listas_display = ! empty( $lista_names ) ? implode( ', ', $lista_names ) : 'Nenhuma lista configurada';
+            $listas_count   = count( $lista_names );
+            $has_data       = ! empty( $webhook->webhook_data );
+            $webhook_url    = rest_url( 'webhook-receiver/v1/lista/' . $webhook->webhook_id );
+            ?>
+            <div class="wl-webhook-item">
+                <div class="wl-webhook-item-header">
+                    <h3 class="wl-webhook-name"><span class="icon">📋</span> <?php echo esc_html( $webhook->webhook_name ); ?></h3>
+                    <div>
+                        <?php if ( $has_data ) : ?>
+                            <span class="wl-status configured">✓ Configurado</span>
+                        <?php else : ?>
+                            <span class="wl-status waiting">⏳ Aguardando</span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <div class="wl-webhook-item-content">
+                    <div class="wl-info-grid">
+                        <div class="wl-info-section">
+                            <span class="wl-info-label">ID do Webhook</span>
+                            <code><?php echo esc_html( $webhook->webhook_id ); ?></code>
+                        </div>
+                        <div class="wl-info-section">
+                            <span class="wl-info-label">Listas (<?php echo esc_html( (string) $listas_count ); ?>)</span>
+                            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                                <span style="font-size:.9rem;color:#4a5568;"><?php echo esc_html( $listas_display ); ?></span>
+                                <button type="button" class="wl-btn secondary small wl-manage-listas"
+                                        data-webhook-id="<?php echo esc_attr( $webhook->webhook_id ); ?>"
+                                        data-webhook-name="<?php echo esc_attr( $webhook->webhook_name ); ?>">
+                                    <span>⚙️</span> Gerenciar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wl-url-section">
+                        <span class="wl-info-label">URL do Webhook</span>
+                        <div class="wl-url-container">
+                            <code class="wl-url-code"><?php echo esc_url( $webhook_url ); ?></code>
+                            <button type="button" class="wl-btn secondary small wl-copy-url" data-url="<?php echo esc_url( $webhook_url ); ?>">
+                                <span>📋</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="wl-webhook-item-footer">
+                    <button type="button" class="wl-btn danger small wl-delete-webhook"
+                            data-webhook-id="<?php echo esc_attr( $webhook->webhook_id ); ?>">
+                        <span>🗑️</span> Excluir
+                    </button>
+                </div>
+            </div>
+            <?php
+        }
+        echo '</div>';
+    }
+
+    /**
+     * ========================================
+     * WEBHOOK LISTA - AJAX: SALVAR WEBHOOK
+     * ========================================
+     */
+    public function ajax_save_lista_webhook() {
+        check_ajax_referer( 'webhook_lista_save', 'wl_nonce' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => 'Permissão negada.' ) );
+            return;
+        }
+
+        $webhook_name = sanitize_text_field( $_POST['webhook_name'] ?? '' );
+        $webhook_id   = sanitize_key( $_POST['webhook_id'] ?? '' );
+        $lista_ids    = isset( $_POST['lista_ids'] ) ? array_map( 'intval', (array) $_POST['lista_ids'] ) : array();
+
+        if ( empty( $webhook_name ) || empty( $webhook_id ) || empty( $lista_ids ) ) {
+            wp_send_json_error( array( 'message' => 'Todos os campos obrigatórios devem ser preenchidos.' ) );
+            return;
+        }
+
+        global $wpdb;
+        $endpoints_table = $wpdb->prefix . 'webhook_lista_endpoints';
+        $items_table     = $wpdb->prefix . 'webhook_lista_items';
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        $exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM `{$endpoints_table}` WHERE webhook_id = %s", $webhook_id ) );
+        if ( $exists ) {
+            wp_send_json_error( array( 'message' => 'Este ID de webhook já está em uso. Escolha outro.' ) );
+            return;
+        }
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        $result = $wpdb->insert( $endpoints_table, array(
+            'webhook_id'   => $webhook_id,
+            'webhook_name' => $webhook_name,
+            'webhook_data' => null,
+            'created_at'   => current_time( 'mysql' ),
+        ) );
+
+        if ( false === $result ) {
+            wp_send_json_error( array( 'message' => 'Erro ao salvar webhook no banco de dados.' ) );
+            return;
+        }
+
+        foreach ( $lista_ids as $lid ) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+            $wpdb->insert( $items_table, array(
+                'webhook_id' => $webhook_id,
+                'lista_id'   => $lid,
+                'created_at' => current_time( 'mysql' ),
+            ) );
+        }
+
+        ob_start();
+        $this->display_lista_webhooks_list();
+        $html = ob_get_clean();
+
+        wp_send_json_success( array( 'html' => $html ) );
+    }
+
+    /**
+     * ========================================
+     * WEBHOOK LISTA - AJAX: EXCLUIR WEBHOOK
+     * ========================================
+     */
+    public function ajax_delete_lista_webhook() {
+        check_ajax_referer( 'webhook_lista_save', 'wl_nonce' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => 'Permissão negada.' ) );
+            return;
+        }
+
+        $webhook_id = sanitize_key( $_POST['webhook_id'] ?? '' );
+        if ( empty( $webhook_id ) ) {
+            wp_send_json_error( array( 'message' => 'ID do webhook inválido.' ) );
+            return;
+        }
+
+        global $wpdb;
+        $endpoints_table = $wpdb->prefix . 'webhook_lista_endpoints';
+        $items_table     = $wpdb->prefix . 'webhook_lista_items';
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        $wpdb->delete( $items_table, array( 'webhook_id' => $webhook_id ) );
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        $result = $wpdb->delete( $endpoints_table, array( 'webhook_id' => $webhook_id ) );
+
+        if ( false === $result ) {
+            wp_send_json_error( array( 'message' => 'Erro ao excluir webhook do banco de dados.' ) );
+            return;
+        }
+
+        ob_start();
+        $this->display_lista_webhooks_list();
+        $html = ob_get_clean();
+
+        wp_send_json_success( array( 'html' => $html ) );
+    }
+
+    /**
+     * ========================================
+     * WEBHOOK LISTA - AJAX: OBTER HTML DA LISTA
+     * ========================================
+     */
+    public function ajax_get_lista_webhooks_list() {
+        check_ajax_referer( 'webhook_lista_save', 'nonce' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => 'Permissão negada.' ) );
+            return;
+        }
+
+        ob_start();
+        $this->display_lista_webhooks_list();
+        $html = ob_get_clean();
+
+        wp_send_json_success( array( 'html' => $html ) );
+    }
+
+    /**
+     * ========================================
+     * WEBHOOK LISTA - AJAX: SALVAR ITENS (LISTAS)
+     * ========================================
+     */
+    public function ajax_save_lista_items() {
+        check_ajax_referer( 'webhook_lista_items', 'nonce' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => 'Permissão negada.' ) );
+            return;
+        }
+
+        $webhook_id = sanitize_key( $_POST['webhook_id'] ?? '' );
+        $lista_ids  = isset( $_POST['lista_ids'] ) ? array_map( 'intval', (array) $_POST['lista_ids'] ) : array();
+
+        if ( empty( $webhook_id ) || empty( $lista_ids ) ) {
+            wp_send_json_error( array( 'message' => 'Dados inválidos.' ) );
+            return;
+        }
+
+        global $wpdb;
+        $items_table = $wpdb->prefix . 'webhook_lista_items';
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        $wpdb->delete( $items_table, array( 'webhook_id' => $webhook_id ) );
+
+        foreach ( $lista_ids as $lid ) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+            $wpdb->insert( $items_table, array(
+                'webhook_id' => $webhook_id,
+                'lista_id'   => $lid,
+                'created_at' => current_time( 'mysql' ),
+            ) );
+        }
+
+        wp_send_json_success( array( 'message' => 'Listas atualizadas com sucesso.' ) );
+    }
+
+    /**
+     * ========================================
+     * WEBHOOK LISTA - AJAX: OBTER ITENS (LISTAS)
+     * ========================================
+     */
+    public function ajax_get_lista_items() {
+        check_ajax_referer( 'webhook_lista_items', 'nonce' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => 'Permissão negada.' ) );
+            return;
+        }
+
+        $webhook_id = sanitize_key( $_POST['webhook_id'] ?? '' );
+        if ( empty( $webhook_id ) ) {
+            wp_send_json_error( array( 'message' => 'ID do webhook inválido.' ) );
+            return;
+        }
+
+        global $wpdb;
+        $items_table = $wpdb->prefix . 'webhook_lista_items';
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        $lista_ids = $wpdb->get_col( $wpdb->prepare(
+            "SELECT lista_id FROM `{$items_table}` WHERE webhook_id = %s",
+            $webhook_id
+        ) );
+
+        wp_send_json_success( array( 'lista_ids' => array_map( 'intval', $lista_ids ) ) );
+    }
+
+    /**
+     * ========================================
+     * WEBHOOK LISTA - PROCESSAR WEBHOOK RECEBIDO
+     * ========================================
+     */
+    public function process_lista_webhook( $request ) {
+        $webhook_id = $request->get_param( 'webhook_id' );
+
+        global $wpdb;
+        $endpoints_table = $wpdb->prefix . 'webhook_lista_endpoints';
+        $items_table     = $wpdb->prefix . 'webhook_lista_items';
+        $leads_table     = $wpdb->prefix . 'leads';
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        $webhook_config = $wpdb->get_row( $wpdb->prepare(
+            "SELECT * FROM `{$endpoints_table}` WHERE webhook_id = %s",
+            $webhook_id
+        ) );
+
+        if ( ! $webhook_config ) {
+            return new WP_Error( 'invalid_webhook', 'Webhook não encontrado', array( 'status' => 404 ) );
+        }
+
+        $body = $request->get_body();
+        $data = json_decode( $body, true );
+
+        // Salvar dados brutos na primeira vez
+        if ( empty( $webhook_config->webhook_data ) && json_last_error() === JSON_ERROR_NONE ) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+            $wpdb->update( $endpoints_table, array( 'webhook_data' => $body ), array( 'webhook_id' => $webhook_id ) );
+        }
+
+        if ( ! $data ) {
+            return new WP_Error( 'invalid_data', 'Dados inválidos ou malformados', array( 'status' => 400 ) );
+        }
+
+        // Mapear dados do lead (suporte a formatos comuns)
+        $nome     = '';
+        $email    = '';
+        $telefone = '';
+
+        if ( ! empty( $data['Customer']['name'] ) ) {
+            $nome  = $data['Customer']['name'];
+            $email = $data['Customer']['email'] ?? '';
+            $telefone = $data['Customer']['mobile'] ?? $data['Customer']['phone'] ?? '';
+        } elseif ( ! empty( $data['data']['buyer']['name'] ) ) {
+            $nome  = $data['data']['buyer']['name'];
+            $email = $data['data']['buyer']['email'] ?? '';
+            $telefone = $data['data']['buyer']['checkout_phone'] ?? '';
+        } elseif ( ! empty( $data['customer']['name'] ) ) {
+            $nome  = $data['customer']['name'];
+            $email = $data['customer']['email'] ?? '';
+            $telefone = $data['customer']['phone'] ?? '';
+        } elseif ( ! empty( $data['name'] ) ) {
+            $nome     = $data['name'];
+            $email    = $data['email'] ?? '';
+            $telefone = $data['phone'] ?? $data['telefone'] ?? '';
+        }
+
+        if ( empty( $email ) ) {
+            return new WP_REST_Response( array(
+                'success' => false,
+                'message' => 'E-mail do lead não encontrado no payload.',
+            ), 400 );
+        }
+
+        // Obter listas associadas ao webhook
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        $lista_ids = $wpdb->get_col( $wpdb->prepare(
+            "SELECT lista_id FROM `{$items_table}` WHERE webhook_id = %s",
+            $webhook_id
+        ) );
+
+        $inserted = 0;
+        foreach ( $lista_ids as $lista_id ) {
+            $lista_id = (int) $lista_id;
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+            $wpdb->insert( $leads_table, array(
+                'lista_id'   => $lista_id,
+                'nome'       => sanitize_text_field( $nome ),
+                'email'      => sanitize_email( $email ),
+                'telefone'   => sanitize_text_field( $telefone ),
+                'campos_json' => null,
+                'origem'     => 'webhook',
+                'created_at' => current_time( 'mysql' ),
+            ) );
+            $inserted++;
+        }
+
+        return new WP_REST_Response( array(
+            'success'  => true,
+            'message'  => "Lead adicionado a {$inserted} lista(s) com sucesso.",
+            'lead'     => array( 'nome' => $nome, 'email' => $email ),
+        ), 200 );
     }
 
 } // end class Webhook_Receiver
