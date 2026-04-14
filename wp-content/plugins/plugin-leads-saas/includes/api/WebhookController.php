@@ -63,6 +63,15 @@ class WebhookController {
      * Handler de recebimento de eventos (POST).
      * Cria lead quando há e-mail válido; responde 200 quando o payload é apenas
      * um teste de plataforma (sem e-mail), para não reprovar a verificação.
+     *
+     * Payloads suportados (exemplos):
+     *
+     * Genérico:
+     *   {"email":"user@example.com","name":"João","phone":"11999999999"}
+     *
+     * Eduzz:
+     *   {"buyer":{"email":"user@example.com","name":"João","cellphone":"+5511999999999"},
+     *    "student":{"email":"user@example.com","name":"João","cellphone":"+5511999999999"}}
      */
     public static function receive( WP_REST_Request $request ): WP_REST_Response {
         $token = $request['token'];
@@ -75,30 +84,60 @@ class WebhookController {
             return new WP_REST_Response( [ 'message' => 'Token inválido.' ], 404 );
         }
 
-        $body = $request->get_json_params();
+        // 1. Tentar get_json_params() (Content-Type: application/json).
+        $body     = $request->get_json_params();
+        $strategy = 'json_params';
+
+        // 2. Fallback: form-urlencoded.
         if ( empty( $body ) ) {
-            $body = $request->get_body_params();
+            $body     = $request->get_body_params();
+            $strategy = 'body_params';
         }
+
+        // 3. Fallback: leitura do raw body e json_decode.
+        if ( empty( $body ) ) {
+            $raw = $request->get_body();
+            if ( ! empty( $raw ) ) {
+                $decoded = json_decode( $raw, true );
+                if ( is_array( $decoded ) && ! empty( $decoded ) ) {
+                    $body     = $decoded;
+                    $strategy = 'raw_json_decode';
+                } elseif ( strpos( $raw, '=' ) !== false ) {
+                    // 4. Fallback final: application/x-www-form-urlencoded como string.
+                    wp_parse_str( $raw, $parsed );
+                    if ( ! empty( $parsed ) ) {
+                        $body     = $parsed;
+                        $strategy = 'raw_wp_parse_str';
+                    }
+                }
+            }
+        }
+
         if ( empty( $body ) ) {
             $body = [];
         }
 
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log( '[LeadsSaaS] Webhook receive: payload recebido para lista #' . (int) $lista['id'] . '.' );
+            error_log( '[LeadsSaaS] Webhook receive: payload recebido para lista #' . (int) $lista['id'] . ' (estratégia: ' . $strategy . ').' );
         }
 
-        $email = self::extract_email( $body );
+        $email_info = self::extract_email_with_path( $body );
+        $email      = $email_info['email'];
 
         // Sem e-mail = provavelmente teste de plataforma → retorna 200 sem criar lead.
         if ( empty( $email ) ) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[LeadsSaaS] Webhook receive: sem e-mail no payload (possível teste de plataforma), retornando 200.' );
+                error_log( '[LeadsSaaS] Webhook receive: sem e-mail no payload (estratégia: ' . $strategy . ', possível teste de plataforma), retornando 200.' );
             }
             return new WP_REST_Response( [ 'message' => 'Webhook ativo.' ], 200 );
         }
 
-        $nome     = self::extract_field( $body, [ 'nome', 'name', 'full_name', 'fullname', 'buyer_name', 'customer_name', 'Name' ] );
-        $telefone = self::extract_field( $body, [ 'telefone', 'phone', 'celular', 'mobile', 'fone', 'Phone', 'buyer_phone', 'customer_phone' ] );
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            error_log( '[LeadsSaaS] Webhook receive: e-mail encontrado via "' . $email_info['path'] . '".' );
+        }
+
+        $nome     = self::extract_field_nested( $body, [ 'nome', 'name', 'full_name', 'fullname', 'buyer_name', 'customer_name' ] );
+        $telefone = self::extract_field_nested( $body, [ 'cellphone', 'telefone', 'phone', 'celular', 'mobile', 'fone', 'buyer_phone', 'customer_phone' ] );
 
         $campos_json = self::build_campos_json( $body );
 
@@ -112,7 +151,7 @@ class WebhookController {
         ], 'webhook' );
 
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log( '[LeadsSaaS] Webhook receive: lead #' . $lead_id . ' criado para lista #' . (int) $lista['id'] . '.' );
+            error_log( '[LeadsSaaS] Webhook receive: lead #' . (int) $lead_id . ' criado para lista #' . (int) $lista['id'] . '.' );
         }
 
         return new WP_REST_Response( [
@@ -122,32 +161,90 @@ class WebhookController {
     }
 
     /**
-     * Extrai o e-mail do payload aceitando variações comuns de nomes de campos
-     * (comparação case-insensitive).
+     * Extrai o e-mail do payload usando busca recursiva case-insensitive até
+     * 5 níveis de profundidade. Retorna um array com 'email' e 'path' (para log).
+     *
+     * @param array  $body  Payload a pesquisar.
+     * @param string $path  Caminho acumulado (para depuração).
+     * @param int    $depth Profundidade atual.
+     * @return array{email: string, path: string}
      */
-    private static function extract_email( array $body ): string {
-        // Mapeamento case-insensitive: normalizar chaves para minúsculas.
-        $lower_body = array_change_key_case( $body, CASE_LOWER );
+    private static function extract_email_with_path( array $body, string $path = '', int $depth = 0 ): array {
+        if ( $depth > 5 ) {
+            return [ 'email' => '', 'path' => '' ];
+        }
 
-        $candidates = [ 'email', 'buyer_email', 'customer_email' ];
+        // Chaves diretas prioritárias (sem aninhamento) verificadas primeiro.
+        $top_candidates = [ 'email', 'buyer_email', 'customer_email', 'user_email', 'contact_email' ];
+        $lower_body     = array_change_key_case( $body, CASE_LOWER );
 
-        foreach ( $candidates as $key ) {
-            if ( ! empty( $lower_body[ $key ] ) ) {
-                $email = sanitize_email( (string) $lower_body[ $key ] );
+        foreach ( $top_candidates as $key ) {
+            if ( ! empty( $lower_body[ $key ] ) && is_string( $lower_body[ $key ] ) ) {
+                $email = sanitize_email( $lower_body[ $key ] );
                 if ( $email ) {
-                    return $email;
+                    return [ 'email' => $email, 'path' => ltrim( $path . '.' . $key, '.' ) ];
                 }
             }
         }
 
-        // Suporte a payload aninhado: customer.email, buyer.email
-        foreach ( [ 'customer', 'buyer', 'subscriber', 'contact' ] as $parent ) {
-            if ( ! empty( $lower_body[ $parent ] ) && is_array( $lower_body[ $parent ] ) ) {
-                $nested = array_change_key_case( $lower_body[ $parent ], CASE_LOWER );
-                if ( ! empty( $nested['email'] ) ) {
-                    $email = sanitize_email( (string) $nested['email'] );
+        // Busca em sub-arrays (recursiva): qualquer chave cujo valor seja array.
+        foreach ( $lower_body as $key => $value ) {
+            if ( is_array( $value ) ) {
+                $sub_path = ltrim( $path . '.' . $key, '.' );
+                // Verificar chave "email" no nível imediato do sub-array.
+                $nested = array_change_key_case( $value, CASE_LOWER );
+                if ( ! empty( $nested['email'] ) && is_string( $nested['email'] ) ) {
+                    $email = sanitize_email( $nested['email'] );
                     if ( $email ) {
-                        return $email;
+                        return [ 'email' => $email, 'path' => $sub_path . '.email' ];
+                    }
+                }
+                // Recursão para sub-níveis.
+                $result = self::extract_email_with_path( $value, $sub_path, $depth + 1 );
+                if ( ! empty( $result['email'] ) ) {
+                    return $result;
+                }
+            }
+        }
+
+        return [ 'email' => '', 'path' => '' ];
+    }
+
+    /**
+     * Extrai o e-mail do payload aceitando variações comuns de nomes de campos
+     * (comparação case-insensitive). Mantida por compatibilidade interna.
+     *
+     * @deprecated Usar extract_email_with_path() diretamente.
+     */
+    private static function extract_email( array $body ): string {
+        return self::extract_email_with_path( $body )['email'];
+    }
+
+    /**
+     * Extrai o primeiro valor não vazio para uma lista de chaves candidatas,
+     * pesquisando também em sub-arrays de 1º nível (ex.: buyer.name, student.name).
+     *
+     * @param array    $body Payload.
+     * @param string[] $keys Chaves candidatas (comparação case-insensitive).
+     */
+    private static function extract_field_nested( array $body, array $keys ): string {
+        $lower_body = array_change_key_case( $body, CASE_LOWER );
+        $lower_keys = array_map( 'strtolower', $keys );
+
+        // Busca direta no 1º nível.
+        foreach ( $lower_keys as $key ) {
+            if ( ! empty( $lower_body[ $key ] ) && is_scalar( $lower_body[ $key ] ) ) {
+                return (string) $lower_body[ $key ];
+            }
+        }
+
+        // Busca em sub-arrays de 1º nível (ex.: buyer.name, student.name).
+        foreach ( $lower_body as $value ) {
+            if ( is_array( $value ) ) {
+                $nested = array_change_key_case( $value, CASE_LOWER );
+                foreach ( $lower_keys as $key ) {
+                    if ( ! empty( $nested[ $key ] ) && is_scalar( $nested[ $key ] ) ) {
+                        return (string) $nested[ $key ];
                     }
                 }
             }
@@ -158,15 +255,11 @@ class WebhookController {
 
     /**
      * Extrai o primeiro valor não vazio de uma lista de chaves candidatas.
+     *
+     * @deprecated Usar extract_field_nested() para suporte a campos aninhados.
      */
     private static function extract_field( array $body, array $keys ): string {
-        foreach ( $keys as $key ) {
-            if ( ! empty( $body[ $key ] ) ) {
-                return (string) $body[ $key ];
-            }
-        }
-
-        return '';
+        return self::extract_field_nested( $body, $keys );
     }
 
     /**
