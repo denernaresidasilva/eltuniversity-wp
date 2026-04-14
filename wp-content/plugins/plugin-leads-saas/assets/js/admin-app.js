@@ -9,6 +9,7 @@
   var useState = wp.element.useState;
   var useEffect = wp.element.useEffect;
   var useCallback = wp.element.useCallback;
+  var useRef = wp.element.useRef;
   var Fragment = wp.element.Fragment;
 
   var API_URL = window.LeadsSaaSConfig.apiUrl;
@@ -261,6 +262,7 @@
     var [alert, setAlert] = useState(null);
     var [saving, setSaving] = useState(false);
     var [form, setForm] = useState({ nome: '', descricao: '' });
+    var [subPage, setSubPage] = useState(null); // null | 'leads' | 'seq'
 
     function load() {
       setLoading(true);
@@ -295,9 +297,9 @@
       setModal('delete');
     }
 
-    function openLeadsModal(lista) {
+    function openLeadsPage(lista) {
       setCurrent(lista);
-      setModal('leads');
+      setSubPage('leads');
     }
 
     function openTagsModal(lista) {
@@ -305,9 +307,13 @@
       setModal('tags');
     }
 
-    function openSeqModal(lista) {
+    function openSeqPage(lista) {
       setCurrent(lista);
-      setModal('seq');
+      setSubPage('seq');
+    }
+
+    function closeSubPage() {
+      setSubPage(null);
     }
 
     async function handleSave() {
@@ -349,6 +355,14 @@
       setTimeout(function() { setAlert(null); }, 4000);
     }
 
+    // Sub-page navigation: return full-page components instead of modal
+    if (subPage === 'leads' && current) {
+      return el(ListLeadsPage, { lista: current, onBack: closeSubPage });
+    }
+    if (subPage === 'seq' && current) {
+      return el(ListSeqPage, { lista: current, onBack: closeSubPage });
+    }
+
     return el(Fragment, null,
       alert && el(Alert, { type: alert.type, onClose: function(){ setAlert(null); } }, alert.msg),
 
@@ -384,7 +398,7 @@
                   el('td', null,
                     el('button', {
                       style: { fontWeight: 600, cursor: 'pointer', background: 'none', border: 'none', padding: 0, color: '#6366f1', textDecoration: 'underline', fontSize: 'inherit' },
-                      onClick: function() { openLeadsModal(lista); }
+                      onClick: function() { openLeadsPage(lista); }
                     }, lista.nome)
                   ),
                   el('td', null, el('span', { className: 'ls-text-muted' }, lista.descricao || '—')),
@@ -409,7 +423,7 @@
                   el('td', null,
                     el('div', { className: 'ls-flex ls-gap-2', style: { flexWrap: 'wrap' } },
                       el('button', { className: 'ls-btn ls-btn-outline ls-btn-sm', onClick: function() { openBuilder(lista); } }, '🔧 Form'),
-                      el('button', { className: 'ls-btn ls-btn-outline ls-btn-sm', onClick: function() { openSeqModal(lista); } }, 'Sequência'),
+                      el('button', { className: 'ls-btn ls-btn-outline ls-btn-sm', onClick: function() { openSeqPage(lista); } }, 'Sequência'),
                       el('button', { className: 'ls-btn ls-btn-outline ls-btn-sm', onClick: function() { openTagsModal(lista); } }, 'Tags'),
                       el('button', { className: 'ls-btn ls-btn-outline ls-btn-sm', onClick: function() { openEdit(lista); } }, 'Editar'),
                       el('button', { className: 'ls-btn ls-btn-danger ls-btn-sm', onClick: function() { openDelete(lista); } }, 'Excluir')
@@ -462,24 +476,11 @@
         onSaved: function() { setModal(null); showAlert('success', 'Formulário salvo!'); }
       }),
 
-      // Leads List Modal
-      modal === 'leads' && current && el(ListLeadsModal, {
-        lista: current,
-        onClose: function() { setModal(null); }
-      }),
-
       // Tags Automation Modal
       modal === 'tags' && current && el(ListTagsModal, {
         lista: current,
         onClose: function() { setModal(null); },
         onSaved: function() { setModal(null); showAlert('success', 'Tags automáticas salvas!'); }
-      }),
-
-      // Email Sequence Modal
-      modal === 'seq' && current && el(ListSeqModal, {
-        lista: current,
-        onClose: function() { setModal(null); },
-        onSaved: function() { setModal(null); showAlert('success', 'Sequência salva!'); }
       })
     );
   }
@@ -800,6 +801,401 @@
                 )
               );
             })
+      )
+    );
+  }
+
+  /* ============================================================
+     Variables sidebar – clickable placeholders for email bodies
+  ============================================================ */
+  var EMAIL_VARIABLES = [
+    { label: 'Nome',             value: '{{nome}}',            desc: 'Nome completo do lead' },
+    { label: 'E-mail',           value: '{{email}}',           desc: 'E-mail do lead' },
+    { label: 'Telefone',         value: '{{telefone}}',        desc: 'Telefone do lead' },
+    { label: 'Nome da Lista',    value: '{{lista_nome}}',      desc: 'Nome da lista do lead' },
+    { label: 'URL do Site',      value: '{{site_url}}',        desc: 'URL do seu site WordPress' },
+    { label: 'Link Descadastro', value: '{{unsubscribe_url}}', desc: 'Link de descadastro automático' },
+    { label: 'Data Atual',       value: '{{data}}',            desc: 'Data no momento do envio' },
+    { label: 'Primeiro Nome',    value: '{{primeiro_nome}}',   desc: 'Primeiro nome do lead' },
+  ];
+
+  function VariablesSidebar({ onInsert, copyFeedback }) {
+    return el('div', { className: 'ls-seq-sidebar' },
+      el('div', { className: 'ls-seq-sidebar__header' }, '{ } Variáveis'),
+      el('p', { className: 'ls-seq-sidebar__desc' },
+        'Clique para inserir no campo ativo ou copiar para o clipboard.'
+      ),
+      el('div', { className: 'ls-var-list' },
+        EMAIL_VARIABLES.map(function(v) {
+          var isCopied = copyFeedback === v.value;
+          return el('div', {
+            key: v.value,
+            className: 'ls-var-item' + (isCopied ? ' ls-var-item--copied' : ''),
+            onClick: function() { onInsert(v.value); },
+            title: v.desc,
+          },
+            el('code', { className: 'ls-var-item__code' }, v.value),
+            el('span', { className: 'ls-var-item__label' }, isCopied ? '✓ Copiado!' : v.label)
+          );
+        })
+      )
+    );
+  }
+
+  /* ============================================================
+     List Leads Page – full-page view of leads for a specific list
+  ============================================================ */
+  function ListLeadsPage({ lista, onBack }) {
+    var [leads, setLeads] = useState([]);
+    var [total, setTotal] = useState(0);
+    var [page, setPage] = useState(1);
+    var [search, setSearch] = useState('');
+    var [loading, setLoading] = useState(true);
+
+    useEffect(function() {
+      setLoading(true);
+      var params = '?lista_id=' + lista.id + '&page=' + page + '&per_page=20';
+      if (search) params += '&search=' + encodeURIComponent(search);
+      apiFetch('/leads' + params).then(function(d) {
+        setLeads(d.items);
+        setTotal(d.total);
+        setLoading(false);
+      }).catch(function() { setLoading(false); });
+    }, [lista.id, page, search]);
+
+    return el(Fragment, null,
+      el('div', { className: 'ls-page-header' },
+        el('button', { className: 'ls-btn ls-btn-outline ls-btn-sm', onClick: onBack }, '← Voltar'),
+        el('h2', { className: 'ls-page-header__title' }, '👤 Leads – ' + lista.nome)
+      ),
+
+      el('div', { className: 'ls-card' },
+        el('div', { className: 'ls-card-header' },
+          el('h3', { className: 'ls-card-title' }, 'Leads (' + total + ')'),
+          el('div', { className: 'ls-search-bar' },
+            el('span', { className: 'ls-search-icon' }, '🔍'),
+            el('input', {
+              className: 'ls-input',
+              style: { paddingLeft: 30, width: 240 },
+              placeholder: 'Pesquisar leads...',
+              value: search,
+              onChange: function(e) { setSearch(e.target.value); setPage(1); }
+            })
+          )
+        ),
+        loading ? el(LoadingCenter) :
+        leads.length === 0
+          ? el(EmptyState, { icon: '👤', title: 'Nenhum lead', desc: 'Esta lista não possui leads ainda.' })
+          : el('div', null,
+              el('div', { className: 'ls-table-wrap' },
+                el('table', { className: 'ls-table' },
+                  el('thead', null,
+                    el('tr', null,
+                      el('th', null, 'Nome'),
+                      el('th', null, 'E-mail'),
+                      el('th', null, 'Telefone'),
+                      el('th', null, 'Data')
+                    )
+                  ),
+                  el('tbody', null,
+                    leads.map(function(lead) {
+                      return el('tr', { key: lead.id },
+                        el('td', null, lead.nome || el('span', { className: 'ls-text-muted' }, '—')),
+                        el('td', null, lead.email),
+                        el('td', null, lead.telefone || el('span', { className: 'ls-text-muted' }, '—')),
+                        el('td', null, el('span', { className: 'ls-text-muted' }, formatDate(lead.created_at)))
+                      );
+                    })
+                  )
+                )
+              ),
+              el(Pagination, { page: page, total: total, perPage: 20, onChange: setPage })
+            )
+      )
+    );
+  }
+
+  /* ============================================================
+     List Seq Page – full-page email sequence editor with sidebar
+  ============================================================ */
+  function ListSeqPage({ lista, onBack }) {
+    var [steps, setSteps] = useState([]);
+    var [savedSteps, setSavedSteps] = useState([]);
+    var [loading, setLoading] = useState(true);
+    var [saving, setSaving] = useState(false);
+    var [alert, setAlert] = useState(null);
+    var [copyFeedback, setCopyFeedback] = useState(null);
+    var [openPreviews, setOpenPreviews] = useState({});
+    var activeBodyRef = useRef(null); // { idx, el }
+
+    useEffect(function() {
+      apiFetch('/email-sequences/' + lista.id).then(function(d) {
+        var loaded = d.steps || [];
+        setSteps(loaded);
+        setSavedSteps(loaded);
+        setLoading(false);
+      }).catch(function() {
+        setSteps([]);
+        setSavedSteps([]);
+        setLoading(false);
+      });
+    }, [lista.id]);
+
+    function showAlert(type, msg) {
+      setAlert({ type, msg });
+      setTimeout(function() { setAlert(null); }, 4000);
+    }
+
+    function addStep() {
+      var isFirst = steps.length === 0;
+      setSteps(function(prev) {
+        return prev.concat([{
+          assunto:        '',
+          corpo_html:     '',
+          delay_value:    isFirst ? 0 : 1,
+          delay_unit:     'hours',
+          wait_for_open:  false,
+          max_wait_value: 48,
+          max_wait_unit:  'hours',
+        }]);
+      });
+    }
+
+    function removeStep(idx) {
+      setSteps(function(prev) { return prev.filter(function(_, i) { return i !== idx; }); });
+      setOpenPreviews(function(prev) {
+        var next = Object.assign({}, prev);
+        delete next[idx];
+        return next;
+      });
+      if (activeBodyRef.current && activeBodyRef.current.idx === idx) {
+        activeBodyRef.current = null;
+      }
+    }
+
+    function updateStep(idx, patch) {
+      setSteps(function(prev) {
+        return prev.map(function(s, i) { return i === idx ? Object.assign({}, s, patch) : s; });
+      });
+    }
+
+    async function handleSave() {
+      setSaving(true);
+      try {
+        await apiFetch('/email-sequences/' + lista.id, {
+          method: 'PUT',
+          body: { steps: steps },
+        });
+        setSavedSteps(steps.slice());
+        showAlert('success', 'Sequência salva com sucesso!');
+      } catch(e) {
+        showAlert('error', e.message);
+      } finally {
+        setSaving(false);
+      }
+    }
+
+    function insertOrCopy(varValue) {
+      if (activeBodyRef.current) {
+        var info = activeBodyRef.current;
+        var domEl = info.el;
+        var start = domEl.selectionStart;
+        var end = domEl.selectionEnd;
+        var current = steps[info.idx] ? steps[info.idx].corpo_html : '';
+        var newVal = current.slice(0, start) + varValue + current.slice(end);
+        var newCursor = start + varValue.length;
+        updateStep(info.idx, { corpo_html: newVal });
+        setTimeout(function() {
+          domEl.focus();
+          domEl.setSelectionRange(newCursor, newCursor);
+        }, 0);
+      }
+      navigator.clipboard.writeText(varValue).catch(function() {});
+      setCopyFeedback(varValue);
+      setTimeout(function() { setCopyFeedback(null); }, 2000);
+    }
+
+    function togglePreview(idx) {
+      setOpenPreviews(function(prev) {
+        return Object.assign({}, prev, { [idx]: !prev[idx] });
+      });
+    }
+
+    function scrollToStep(idx) {
+      var el = document.getElementById('ls-seq-step-' + idx);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    var delayUnitOptions = [{ value: 'hours', label: 'hora(s)' }, { value: 'days', label: 'dia(s)' }];
+
+    return el(Fragment, null,
+      el('div', { className: 'ls-page-header' },
+        el('button', { className: 'ls-btn ls-btn-outline ls-btn-sm', onClick: onBack }, '← Voltar'),
+        el('h2', { className: 'ls-page-header__title' }, '📧 Sequência de E-mails – ' + lista.nome)
+      ),
+
+      alert && el(Alert, { type: alert.type, onClose: function() { setAlert(null); } }, alert.msg),
+
+      loading ? el(LoadingCenter) :
+      el('div', { className: 'ls-seq-layout' },
+
+        // ── Main editor column ──────────────────────────────────
+        el('div', { className: 'ls-seq-main' },
+          el('div', { className: 'ls-card' },
+            el('div', { className: 'ls-card-header' },
+              el('h3', { className: 'ls-card-title' }, 'Passos da Sequência'),
+              el('div', { className: 'ls-flex ls-gap-2' },
+                el('button', { className: 'ls-btn ls-btn-outline', onClick: addStep }, '+ Adicionar Passo'),
+                el('button', {
+                  className: 'ls-btn ls-btn-primary',
+                  onClick: handleSave,
+                  disabled: saving,
+                }, saving ? 'Salvando…' : '💾 Salvar Sequência')
+              )
+            ),
+            el('div', { className: 'ls-card-body' },
+              steps.length === 0
+                ? el(EmptyState, {
+                    icon: '📧',
+                    title: 'Nenhum passo configurado',
+                    desc: 'Clique em "+ Adicionar Passo" para começar.',
+                  })
+                : steps.map(function(step, idx) {
+                    var isFirst = idx === 0;
+                    var showPreview = !!openPreviews[idx];
+                    return el('div', {
+                      key: idx,
+                      id: 'ls-seq-step-' + idx,
+                      style: { border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 12, background: '#fafafa' }
+                    },
+                      // Step header
+                      el('div', { className: 'ls-flex', style: { justifyContent: 'space-between', marginBottom: 10 } },
+                        el('div', { style: { fontWeight: 600, fontSize: 14 } },
+                          isFirst ? '📧 Passo 1 — Envio imediato ao entrar na lista' : '📧 Passo ' + (idx + 1)
+                        ),
+                        el('button', {
+                          className: 'ls-btn ls-btn-danger ls-btn-sm',
+                          onClick: function() { removeStep(idx); }
+                        }, '×')
+                      ),
+                      // Assunto
+                      el(FormGroup, { label: 'Assunto' },
+                        el(Input, {
+                          value: step.assunto,
+                          onChange: function(v) { updateStep(idx, { assunto: v }); },
+                          placeholder: 'Assunto do e-mail'
+                        })
+                      ),
+                      // Corpo HTML – direct element to track focus for variable insertion
+                      el(FormGroup, { label: 'Corpo do e-mail (HTML)' },
+                        el('textarea', {
+                          className: 'ls-textarea',
+                          value: step.corpo_html,
+                          rows: 6,
+                          placeholder: '<p>Olá {{nome}}, seja bem-vindo!</p>',
+                          style: { fontFamily: 'monospace', fontSize: 12 },
+                          onChange: function(e) { updateStep(idx, { corpo_html: e.target.value }); },
+                          onFocus: function(e) { activeBodyRef.current = { idx: idx, el: e.target }; },
+                        }),
+                        el('button', {
+                          className: 'ls-btn ls-btn-outline ls-btn-sm',
+                          style: { marginTop: 6 },
+                          onClick: function() { togglePreview(idx); },
+                        }, showPreview ? '🙈 Ocultar Prévia' : '👁 Ver Prévia do E-mail')
+                      ),
+                      // Email HTML preview
+                      showPreview && el('div', { className: 'ls-email-preview' },
+                        el('div', { className: 'ls-email-preview__header' },
+                          'Prévia: ' + (step.assunto || '(sem assunto)')
+                        ),
+                        el('div', {
+                          className: 'ls-email-preview__body',
+                          dangerouslySetInnerHTML: {
+                            __html: step.corpo_html || '<p style="color:#9ca3af;font-style:italic">Corpo do e-mail vazio</p>'
+                          }
+                        })
+                      ),
+                      // Delay settings (not first step)
+                      !isFirst && el('div', { className: 'ls-grid-2' },
+                        el(FormGroup, { label: 'Enviar após' },
+                          el('div', { className: 'ls-flex ls-gap-2' },
+                            el('input', {
+                              className: 'ls-input',
+                              type: 'number',
+                              min: 0,
+                              value: step.delay_value,
+                              onChange: function(e) { updateStep(idx, { delay_value: Math.max(0, parseInt(e.target.value) || 0) }); },
+                              style: { width: 70 }
+                            }),
+                            el(Select, {
+                              value: step.delay_unit,
+                              onChange: function(v) { updateStep(idx, { delay_unit: v }); },
+                              options: delayUnitOptions
+                            })
+                          )
+                        ),
+                        el(FormGroup, { label: 'Aguardar abertura do e-mail anterior?' },
+                          el(Select, {
+                            value: step.wait_for_open ? '1' : '0',
+                            onChange: function(v) { updateStep(idx, { wait_for_open: v === '1' }); },
+                            options: [{ value: '0', label: 'Não' }, { value: '1', label: 'Sim (com fallback)' }]
+                          })
+                        )
+                      ),
+                      !isFirst && step.wait_for_open && el(FormGroup, { label: 'Se não abrir, enviar mesmo assim após' },
+                        el('div', { className: 'ls-flex ls-gap-2' },
+                          el('input', {
+                            className: 'ls-input',
+                            type: 'number',
+                            min: 1,
+                            value: step.max_wait_value,
+                            onChange: function(e) { updateStep(idx, { max_wait_value: Math.max(1, parseInt(e.target.value) || 1) }); },
+                            style: { width: 70 }
+                          }),
+                          el(Select, {
+                            value: step.max_wait_unit,
+                            onChange: function(v) { updateStep(idx, { max_wait_unit: v }); },
+                            options: delayUnitOptions
+                          })
+                        )
+                      )
+                    );
+                  })
+            )
+          ),
+
+          // ── Saved Steps section ─────────────────────────────
+          savedSteps.length > 0 && el('div', { className: 'ls-card ls-mt-4' },
+            el('div', { className: 'ls-card-header' },
+              el('h3', { className: 'ls-card-title' }, '✅ Sequência Salva (' + savedSteps.length + ' passo(s))')
+            ),
+            el('div', { className: 'ls-card-body' },
+              el('p', { className: 'ls-text-muted', style: { marginBottom: 12 } },
+                'Clique em um passo para ir até o editor.'
+              ),
+              el('div', { className: 'ls-saved-steps' },
+                savedSteps.map(function(step, idx) {
+                  return el('div', {
+                    key: idx,
+                    className: 'ls-saved-step-card',
+                    onClick: function() { scrollToStep(idx); },
+                  },
+                    el('div', { className: 'ls-saved-step-card__num' }, 'Passo ' + (idx + 1)),
+                    el('div', { className: 'ls-saved-step-card__subject' },
+                      step.assunto || el('span', { className: 'ls-text-muted' }, '(sem assunto)')
+                    ),
+                    idx > 0 && el('div', { className: 'ls-saved-step-card__delay' },
+                      '⏱ Enviar após ' + step.delay_value + ' ' + (step.delay_unit === 'hours' ? 'hora(s)' : 'dia(s)')
+                    )
+                  );
+                })
+              )
+            )
+          )
+        ),
+
+        // ── Variables sidebar ───────────────────────────────────
+        el(VariablesSidebar, { onInsert: insertOrCopy, copyFeedback: copyFeedback })
       )
     );
   }
