@@ -14,9 +14,11 @@ class Loader {
         require_once LEADS_SAAS_DIR . 'includes/models/Lead.php';
         require_once LEADS_SAAS_DIR . 'includes/models/Tag.php';
         require_once LEADS_SAAS_DIR . 'includes/models/Automacao.php';
+        require_once LEADS_SAAS_DIR . 'includes/models/EmailSequence.php';
         require_once LEADS_SAAS_DIR . 'includes/services/LeadService.php';
         require_once LEADS_SAAS_DIR . 'includes/services/AutomacaoService.php';
         require_once LEADS_SAAS_DIR . 'includes/services/WebhookService.php';
+        require_once LEADS_SAAS_DIR . 'includes/services/EmailSequenceService.php';
         require_once LEADS_SAAS_DIR . 'includes/api/Routes.php';
         require_once LEADS_SAAS_DIR . 'includes/api/ListasController.php';
         require_once LEADS_SAAS_DIR . 'includes/api/LeadsController.php';
@@ -24,6 +26,7 @@ class Loader {
         require_once LEADS_SAAS_DIR . 'includes/api/WebhookController.php';
         require_once LEADS_SAAS_DIR . 'includes/api/AutomacoesController.php';
         require_once LEADS_SAAS_DIR . 'includes/api/DashboardController.php';
+        require_once LEADS_SAAS_DIR . 'includes/api/EmailSequenceController.php';
 
         // Admin
         require_once LEADS_SAAS_DIR . 'admin/Admin.php';
@@ -36,6 +39,9 @@ class Loader {
 
         // Register REST routes
         add_action( 'rest_api_init', [ Api\Routes::class, 'register' ] );
+
+        // Register email-sequence cron
+        Services\EmailSequenceService::register_cron();
 
         // Boot admin
         if ( is_admin() ) {

@@ -16,6 +16,7 @@ class Routes {
         WebhookController::register_routes();
         AutomacoesController::register_routes();
         DashboardController::register_routes();
+        EmailSequenceController::register_routes();
     }
 
     public static function auth_callback(): bool {

@@ -49,9 +49,6 @@ class AutomacoesController {
 
     public static function index(): WP_REST_Response {
         $automacoes = Automacao::all();
-        foreach ( $automacoes as &$a ) {
-            $a['acoes_json'] = $a['acoes_json'] ? json_decode( $a['acoes_json'], true ) : [];
-        }
         return new WP_REST_Response( $automacoes );
     }
 

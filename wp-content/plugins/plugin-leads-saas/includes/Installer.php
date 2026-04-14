@@ -67,13 +67,57 @@ class Installer {
         ) $charset;
 
         CREATE TABLE {$wpdb->prefix}lead_automacoes (
-            id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-            nome        VARCHAR(191)    NOT NULL,
-            trigger_key VARCHAR(100)    NOT NULL,
-            acoes_json  LONGTEXT        NULL,
-            ativo       TINYINT(1)      NOT NULL DEFAULT 1,
-            created_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            nome            VARCHAR(191)    NOT NULL,
+            trigger_key     VARCHAR(100)    NOT NULL,
+            acoes_json      LONGTEXT        NULL,
+            conditions_json LONGTEXT        NULL,
+            ativo           TINYINT(1)      NOT NULL DEFAULT 1,
+            created_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (id)
+        ) $charset;
+
+        CREATE TABLE {$wpdb->prefix}lead_email_sequences (
+            id         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            lista_id   BIGINT UNSIGNED NOT NULL,
+            nome       VARCHAR(191)    NOT NULL DEFAULT '',
+            created_at DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            UNIQUE KEY lista_id (lista_id)
+        ) $charset;
+
+        CREATE TABLE {$wpdb->prefix}lead_email_sequence_steps (
+            id             BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            sequence_id    BIGINT UNSIGNED NOT NULL,
+            step_order     INT             NOT NULL DEFAULT 0,
+            assunto        VARCHAR(255)    NOT NULL DEFAULT '',
+            corpo_html     LONGTEXT        NULL,
+            delay_value    INT             NOT NULL DEFAULT 0,
+            delay_unit     VARCHAR(10)     NOT NULL DEFAULT 'hours',
+            wait_for_open  TINYINT(1)      NOT NULL DEFAULT 0,
+            max_wait_value INT             NOT NULL DEFAULT 48,
+            max_wait_unit  VARCHAR(10)     NOT NULL DEFAULT 'hours',
+            PRIMARY KEY (id),
+            KEY sequence_id (sequence_id)
+        ) $charset;
+
+        CREATE TABLE {$wpdb->prefix}lead_email_queue (
+            id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            sequence_id     BIGINT UNSIGNED NOT NULL,
+            step_id         BIGINT UNSIGNED NOT NULL,
+            lead_id         BIGINT UNSIGNED NOT NULL,
+            status          VARCHAR(20)     NOT NULL DEFAULT 'pending',
+            scheduled_at    DATETIME        NOT NULL,
+            sent_at         DATETIME        NULL,
+            open_token      VARCHAR(64)     NOT NULL DEFAULT '',
+            opened_at       DATETIME        NULL,
+            prev_queue_id   BIGINT UNSIGNED NULL,
+            wait_open_until DATETIME        NULL,
+            created_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            KEY lead_id (lead_id),
+            KEY status (status),
+            KEY open_token (open_token)
         ) $charset;
         ";
 
