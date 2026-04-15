@@ -7,6 +7,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Loader {
 
+    /** Minutes after session start before tagging participants as non-attending. */
+    const NON_ATTENDANCE_CUTOFF_SECONDS = 1800; // 30 minutes
+
     public static function init(): void {
 
         // Services
@@ -74,8 +77,8 @@ class Loader {
         $part_table  = $wpdb->prefix . 'webinar_participantes';
         $webinar_tab = $wpdb->prefix . 'webinars';
 
-        // Find active sessions that started > 30 minutes ago
-        $cutoff = gmdate( 'Y-m-d H:i:s', time() - 30 * 60 );
+        // Find active sessions that started > NON_ATTENDANCE_CUTOFF_SECONDS ago
+        $cutoff = gmdate( 'Y-m-d H:i:s', time() - self::NON_ATTENDANCE_CUTOFF_SECONDS );
 
         $sessoes = $wpdb->get_results( $wpdb->prepare(
             "SELECT s.*, w.configuracoes_json
