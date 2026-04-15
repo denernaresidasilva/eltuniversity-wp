@@ -864,18 +864,457 @@
   }
 
   /* ─────────────────────────────────────────
+     Sessões Page — session management, offer config,
+     tag automations, message sequences, participants
+  ───────────────────────────────────────── */
+  function SessoesPage() {
+    var _w   = useState([]), webinars = _w[0], setWebinars = _w[1];
+    var _sel = useState(''), selectedId = _sel[0], setSelectedId = _sel[1];
+    var _s   = useState([]), sessoes = _s[0], setSessoes = _s[1];
+    var _l   = useState(false), loading = _l[0], setLoading = _l[1];
+    var _ok  = useState(''), ok = _ok[0], setOk = _ok[1];
+    var _err = useState(''), err = _err[0], setErr = _err[1];
+
+    // Offer / Tag automation / Sequence config (stored in webinar.configuracoes_json)
+    var _cfg = useState(null), cfg = _cfg[0], setCfg = _cfg[1];
+    var _cfgSaving = useState(false), cfgSaving = _cfgSaving[0], setCfgSaving = _cfgSaving[1];
+
+    // Lead SaaS lists and tags
+    var _listas = useState([]), listas = _listas[0], setListas = _listas[1];
+    var _tags   = useState([]), leadsaaTags = _tags[0], setLeadsaaTags = _tags[1];
+
+    // Session form
+    var _sf = useState({ inicio_em: '', tipo: 'evergreen' }), sfForm = _sf[0], setSfForm = _sf[1];
+
+    // Session participants panel
+    var _selSessao = useState(null), selSessao = _selSessao[0], setSelSessao = _selSessao[1];
+    var _parts = useState([]), parts = _parts[0], setParts = _parts[1];
+    var _pLoading = useState(false), pLoading = _pLoading[0], setPLoading = _pLoading[1];
+
+    // Finalize modal
+    var _finModal = useState(null), finModal = _finModal[0], setFinModal = _finModal[1];
+    var _finLista = useState(''), finLista = _finLista[0], setFinLista = _finLista[1];
+
+    // Tag automation form
+    var _taForm = useState({ tag_nome: '', lista_id: '' }), taForm = _taForm[0], setTaForm = _taForm[1];
+
+    // Sequence form
+    var _seqForm = useState({ tipo: 'email', assunto: '', corpo: '', offset_segundos: 0 });
+    var seqForm = _seqForm[0], setSeqForm = _seqForm[1];
+
+    useEffect(function() {
+      apiFetch('/webinars?per_page=100').then(function(d) { setWebinars(d.data || []); }).catch(function() {});
+      apiFetch('/leadsaas/listas').then(setListas).catch(function() {});
+      apiFetch('/leadsaas/tags').then(setLeadsaaTags).catch(function() {});
+    }, []);
+
+    useEffect(function() {
+      if (!selectedId) { setSessoes([]); setCfg(null); return; }
+      setLoading(true);
+      Promise.all([
+        apiFetch('/webinars/' + selectedId + '/sessoes'),
+        apiFetch('/webinars/' + selectedId),
+      ]).then(function(res) {
+        setSessoes(res[0] || []);
+        var w = res[1];
+        var c = {};
+        try { c = JSON.parse(w.configuracoes_json || '{}'); } catch(e) {}
+        setCfg({
+          oferta_aparece_em_segundos: c.oferta_aparece_em_segundos || 0,
+          tag_automacoes: c.tag_automacoes || [],
+          sequencias: c.sequencias || [],
+        });
+        setLoading(false);
+      }).catch(function(e) { setErr(e.message); setLoading(false); });
+    }, [selectedId]);
+
+    // Load participants when a session is selected
+    useEffect(function() {
+      if (!selSessao) { setParts([]); return; }
+      setPLoading(true);
+      apiFetch('/sessoes/' + selSessao.id + '/participantes?per_page=100')
+        .then(function(d) { setParts(d.data || []); setPLoading(false); })
+        .catch(function() { setPLoading(false); });
+    }, [selSessao]);
+
+    async function saveConfig() {
+      if (!selectedId || !cfg) return;
+      setCfgSaving(true);
+      try {
+        // Fetch current webinar to merge other fields
+        var w = await apiFetch('/webinars/' + selectedId);
+        var existing = {};
+        try { existing = JSON.parse(w.configuracoes_json || '{}'); } catch(e) {}
+        var merged = Object.assign({}, existing, cfg);
+        await apiFetch('/webinars/' + selectedId, { method: 'PUT', body: { configuracoes_json: JSON.stringify(merged) } });
+        setOk('Configurações salvas!');
+        setTimeout(function() { setOk(''); }, 3000);
+      } catch(ex) { setErr(ex.message); }
+      setCfgSaving(false);
+    }
+
+    async function createSessao(e) {
+      e.preventDefault();
+      if (!selectedId || !sfForm.inicio_em) { setErr('Selecione um webinar e preencha a data/hora.'); return; }
+      try {
+        var s = await apiFetch('/webinars/' + selectedId + '/sessoes', { method: 'POST', body: sfForm });
+        setSessoes(function(prev) { return prev.concat([s]); });
+        setSfForm({ inicio_em: '', tipo: 'evergreen' });
+        setOk('Sessão criada!');
+        setTimeout(function() { setOk(''); }, 3000);
+      } catch(ex) { setErr(ex.message); }
+    }
+
+    async function deleteSessao(s) {
+      if (!confirm('Excluir a sessão de ' + s.inicio_em + '? Só é possível se não houver participantes.')) return;
+      try {
+        await apiFetch('/sessoes/' + s.id, { method: 'DELETE' });
+        setSessoes(function(prev) { return prev.filter(function(x) { return x.id !== s.id; }); });
+        if (selSessao && selSessao.id === s.id) setSelSessao(null);
+        setOk('Sessão excluída.');
+        setTimeout(function() { setOk(''); }, 3000);
+      } catch(ex) { setErr(ex.message); }
+    }
+
+    async function marcarReplay(s) {
+      if (s.replay_enviado_em) { alert('Replay já foi enviado em ' + s.replay_enviado_em); return; }
+      if (!confirm('Marcar replay como enviado para esta sessão? Não poderá ser desfeito.')) return;
+      try {
+        await apiFetch('/sessoes/' + s.id + '/replay', { method: 'POST' });
+        setSessoes(function(prev) { return prev.map(function(x) { return x.id === s.id ? Object.assign({}, x, { replay_enviado_em: new Date().toISOString() }) : x; }); });
+        setOk('Replay marcado como enviado!');
+        setTimeout(function() { setOk(''); }, 3000);
+      } catch(ex) { setErr(ex.message); }
+    }
+
+    async function dispararSequencia(s) {
+      if (!confirm('Disparar sequência de mensagens para todos os participantes desta sessão?')) return;
+      try {
+        var res = await apiFetch('/sessoes/' + s.id + '/sequencia', { method: 'POST' });
+        setOk(res.message + ' (' + res.agendados + ' mensagens agendadas)');
+        setTimeout(function() { setOk(''); }, 4000);
+      } catch(ex) { setErr(ex.message); }
+    }
+
+    async function confirmarFinalizar() {
+      if (!finModal) return;
+      try {
+        var res = await apiFetch('/sessoes/' + finModal.id + '/finalizar', {
+          method: 'POST',
+          body: { lista_destino_id: parseInt(finLista, 10) || 0 }
+        });
+        setOk(res.message + ' · Leads movidos: ' + res.leads_movidos + (res.lista_deletada ? ' · Lista deletada ✓' : ''));
+        setSessoes(function(prev) {
+          return prev.map(function(x) { return x.id === finModal.id ? Object.assign({}, x, { status: 'finalizada' }) : x; });
+        });
+        setFinModal(null);
+        setTimeout(function() { setOk(''); }, 5000);
+      } catch(ex) { setErr(ex.message); setFinModal(null); }
+    }
+
+    function addTagAutomacao() {
+      if (!taForm.tag_nome || !taForm.lista_id) return;
+      setCfg(function(prev) {
+        return Object.assign({}, prev, { tag_automacoes: (prev.tag_automacoes || []).concat([{
+          tag_nome: taForm.tag_nome,
+          lista_id: parseInt(taForm.lista_id, 10),
+        }]) });
+      });
+      setTaForm({ tag_nome: '', lista_id: '' });
+    }
+
+    function removeTagAutomacao(idx) {
+      setCfg(function(prev) {
+        return Object.assign({}, prev, { tag_automacoes: prev.tag_automacoes.filter(function(_, i) { return i !== idx; }) });
+      });
+    }
+
+    function addSequencia() {
+      if (!seqForm.corpo) return;
+      setCfg(function(prev) {
+        return Object.assign({}, prev, { sequencias: (prev.sequencias || []).concat([Object.assign({}, seqForm)]) });
+      });
+      setSeqForm({ tipo: 'email', assunto: '', corpo: '', offset_segundos: 0 });
+    }
+
+    function removeSequencia(idx) {
+      setCfg(function(prev) {
+        return Object.assign({}, prev, { sequencias: prev.sequencias.filter(function(_, i) { return i !== idx; }) });
+      });
+    }
+
+    function fmtDt(dt) {
+      if (!dt) return '-';
+      return new Date(dt).toLocaleString('pt-BR');
+    }
+
+    function fmtOffset(s) {
+      var abs = Math.abs(s);
+      var sign = s < 0 ? '-' : '+';
+      if (abs < 3600) return sign + Math.round(abs / 60) + 'min';
+      return sign + Math.round(abs / 3600) + 'h';
+    }
+
+    var webinarAtivo = selectedId ? webinars.find(function(w) { return String(w.id) === String(selectedId); }) : null;
+
+    return el('div', { className: 'ww-page' },
+      // Finalize modal
+      finModal ? el('div', { className: 'ww-modal-overlay', onClick: function(e) { if (e.target === e.currentTarget) setFinModal(null); } },
+        el('div', { className: 'ww-modal' },
+          el('div', { className: 'ww-modal-header' },
+            el('h2', null, '🏁 Finalizar Sessão'),
+            el('button', { className: 'ww-modal-close', onClick: function() { setFinModal(null); } }, '×')
+          ),
+          el('div', { style: { padding: '1.5rem' } },
+            el('p', null, 'Todos os leads desta sessão serão movidos para a lista selecionada. A lista da sessão só será deletada se ficar vazia após a movimentação.'),
+            el('div', { className: 'ww-form-group', style: { marginTop: 12 } },
+              el('label', { className: 'ww-label' }, 'Lista de destino (Lead SaaS)'),
+              el('select', { className: 'ww-select', value: finLista, onChange: function(e) { setFinLista(e.target.value); } },
+                el('option', { value: '' }, '-- Selecione (opcional) --'),
+                listas.map(function(l) { return el('option', { key: l.id, value: l.id }, l.nome); })
+              )
+            ),
+            el('div', { className: 'ww-modal-footer' },
+              el('button', { className: 'ww-btn ww-btn-secondary', onClick: function() { setFinModal(null); } }, 'Cancelar'),
+              el('button', { className: 'ww-btn ww-btn-primary', onClick: confirmarFinalizar }, '✅ Confirmar Finalização')
+            )
+          )
+        )
+      ) : null,
+
+      el('h1', { className: 'ww-page-title' }, '📅 Sessões & Leads'),
+
+      ok  ? el(Alert, { type: 'success', onClose: function() { setOk(''); } }, ok)  : null,
+      err ? el(Alert, { type: 'error',   onClose: function() { setErr(''); } }, err) : null,
+
+      el('div', { className: 'ww-form-group' },
+        el('label', { className: 'ww-label' }, 'Selecione o Webinar'),
+        el('select', { className: 'ww-select', value: selectedId, onChange: function(e) { setSelectedId(e.target.value); setSelSessao(null); } },
+          el('option', { value: '' }, '-- Selecione --'),
+          webinars.map(function(w) { return el('option', { key: w.id, value: w.id }, w.nome); })
+        )
+      ),
+
+      selectedId && cfg ? el(Fragment, null,
+
+        /* ── Config: offer time ── */
+        el('div', { className: 'ww-card' },
+          el('h3', { className: 'ww-card-title' }, '⚙️ Configuração do Webinar (válida para todas as sessões)'),
+
+          el('div', { className: 'ww-form-group' },
+            el('label', { className: 'ww-label' }, '⏱ Oferta aparece em (segundos)'),
+            el('input', { type: 'number', className: 'ww-input', min: 0, value: cfg.oferta_aparece_em_segundos,
+              onChange: function(e) { setCfg(function(p) { return Object.assign({}, p, { oferta_aparece_em_segundos: parseInt(e.target.value, 10) || 0 }); }); } })
+          ),
+
+          /* Tag automations */
+          el('div', { style: { marginTop: 16 } },
+            el('strong', null, '🏷 Automações: Tag recebida → Mover para lista Lead SaaS'),
+            el('div', { className: 'ww-form-row', style: { marginTop: 8 } },
+              el('div', { className: 'ww-form-group' },
+                el('label', { className: 'ww-label' }, 'Tag (nome)'),
+                el('input', { className: 'ww-input', placeholder: 'ex: viu_oferta', value: taForm.tag_nome,
+                  onChange: function(e) { setTaForm(function(p) { return Object.assign({}, p, { tag_nome: e.target.value }); }); } })
+              ),
+              el('div', { className: 'ww-form-group' },
+                el('label', { className: 'ww-label' }, 'Lista destino (Lead SaaS)'),
+                el('select', { className: 'ww-select', value: taForm.lista_id,
+                  onChange: function(e) { setTaForm(function(p) { return Object.assign({}, p, { lista_id: e.target.value }); }); } },
+                  el('option', { value: '' }, '-- Selecione --'),
+                  listas.map(function(l) { return el('option', { key: l.id, value: l.id }, l.nome); })
+                )
+              ),
+              el('div', { className: 'ww-form-group', style: { display: 'flex', alignItems: 'flex-end' } },
+                el('button', { className: 'ww-btn ww-btn-primary', onClick: addTagAutomacao }, '+ Adicionar')
+              )
+            ),
+            cfg.tag_automacoes && cfg.tag_automacoes.length > 0
+              ? el('table', { className: 'ww-table', style: { marginTop: 8 } },
+                  el('thead', null, el('tr', null, el('th', null, 'Tag'), el('th', null, 'Mover para Lista'), el('th', null, ''))),
+                  el('tbody', null, cfg.tag_automacoes.map(function(ta, idx) {
+                    var lista = listas.find(function(l) { return l.id == ta.lista_id; });
+                    return el('tr', { key: idx },
+                      el('td', null, ta.tag_nome),
+                      el('td', null, lista ? lista.nome : 'Lista #' + ta.lista_id),
+                      el('td', null, el('button', { className: 'ww-btn ww-btn-sm ww-btn-danger', onClick: function() { removeTagAutomacao(idx); } }, '🗑'))
+                    );
+                  }))
+                )
+              : el('p', { className: 'ww-no-data', style: { marginTop: 8 } }, 'Nenhuma automação configurada.')
+          ),
+
+          /* Message sequences */
+          el('div', { style: { marginTop: 20 } },
+            el('strong', null, '✉️ Sequências de Mensagens (baseadas na hora da sessão)'),
+            el('div', { className: 'ww-form-row', style: { marginTop: 8 } },
+              el('div', { className: 'ww-form-group' },
+                el('label', { className: 'ww-label' }, 'Tipo'),
+                el('select', { className: 'ww-select', value: seqForm.tipo,
+                  onChange: function(e) { setSeqForm(function(p) { return Object.assign({}, p, { tipo: e.target.value }); }); } },
+                  el('option', { value: 'email' }, '📧 E-mail'),
+                  el('option', { value: 'whatsapp' }, '💬 WhatsApp')
+                )
+              ),
+              el('div', { className: 'ww-form-group' },
+                el('label', { className: 'ww-label' }, 'Offset em segundos (ex: -3600 = 1h antes, 3600 = 1h depois)'),
+                el('input', { type: 'number', className: 'ww-input', value: seqForm.offset_segundos,
+                  onChange: function(e) { setSeqForm(function(p) { return Object.assign({}, p, { offset_segundos: parseInt(e.target.value, 10) || 0 }); }); } })
+              )
+            ),
+            el('div', { className: 'ww-form-row' },
+              el('div', { className: 'ww-form-group' },
+                el('label', { className: 'ww-label' }, 'Assunto (e-mail)'),
+                el('input', { className: 'ww-input', value: seqForm.assunto, placeholder: 'Assunto do e-mail',
+                  onChange: function(e) { setSeqForm(function(p) { return Object.assign({}, p, { assunto: e.target.value }); }); } })
+              ),
+              el('div', { className: 'ww-form-group', style: { display: 'flex', alignItems: 'flex-end' } },
+                el('button', { className: 'ww-btn ww-btn-primary', onClick: addSequencia }, '+ Adicionar')
+              )
+            ),
+            el('div', { className: 'ww-form-group' },
+              el('label', { className: 'ww-label' }, 'Corpo da Mensagem'),
+              el('textarea', { className: 'ww-input ww-textarea', rows: 3, value: seqForm.corpo, placeholder: 'Conteúdo da mensagem...',
+                onChange: function(e) { setSeqForm(function(p) { return Object.assign({}, p, { corpo: e.target.value }); }); } })
+            ),
+            cfg.sequencias && cfg.sequencias.length > 0
+              ? el('table', { className: 'ww-table', style: { marginTop: 8 } },
+                  el('thead', null, el('tr', null, el('th', null, 'Tipo'), el('th', null, 'Quando'), el('th', null, 'Assunto'), el('th', null, ''))),
+                  el('tbody', null, cfg.sequencias.map(function(seq, idx) {
+                    return el('tr', { key: idx },
+                      el('td', null, seq.tipo === 'whatsapp' ? '💬 WhatsApp' : '📧 E-mail'),
+                      el('td', null, fmtOffset(seq.offset_segundos || 0)),
+                      el('td', null, seq.assunto || '—'),
+                      el('td', null, el('button', { className: 'ww-btn ww-btn-sm ww-btn-danger', onClick: function() { removeSequencia(idx); } }, '🗑'))
+                    );
+                  }))
+                )
+              : el('p', { className: 'ww-no-data', style: { marginTop: 8 } }, 'Nenhuma sequência configurada.')
+          ),
+
+          el('div', { style: { marginTop: 16 } },
+            el('button', { className: 'ww-btn ww-btn-primary', onClick: saveConfig, disabled: cfgSaving },
+              cfgSaving ? 'Salvando...' : '💾 Salvar Configuração'
+            )
+          )
+        ),
+
+        /* ── Sessions list ── */
+        el('div', { className: 'ww-card ww-mt' },
+          el('h3', { className: 'ww-card-title' }, '📅 Sessões (máx. 10 ativas)'),
+
+          /* Create session form */
+          el('form', { onSubmit: createSessao, className: 'ww-form', style: { marginBottom: 16 } },
+            el('div', { className: 'ww-form-row' },
+              el('div', { className: 'ww-form-group' },
+                el('label', { className: 'ww-label' }, 'Data e Hora da Sessão *'),
+                el('input', { type: 'datetime-local', className: 'ww-input', value: sfForm.inicio_em,
+                  onChange: function(e) { setSfForm(function(p) { return Object.assign({}, p, { inicio_em: e.target.value }); }); } })
+              ),
+              el('div', { className: 'ww-form-group' },
+                el('label', { className: 'ww-label' }, 'Tipo'),
+                el('select', { className: 'ww-select', value: sfForm.tipo,
+                  onChange: function(e) { setSfForm(function(p) { return Object.assign({}, p, { tipo: e.target.value }); }); } },
+                  el('option', { value: 'evergreen' }, '🟢 Evergreen'),
+                  el('option', { value: 'ao_vivo' }, '🔴 Ao Vivo')
+                )
+              ),
+              el('div', { className: 'ww-form-group', style: { display: 'flex', alignItems: 'flex-end' } },
+                el('button', { type: 'submit', className: 'ww-btn ww-btn-success' }, '+ Nova Sessão')
+              )
+            )
+          ),
+
+          loading ? el(LoadingCenter) :
+          sessoes.length === 0
+            ? el('p', { className: 'ww-no-data' }, 'Nenhuma sessão criada para este webinar.')
+            : el('table', { className: 'ww-table' },
+                el('thead', null, el('tr', null,
+                  el('th', null, 'Data/Hora'),
+                  el('th', null, 'Tipo'),
+                  el('th', null, 'Status'),
+                  el('th', null, 'Participantes'),
+                  el('th', null, 'Leads SaaS'),
+                  el('th', null, 'Replay'),
+                  el('th', null, 'Ações')
+                )),
+                el('tbody', null, sessoes.map(function(s) {
+                  var isAtiva = s.status === 'ativa';
+                  var isSel   = selSessao && selSessao.id === s.id;
+                  return el('tr', { key: s.id, style: { background: isSel ? 'rgba(255,106,0,0.06)' : undefined } },
+                    el('td', null, fmtDt(s.inicio_em)),
+                    el('td', null, s.tipo === 'ao_vivo' ? '🔴 Ao Vivo' : '🟢 Evergreen'),
+                    el('td', null, isAtiva
+                      ? el('span', { style: { color: '#22C55E' } }, '● Ativa')
+                      : el('span', { style: { color: '#B6B6BD' } }, '◼ Finalizada')
+                    ),
+                    el('td', null, s.total_participantes || 0),
+                    el('td', null, s.leadsaas_total !== null ? s.leadsaas_total : '—'),
+                    el('td', null, s.replay_enviado_em ? '✅ ' + fmtDt(s.replay_enviado_em) : '—'),
+                    el('td', null,
+                      el('div', { style: { display: 'flex', gap: 4, flexWrap: 'wrap' } },
+                        el('button', { className: 'ww-btn ww-btn-sm ww-btn-secondary',
+                          onClick: function() { setSelSessao(isSel ? null : s); } },
+                          isSel ? '▲ Fechar' : '👥 Participantes'
+                        ),
+                        isAtiva ? el('button', { className: 'ww-btn ww-btn-sm ww-btn-outline',
+                          onClick: function() { dispararSequencia(s); } }, '✉️ Sequência') : null,
+                        isAtiva && !s.replay_enviado_em ? el('button', { className: 'ww-btn ww-btn-sm ww-btn-outline',
+                          onClick: function() { marcarReplay(s); } }, '🔁 Marcar Replay') : null,
+                        isAtiva ? el('button', { className: 'ww-btn ww-btn-sm ww-btn-danger',
+                          onClick: function() { setFinModal(s); setFinLista(''); } }, '🏁 Finalizar') : null,
+                        isAtiva && (s.total_participantes === 0 || s.total_participantes === '0')
+                          ? el('button', { className: 'ww-btn ww-btn-sm ww-btn-danger',
+                              onClick: function() { deleteSessao(s); } }, '🗑') : null
+                      )
+                    )
+                  );
+                }))
+              )
+        ),
+
+        /* ── Session participants panel ── */
+        selSessao ? el('div', { className: 'ww-card ww-mt' },
+          el('h3', { className: 'ww-card-title' }, '👥 Participantes da Sessão — ' + fmtDt(selSessao.inicio_em)),
+          pLoading ? el(LoadingCenter) :
+          parts.length === 0
+            ? el('p', { className: 'ww-no-data' }, 'Nenhum participante nesta sessão.')
+            : el('table', { className: 'ww-table' },
+                el('thead', null, el('tr', null,
+                  el('th', null, 'Nome'), el('th', null, 'E-mail'), el('th', null, 'Telefone'),
+                  el('th', null, 'Data'), el('th', null, 'Tempo Assistido'), el('th', null, 'Lead SaaS ID')
+                )),
+                el('tbody', null, parts.map(function(p) {
+                  function fmtTempo(s) { if (!s) return '-'; return Math.floor(s/60)+'min '+String(s%60)+'s'; }
+                  return el('tr', { key: p.id },
+                    el('td', null, p.nome),
+                    el('td', null, p.email),
+                    el('td', null, p.telefone || '-'),
+                    el('td', null, new Date(p.data_registro).toLocaleDateString('pt-BR')),
+                    el('td', null, fmtTempo(p.tempo_assistido)),
+                    el('td', null, p.leadsaas_lead_id ? '#' + p.leadsaas_lead_id : '—')
+                  );
+                }))
+              )
+        ) : null
+
+      ) : null
+    );
+  }
+
+  /* ─────────────────────────────────────────
      Root App
   ───────────────────────────────────────── */
   function App() {
     var rawPage = (window.WPWebinarConfig.page || '').replace('wp-webinar-', '') || 'dashboard';
     var pageMap = {
-      'plataforma' : 'dashboard',
-      'webinars'   : 'webinars',
+      'plataforma'   : 'dashboard',
+      'webinars'     : 'webinars',
       'participantes': 'participantes',
-      'chat'       : 'chat',
-      'automacoes' : 'automacoes',
-      'analytics'  : 'analytics',
+      'chat'         : 'chat',
+      'automacoes'   : 'automacoes',
+      'analytics'    : 'analytics',
       'configuracoes': 'configuracoes',
+      'sessoes'      : 'sessoes',
     };
     var page = pageMap[rawPage] || 'dashboard';
 
@@ -887,6 +1326,7 @@
       automacoes   : el(AutomacoesPage),
       analytics    : el(AnalyticsPage),
       configuracoes: el(ConfiguracoesPage),
+      sessoes      : el(SessoesPage),
     };
 
     return el('main', { className: 'ww-main' },
