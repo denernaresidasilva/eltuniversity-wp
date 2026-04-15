@@ -758,3 +758,107 @@
   padding   : 12px 0;
   text-align: center;
 }
+
+/* ── Focus visible ───────────────────────────── */
+.ww-btn:focus-visible {
+  outline       : 2px solid var(--ww-primary);
+  outline-offset: 2px;
+  box-shadow    : 0 0 0 4px rgba(255,106,0,.2);
+}
+
+.ww-modal-close:focus-visible,
+.ww-alert-close:focus-visible {
+  outline       : 2px solid var(--ww-primary);
+  outline-offset: 2px;
+  border-radius : 4px;
+}
+
+.ww-filter-tab:focus-visible {
+  outline       : 2px solid var(--ww-primary);
+  outline-offset: 2px;
+}
+
+/* ── Field helpers ───────────────────────────── */
+.ww-field-help {
+  font-size  : 12px;
+  color      : var(--ww-muted);
+  margin-top : 4px;
+  line-height: 1.4;
+  display    : block;
+}
+
+.ww-field-error {
+  font-size  : 12px;
+  color      : var(--ww-danger);
+  margin-top : 4px;
+  line-height: 1.4;
+  display    : block;
+}
+
+.ww-input.is-error,
+.ww-select.is-error,
+.ww-textarea.is-error {
+  border-color: var(--ww-danger);
+}
+
+.ww-input.is-error:focus,
+.ww-select.is-error:focus,
+.ww-textarea.is-error:focus {
+  box-shadow: 0 0 0 3px var(--ww-danger-bg);
+}
+
+/* ── Form sections ───────────────────────────── */
+.ww-form-section {
+  border       : 1px solid var(--ww-border);
+  border-radius: var(--ww-radius);
+  margin-bottom: 16px;
+  overflow     : hidden;
+}
+
+.ww-form-section-title {
+  background    : var(--ww-surface-2);
+  padding       : 9px 16px;
+  font-size     : 11px;
+  font-weight   : 600;
+  color         : var(--ww-muted);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  border-bottom : 1px solid var(--ww-border);
+}
+
+.ww-form-section-body {
+  padding: 16px;
+}
+
+/* ── Status filter tabs ──────────────────────── */
+.ww-filter-tabs {
+  display  : flex;
+  gap      : 4px;
+  flex-wrap: wrap;
+}
+
+.ww-filter-tab {
+  padding      : 5px 12px;
+  border       : 1px solid var(--ww-border);
+  border-radius: 20px;
+  font-size    : 12px;
+  font-weight  : 500;
+  cursor       : pointer;
+  background   : transparent;
+  color        : var(--ww-muted);
+  transition   : background .15s, color .15s, border-color .15s;
+  white-space  : nowrap;
+  font-family  : var(--ww-font);
+  line-height  : 1.4;
+}
+
+.ww-filter-tab:hover {
+  background: rgba(255,255,255,.06);
+  color     : var(--ww-text);
+}
+
+.ww-filter-tab.is-active {
+  background  : var(--ww-primary-light);
+  color       : var(--ww-primary);
+  border-color: var(--ww-primary);
+}

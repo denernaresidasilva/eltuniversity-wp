@@ -24,8 +24,23 @@
   --ww-border        : rgba(255,255,255,.07);
   --ww-border-accent : rgba(249,115,22,.4);
 
-  /* ── Feedback ────────────────────────────────── */
-  --ww-danger        : #ef4444;
+  /* ── Feedback / State tokens ─────────────────── */
+  --ww-success      : #22c55e;
+  --ww-success-bg   : rgba(34, 197, 94, .12);
+  --ww-warning      : #f59e0b;
+  --ww-warning-bg   : rgba(245, 158, 11, .12);
+  --ww-info         : #38bdf8;
+  --ww-info-bg      : rgba(56, 189, 248, .12);
+  --ww-danger       : #ef4444;
+  --ww-danger-bg    : rgba(239, 68, 68, .12);
+
+  /* ── Spacing scale ───────────────────────────── */
+  --ww-space-1      : 4px;
+  --ww-space-2      : 8px;
+  --ww-space-3      : 12px;
+  --ww-space-4      : 16px;
+  --ww-space-5      : 24px;
+  --ww-space-6      : 32px;
 
   /* ── Shadows ─────────────────────────────────── */
   --ww-shadow-sm     : 0 2px 8px rgba(0,0,0,.4);
@@ -137,6 +152,39 @@
   box-shadow  : 0 0 0 3px var(--ww-accent-glow);
 }
 
+.ww-input:focus-visible {
+  border-color: var(--ww-accent);
+  box-shadow  : 0 0 0 3px var(--ww-accent-glow);
+  outline     : none;
+}
+
+/* ── Field validation states ──────────────────── */
+.ww-input.is-error {
+  border-color: var(--ww-danger);
+  box-shadow  : 0 0 0 3px var(--ww-danger-bg);
+}
+
+.ww-input.is-success {
+  border-color: var(--ww-success);
+  box-shadow  : 0 0 0 3px var(--ww-success-bg);
+}
+
+.ww-field-help {
+  font-size  : 12px;
+  color      : var(--ww-text-muted);
+  margin-top : 4px;
+  line-height: 1.4;
+  display    : block;
+}
+
+.ww-field-error {
+  font-size  : 12px;
+  color      : var(--ww-danger);
+  margin-top : 4px;
+  line-height: 1.4;
+  display    : block;
+}
+
 /* Shared button base */
 .ww-btn {
   display        : inline-flex;
@@ -150,8 +198,15 @@
   font-size      : 15px;
   font-weight    : 700;
   letter-spacing : .2px;
+  min-height     : 44px;
   transition     : background .15s, transform .1s, box-shadow .15s;
   text-decoration: none;
+}
+
+.ww-btn:focus-visible {
+  outline       : 2px solid var(--ww-accent);
+  outline-offset: 2px;
+  box-shadow    : 0 0 0 4px var(--ww-accent-glow);
 }
 
 .ww-btn-primary {
@@ -499,6 +554,12 @@
   box-shadow  : 0 0 0 3px var(--ww-accent-glow);
 }
 
+.ww-chat-input:focus-visible {
+  border-color: var(--ww-accent);
+  box-shadow  : 0 0 0 3px var(--ww-accent-glow);
+  outline     : none;
+}
+
 .ww-btn-chat-send {
   padding      : 9px 16px;
   background   : var(--ww-accent);
@@ -508,6 +569,7 @@
   cursor       : pointer;
   font-size    : 14px;
   font-weight  : 700;
+  min-height   : 44px;
   transition   : background .15s, transform .1s;
 }
 
@@ -656,7 +718,7 @@
     padding: 12px 12px 32px;
   }
   .ww-inscricao-inner {
-    padding: 28px 20px 24px;
+    padding: 24px 16px 20px;
   }
   .ww-chat-wrapper {
     height: 300px;
@@ -674,5 +736,17 @@
     bottom: 16px;
     right : 12px;
     left  : 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ww-btn {
+    min-height: 44px;
+    padding   : 10px 20px;
+    font-size : 14px;
+  }
+  .ww-btn-chat-send {
+    min-height: 44px;
+    padding   : 10px 14px;
   }
 }
