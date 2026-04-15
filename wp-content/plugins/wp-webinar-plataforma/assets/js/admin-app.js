@@ -35,6 +35,15 @@
   /* ─────────────────────────────────────────
      Utility components
   ───────────────────────────────────────── */
+
+  /* Convert 6-digit hex color to rgba() string */
+  function hexToRgba(hex, alpha) {
+    var r = parseInt(hex.slice(1, 3), 16);
+    var g = parseInt(hex.slice(3, 5), 16);
+    var b = parseInt(hex.slice(5, 7), 16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+  }
+
   function Spinner() {
     return el('div', { className: 'ww-spinner' });
   }
@@ -50,13 +59,19 @@
   }
   function Badge(_ref) {
     var value = _ref.value, color = _ref.color;
-    return el('span', { className: 'ww-badge', style: { background: color || '#6366f1' } }, value);
+    var c = color || '#FF6A00';
+    return el('span', { className: 'ww-badge', style: { color: c, background: hexToRgba(c, 0.14) } }, value);
   }
   function StatusBadge(_ref) {
     var status = _ref.status;
-    var map = { publicado: ['#10b981', 'Publicado'], rascunho: ['#f59e0b', 'Rascunho'], encerrado: ['#6b7280', 'Encerrado'] };
-    var info = map[status] || ['#6b7280', status];
-    return el('span', { className: 'ww-status-badge', style: { background: info[0] } }, info[1]);
+    /* Each entry: [solidColor, bgColor, label] — colored text on semi-transparent bg */
+    var map = {
+      publicado: ['#22C55E', 'rgba(34,197,94,0.14)',   'Publicado'],
+      rascunho:  ['#F59E0B', 'rgba(245,158,11,0.14)',  'Rascunho'],
+      encerrado: ['#B6B6BD', 'rgba(182,182,189,0.14)', 'Encerrado'],
+    };
+    var info = map[status] || ['#B6B6BD', 'rgba(182,182,189,0.14)', status];
+    return el('span', { className: 'ww-status-badge', style: { color: info[0], background: info[1] } }, info[2]);
   }
 
   /* ─────────────────────────────────────────
@@ -64,8 +79,9 @@
   ───────────────────────────────────────── */
   function MetricCard(_ref) {
     var title = _ref.title, value = _ref.value, icon = _ref.icon, color = _ref.color, sub = _ref.sub;
+    var iconColor = color || '#FF6A00';
     return el('div', { className: 'ww-metric-card' },
-      el('div', { className: 'ww-metric-icon', style: { background: color || '#6366f1' } }, icon),
+      el('div', { className: 'ww-metric-icon', style: { background: hexToRgba(iconColor, 0.14), color: iconColor } }, icon),
       el('div', { className: 'ww-metric-body' },
         el('div', { className: 'ww-metric-title' }, title),
         el('div', { className: 'ww-metric-value' }, value),
@@ -123,11 +139,11 @@
       el('h1', { className: 'ww-page-title' }, '📊 Dashboard'),
 
       el('div', { className: 'ww-metrics-grid' },
-        el(MetricCard, { title: 'Total de Webinars',     value: data.total_webinars,      icon: '🎥', color: '#6366f1' }),
+        el(MetricCard, { title: 'Total de Webinars',     value: data.total_webinars,      icon: '🎥', color: '#FF6A00' }),
         el(MetricCard, { title: 'Total de Participantes',value: data.total_participantes,  icon: '👥', color: '#0ea5e9' }),
-        el(MetricCard, { title: 'Participantes Hoje',    value: data.participantes_hoje,   icon: '📅', color: '#10b981' }),
-        el(MetricCard, { title: 'Tempo Médio Assistido', value: fmtTempo(data.tempo_medio_segundos), icon: '⏱', color: '#f59e0b' }),
-        el(MetricCard, { title: 'Taxa de Conversão',     value: data.taxa_conversao + '%', icon: '🎯', color: '#ef4444' })
+        el(MetricCard, { title: 'Participantes Hoje',    value: data.participantes_hoje,   icon: '📅', color: '#22C55E' }),
+        el(MetricCard, { title: 'Tempo Médio Assistido', value: fmtTempo(data.tempo_medio_segundos), icon: '⏱', color: '#F59E0B' }),
+        el(MetricCard, { title: 'Taxa de Conversão',     value: data.taxa_conversao + '%', icon: '🎯', color: '#EF4444' })
       ),
 
       el('div', { className: 'ww-dashboard-cols' },
@@ -795,11 +811,11 @@
       data ? el(Fragment, null,
         el('div', { className: 'ww-metrics-grid' },
           el(MetricCard, { title: 'Participantes',     value: data.total_participantes,  icon: '👥', color: '#0ea5e9' }),
-          el(MetricCard, { title: 'Participantes Hoje',value: data.participantes_hoje,    icon: '📅', color: '#10b981' }),
-          el(MetricCard, { title: 'Tempo Médio',       value: fmtTempo(data.tempo_medio_segundos), icon: '⏱', color: '#f59e0b' }),
-          el(MetricCard, { title: 'Convertidos',       value: data.convertidos,           icon: '🎯', color: '#ef4444' }),
-          el(MetricCard, { title: 'Taxa de Conversão', value: data.taxa_conversao + '%',  icon: '📊', color: '#6366f1' }),
-          el(MetricCard, { title: 'Cliques no Botão',  value: data.cliques_botao,         icon: '🖱', color: '#8b5cf6' })
+          el(MetricCard, { title: 'Participantes Hoje',value: data.participantes_hoje,    icon: '📅', color: '#22C55E' }),
+          el(MetricCard, { title: 'Tempo Médio',       value: fmtTempo(data.tempo_medio_segundos), icon: '⏱', color: '#F59E0B' }),
+          el(MetricCard, { title: 'Convertidos',       value: data.convertidos,           icon: '🎯', color: '#EF4444' }),
+          el(MetricCard, { title: 'Taxa de Conversão', value: data.taxa_conversao + '%',  icon: '📊', color: '#FF6A00' }),
+          el(MetricCard, { title: 'Cliques no Botão',  value: data.cliques_botao,         icon: '🖱', color: '#0ea5e9' })
         ),
         el('div', { className: 'ww-dashboard-cols' },
           el('div', { className: 'ww-dashboard-col' },
