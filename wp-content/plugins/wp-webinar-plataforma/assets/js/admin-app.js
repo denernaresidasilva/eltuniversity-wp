@@ -35,6 +35,15 @@
   /* ─────────────────────────────────────────
      Utility components
   ───────────────────────────────────────── */
+
+  /* Convert 6-digit hex color to rgba() string */
+  function hexToRgba(hex, alpha) {
+    var r = parseInt(hex.slice(1, 3), 16);
+    var g = parseInt(hex.slice(3, 5), 16);
+    var b = parseInt(hex.slice(5, 7), 16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+  }
+
   function Spinner() {
     return el('div', { className: 'ww-spinner' });
   }
@@ -50,13 +59,19 @@
   }
   function Badge(_ref) {
     var value = _ref.value, color = _ref.color;
-    return el('span', { className: 'ww-badge', style: { background: color || '#FF6A00' } }, value);
+    var c = color || '#FF6A00';
+    return el('span', { className: 'ww-badge', style: { color: c, background: hexToRgba(c, 0.14) } }, value);
   }
   function StatusBadge(_ref) {
     var status = _ref.status;
-    var map = { publicado: ['#22C55E', 'Publicado'], rascunho: ['#F59E0B', 'Rascunho'], encerrado: ['#6b7280', 'Encerrado'] };
-    var info = map[status] || ['#6b7280', status];
-    return el('span', { className: 'ww-status-badge', style: { background: info[0] } }, info[1]);
+    /* Each entry: [solidColor, bgColor, label] — colored text on semi-transparent bg */
+    var map = {
+      publicado: ['#22C55E', 'rgba(34,197,94,0.14)',   'Publicado'],
+      rascunho:  ['#F59E0B', 'rgba(245,158,11,0.14)',  'Rascunho'],
+      encerrado: ['#B6B6BD', 'rgba(182,182,189,0.14)', 'Encerrado'],
+    };
+    var info = map[status] || ['#B6B6BD', 'rgba(182,182,189,0.14)', status];
+    return el('span', { className: 'ww-status-badge', style: { color: info[0], background: info[1] } }, info[2]);
   }
 
   /* ─────────────────────────────────────────
@@ -64,8 +79,9 @@
   ───────────────────────────────────────── */
   function MetricCard(_ref) {
     var title = _ref.title, value = _ref.value, icon = _ref.icon, color = _ref.color, sub = _ref.sub;
+    var iconColor = color || '#FF6A00';
     return el('div', { className: 'ww-metric-card' },
-      el('div', { className: 'ww-metric-icon', style: { background: color ? color + '22' : 'rgba(255,106,0,.14)', color: color || '#FF6A00' } }, icon),
+      el('div', { className: 'ww-metric-icon', style: { background: hexToRgba(iconColor, 0.14), color: iconColor } }, icon),
       el('div', { className: 'ww-metric-body' },
         el('div', { className: 'ww-metric-title' }, title),
         el('div', { className: 'ww-metric-value' }, value),
