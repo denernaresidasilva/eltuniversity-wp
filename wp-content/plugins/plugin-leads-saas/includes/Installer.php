@@ -82,7 +82,7 @@ class Installer {
             id           BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
             workflow_id  BIGINT UNSIGNED NOT NULL,
             lead_id      BIGINT UNSIGNED NOT NULL,
-            current_node VARCHAR(64)     NOT NULL DEFAULT '',
+            next_nodes   TEXT            NOT NULL DEFAULT '',
             status       VARCHAR(20)     NOT NULL DEFAULT 'running',
             context_json LONGTEXT        NULL,
             resume_at    DATETIME        NULL,

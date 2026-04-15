@@ -99,7 +99,7 @@ class AutomacaoService {
                 $wpdb->insert( $wpdb->prefix . 'lead_workflow_runs', [
                     'workflow_id'  => $workflow_id,
                     'lead_id'      => (int) ( $context['lead_id'] ?? 0 ),
-                    'current_node' => wp_json_encode( $next_nodes ),
+                    'next_nodes'   => wp_json_encode( $next_nodes ),
                     'status'       => 'waiting',
                     'context_json' => wp_json_encode( $context ),
                     'resume_at'    => $resume_at,
@@ -231,7 +231,7 @@ class AutomacaoService {
 
             $workflow  = Automacao::find( (int) $run['workflow_id'] );
             $context   = $run['context_json'] ? json_decode( $run['context_json'], true ) : [];
-            $next_ids  = $run['current_node'] ? json_decode( $run['current_node'], true ) : [];
+            $next_ids  = $run['next_nodes']   ? json_decode( $run['next_nodes'],   true ) : [];
 
             if ( $workflow && is_array( $workflow['nodes_json'] ) && is_array( $next_ids ) ) {
                 // Index nodes.

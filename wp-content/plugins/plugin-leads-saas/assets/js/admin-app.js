@@ -1651,7 +1651,7 @@
   }
 
   /* ============================================================
-     Tags Page
+     Edit Lead Modal
   ============================================================ */
   function EditLeadModal({ lead, listas, onClose, onSaved }) {
     var [form, setForm]           = useState({
@@ -2022,7 +2022,9 @@
           value: ids,
           onChange: function(e) {
             var selected = Array.from(e.target.selectedOptions).map(function(o) { return o.value; });
-            updateNode(idx, { [edgeKey]: selected });
+            var patch = {};
+            patch[edgeKey] = selected;
+            updateNode(idx, patch);
           }
         },
           nodes.filter(function(_, i) { return i !== idx; }).map(function(n) {
