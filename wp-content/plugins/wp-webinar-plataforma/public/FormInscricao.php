@@ -41,6 +41,7 @@ class FormInscricao {
         ?>
         <div class="ww-inscricao-wrapper" id="ww-form-<?php echo esc_attr( $id ); ?>">
             <div class="ww-inscricao-box">
+                <div class="ww-inscricao-inner">
                 <h2 class="ww-inscricao-titulo"><?php echo esc_html( $webinar->nome ); ?></h2>
                 <?php if ( $webinar->descricao ) : ?>
                     <p class="ww-inscricao-desc"><?php echo esc_html( $webinar->descricao ); ?></p>
@@ -91,6 +92,7 @@ class FormInscricao {
                         Quero me inscrever agora
                     </button>
                 </form>
+                </div><!-- .ww-inscricao-inner -->
             </div>
         </div>
 

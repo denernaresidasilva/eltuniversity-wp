@@ -95,40 +95,46 @@ class RenderWebinar {
             </div>
             <?php endif; ?>
 
-            <div class="ww-video-container">
-                <div id="ww-youtube-player"></div>
-                <div class="ww-controls" id="ww-controls">
-                    <button class="ww-btn-play" id="ww-play-btn" aria-label="Play/Pause">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M8 5v14l11-7z"/>
-                        </svg>
-                    </button>
-                    <div class="ww-progress-bar" id="ww-progress-bar">
-                        <div class="ww-progress-fill" id="ww-progress-fill"></div>
+            <div class="ww-layout-grid">
+
+                <div class="ww-player-card">
+                    <div class="ww-video-container">
+                        <div id="ww-youtube-player"></div>
+                        <div class="ww-controls" id="ww-controls">
+                            <button class="ww-btn-play" id="ww-play-btn" aria-label="Play/Pause">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </button>
+                            <div class="ww-progress-bar" id="ww-progress-bar">
+                                <div class="ww-progress-fill" id="ww-progress-fill"></div>
+                            </div>
+                            <span class="ww-time" id="ww-time">0:00 / 0:00</span>
+                            <button class="ww-btn-fullscreen" id="ww-fullscreen-btn" aria-label="Tela cheia">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                    <span class="ww-time" id="ww-time">0:00 / 0:00</span>
-                    <button class="ww-btn-fullscreen" id="ww-fullscreen-btn" aria-label="Tela cheia">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-                        </svg>
-                    </button>
                 </div>
-            </div>
+
+                <div class="ww-chat-wrapper" id="ww-chat-wrapper">
+                    <div class="ww-chat-header">
+                        <span>💬 Chat ao Vivo</span>
+                    </div>
+                    <div class="ww-chat-messages" id="ww-chat-messages"></div>
+                    <div class="ww-chat-input-row">
+                        <input type="text" id="ww-chat-input" class="ww-chat-input" placeholder="Digite uma mensagem..." maxlength="300" />
+                        <button id="ww-chat-send" class="ww-btn-chat-send">Enviar</button>
+                    </div>
+                </div>
+
+            </div><!-- .ww-layout-grid -->
 
             <div class="ww-notifications" id="ww-notifications"></div>
 
             <div class="ww-automation-overlays" id="ww-automation-overlays"></div>
-
-            <div class="ww-chat-wrapper" id="ww-chat-wrapper">
-                <div class="ww-chat-header">
-                    <span>💬 Chat ao Vivo</span>
-                </div>
-                <div class="ww-chat-messages" id="ww-chat-messages"></div>
-                <div class="ww-chat-input-row">
-                    <input type="text" id="ww-chat-input" class="ww-chat-input" placeholder="Digite uma mensagem..." maxlength="300" />
-                    <button id="ww-chat-send" class="ww-btn-chat-send">Enviar</button>
-                </div>
-            </div>
 
         </div>
         <?php
