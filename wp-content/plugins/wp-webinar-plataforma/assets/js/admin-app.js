@@ -213,6 +213,7 @@
     var form = _f[0], setForm = _f[1];
     var _s = useState(false), saving = _s[0], setSaving = _s[1];
     var _e = useState(''), err = _e[0], setErr = _e[1];
+    var _sub = useState(false), submitted = _sub[0], setSubmitted = _sub[1];
 
     function handle(field, value) {
       setForm(function(prev) { return Object.assign({}, prev, { [field]: value }); });
@@ -220,7 +221,8 @@
 
     async function submit(e) {
       e.preventDefault();
-      if (!form.nome.trim()) { setErr('Nome do webinar é obrigatório.'); return; }
+      setSubmitted(true);
+      if (!form.nome.trim()) { setErr('O nome do webinar é obrigatório.'); return; }
       setSaving(true); setErr('');
       try {
         var result = editing
@@ -237,7 +239,7 @@
       el('div', { className: 'ww-modal' },
         el('div', { className: 'ww-modal-header' },
           el('h2', null, editing ? '✏️ Editar Webinar' : '➕ Novo Webinar'),
-          el('button', { className: 'ww-modal-close', onClick: onClose }, '×')
+          el('button', { className: 'ww-modal-close', onClick: onClose, 'aria-label': 'Fechar', type: 'button' }, '×')
         ),
         el('form', { onSubmit: submit, className: 'ww-form' },
           err ? el('div', {
@@ -259,13 +261,13 @@
                 el('label', { className: 'ww-label', htmlFor: 'ww-f-nome' }, 'Nome *'),
                 el('input', {
                   id              : 'ww-f-nome',
-                  className       : 'ww-input' + (!form.nome.trim() && err ? ' is-error' : ''),
+                  className       : 'ww-input' + (submitted && !form.nome.trim() ? ' is-error' : ''),
                   value           : form.nome,
                   onChange        : function(e) { handle('nome', e.target.value); },
                   required        : true,
                   placeholder     : 'Ex: Aula Secreta de Marketing',
                   'aria-describedby': 'ww-f-nome-help',
-                  'aria-invalid'  : !form.nome.trim() && err ? 'true' : 'false',
+                  'aria-invalid'  : submitted && !form.nome.trim() ? 'true' : 'false',
                 }),
                 el('span', { id: 'ww-f-nome-help', className: 'ww-field-help' },
                   'Título exibido nas páginas de inscrição e webinar.')
@@ -548,7 +550,7 @@
                     el('button', { className: 'ww-btn ww-btn-sm ww-btn-secondary', onClick: function() { openEdit(w); }, 'aria-label': 'Editar ' + w.nome }, '✏️ Editar'),
                     w.status === 'rascunho' ? el('button', { className: 'ww-btn ww-btn-sm ww-btn-success', onClick: function() { publicar(w.id); }, 'aria-label': 'Publicar ' + w.nome }, '🚀 Publicar') : null,
                     w.status === 'publicado' ? el('button', { className: 'ww-btn ww-btn-sm ww-btn-secondary', onClick: function() { despublicar(w); }, 'aria-label': 'Despublicar ' + w.nome }, '⏸ Despublicar') : null,
-                    w.pagina_webinar_id ? el('a', { className: 'ww-btn ww-btn-sm ww-btn-outline', href: SITE_URL + '/?page_id=' + w.pagina_webinar_id, target: '_blank', rel: 'noopener noreferrer', 'aria-label': 'Visualizar ' + w.nome }, '👁 Ver') : null,
+                    w.pagina_webinar_id ? el('a', { className: 'ww-btn ww-btn-sm ww-btn-outline', href: SITE_URL + '/?page_id=' + parseInt(w.pagina_webinar_id, 10), target: '_blank', rel: 'noopener noreferrer', 'aria-label': 'Visualizar ' + w.nome }, '👁 Ver') : null,
                     el('button', { className: 'ww-btn ww-btn-sm ww-btn-outline', onClick: function() { duplicar(w); }, 'aria-label': 'Duplicar ' + w.nome }, '⧉ Duplicar'),
                     el('button', { className: 'ww-btn ww-btn-sm ww-btn-danger', onClick: function() { excluir(w); }, 'aria-label': 'Excluir ' + w.nome }, '🗑')
                   )

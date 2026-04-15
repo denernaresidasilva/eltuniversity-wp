@@ -92,6 +92,7 @@ class WebinarsController {
         }
 
         return new \WP_REST_Response( [
+            // 'items' is the canonical key; 'data' and 'pages' are kept for backward compatibility.
             'items'       => $rows ?: [],
             'data'        => $rows ?: [],
             'total'       => $total,
