@@ -899,3 +899,65 @@
   font-size: 12px;
   color: var(--ls-gray-400);
 }
+
+/* ============================================================
+   Workflow Node Builder
+   ============================================================ */
+
+.ls-workflow-node {
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: var(--ls-gray-200);
+  transition: border-color .15s;
+}
+
+.ls-workflow-node-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ls-workflow-node-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ls-workflow-node-label {
+  font-weight: 700;
+  font-size: 13px;
+  flex: 1;
+}
+
+.ls-workflow-node-id {
+  font-size: 11px;
+  color: var(--ls-gray-400);
+  font-family: ui-monospace, monospace;
+}
+
+.ls-workflow-node-config {
+  padding: 10px 0;
+  border-top: 1px solid var(--ls-border);
+  margin-top: 8px;
+}
+
+.ls-workflow-node-config-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+/* ============================================================
+   Edit Lead Modal – tag toggle buttons
+   ============================================================ */
+
+.ls-tag-toggle {
+  padding: 3px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  transition: all .15s;
+}

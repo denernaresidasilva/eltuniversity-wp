@@ -19,6 +19,7 @@ class Automacao {
         foreach ( $rows as &$row ) {
             $row['acoes_json']      = $row['acoes_json']      ? json_decode( $row['acoes_json'],      true ) : [];
             $row['conditions_json'] = $row['conditions_json'] ? json_decode( $row['conditions_json'], true ) : null;
+            $row['nodes_json']      = $row['nodes_json']      ? json_decode( $row['nodes_json'],      true ) : null;
         }
         return $rows;
     }
@@ -30,6 +31,7 @@ class Automacao {
         if ( ! $row ) return null;
         $row['acoes_json']      = $row['acoes_json']      ? json_decode( $row['acoes_json'],      true ) : [];
         $row['conditions_json'] = $row['conditions_json'] ? json_decode( $row['conditions_json'], true ) : null;
+        $row['nodes_json']      = $row['nodes_json']      ? json_decode( $row['nodes_json'],      true ) : null;
         return $row;
     }
 
@@ -43,6 +45,7 @@ class Automacao {
         foreach ( $rows as &$row ) {
             $row['acoes_json']      = $row['acoes_json']      ? json_decode( $row['acoes_json'],      true ) : [];
             $row['conditions_json'] = $row['conditions_json'] ? json_decode( $row['conditions_json'], true ) : null;
+            $row['nodes_json']      = $row['nodes_json']      ? json_decode( $row['nodes_json'],      true ) : null;
         }
         return $rows;
     }
@@ -56,6 +59,7 @@ class Automacao {
             'conditions_json' => array_key_exists( 'conditions', $data ) && $data['conditions'] !== null
                                     ? wp_json_encode( $data['conditions'] )
                                     : null,
+            'nodes_json'      => isset( $data['nodes'] ) ? wp_json_encode( $data['nodes'] ) : null,
             'ativo'           => isset( $data['ativo'] ) ? (int) $data['ativo'] : 1,
             'created_at'      => current_time( 'mysql' ),
         ] );
@@ -70,6 +74,9 @@ class Automacao {
         if ( isset( $data['acoes'] ) )      $fields['acoes_json']      = wp_json_encode( $data['acoes'] );
         if ( array_key_exists( 'conditions', $data ) ) {
             $fields['conditions_json'] = $data['conditions'] !== null ? wp_json_encode( $data['conditions'] ) : null;
+        }
+        if ( array_key_exists( 'nodes', $data ) ) {
+            $fields['nodes_json'] = $data['nodes'] !== null ? wp_json_encode( $data['nodes'] ) : null;
         }
         if ( isset( $data['ativo'] ) )      $fields['ativo']           = (int) $data['ativo'];
         if ( empty( $fields ) ) return false;

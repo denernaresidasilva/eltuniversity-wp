@@ -43,6 +43,12 @@ class Loader {
         // Register email-sequence cron
         Services\EmailSequenceService::register_cron();
 
+        // Register workflow-runs cron (process waiting nodes every 5 minutes)
+        add_action( 'leads_saas_process_workflow_runs', [ Services\AutomacaoService::class, 'process_pending_runs' ] );
+        if ( ! wp_next_scheduled( 'leads_saas_process_workflow_runs' ) ) {
+            wp_schedule_event( time(), 'leads_saas_five_minutes', 'leads_saas_process_workflow_runs' );
+        }
+
         // Boot admin
         if ( is_admin() ) {
             Admin\Admin::init();
