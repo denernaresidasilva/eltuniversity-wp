@@ -11,6 +11,7 @@ $tables = [
     $wpdb->prefix . 'lead_tags',
     $wpdb->prefix . 'lead_tag_relations',
     $wpdb->prefix . 'lead_automacoes',
+    $wpdb->prefix . 'lead_workflow_runs',
 ];
 
 foreach ( $tables as $table ) {

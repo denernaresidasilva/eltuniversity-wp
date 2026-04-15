@@ -2,6 +2,7 @@
 namespace LeadsSaaS\Api;
 
 use LeadsSaaS\Models\Lista;
+use LeadsSaaS\Models\Tag;
 use LeadsSaaS\Services\LeadService;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -161,6 +162,14 @@ class WebhookController {
             'origem'      => 'webhook',
         ], 'webhook' );
 
+        // Attach tags sent in the payload (array of tag names or tag IDs).
+        if ( $lead_id > 0 ) {
+            $raw_tags = $body['tags'] ?? ( $body['etiquetas'] ?? [] );
+            if ( ! empty( $raw_tags ) && is_array( $raw_tags ) ) {
+                self::attach_tags_by_name( $lead_id, $raw_tags );
+            }
+        }
+
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
             error_log( '[LeadsSaaS] Webhook receive: lead #' . (int) $lead_id . ' criado para lista #' . (int) $lista['id'] . '.' );
         }
@@ -309,5 +318,45 @@ class WebhookController {
         }
 
         return $sanitized;
+    }
+
+    /**
+     * Resolve a list of tag names (or IDs) and attach them to a lead.
+     * Tags that do not exist yet are created on the fly.
+     *
+     * @param int   $lead_id   Lead to attach tags to.
+     * @param array $raw_tags  Array of tag names (string) or IDs (int).
+     */
+    private static function attach_tags_by_name( int $lead_id, array $raw_tags ): void {
+        foreach ( $raw_tags as $raw ) {
+            if ( is_int( $raw ) || ( is_string( $raw ) && ctype_digit( $raw ) ) ) {
+                // Numeric: treat as tag ID.
+                $tag_id = (int) $raw;
+                if ( $tag_id > 0 ) {
+                    LeadService::attach_tag( $lead_id, $tag_id );
+                }
+                continue;
+            }
+
+            $nome = sanitize_text_field( (string) $raw );
+            if ( '' === $nome ) {
+                continue;
+            }
+
+            // Find existing tag by name (case-insensitive).
+            $all_tags = Tag::all();
+            $found    = null;
+            foreach ( $all_tags as $tag ) {
+                if ( strtolower( $tag['nome'] ) === strtolower( $nome ) ) {
+                    $found = $tag;
+                    break;
+                }
+            }
+
+            $tag_id = $found ? (int) $found['id'] : Tag::create( [ 'nome' => $nome ] );
+            if ( $tag_id > 0 ) {
+                LeadService::attach_tag( $lead_id, $tag_id );
+            }
+        }
     }
 }

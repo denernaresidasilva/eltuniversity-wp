@@ -1441,6 +1441,11 @@
       setModal('view');
     }
 
+    function openEdit(lead) {
+      setCurrent(lead);
+      setModal('edit');
+    }
+
     function openDelete(lead) {
       setCurrent(lead);
       setModal('delete');
@@ -1533,6 +1538,7 @@
                   el('td', null,
                     el('div', { className: 'ls-flex ls-gap-2' },
                       el('button', { className: 'ls-btn ls-btn-outline ls-btn-sm', onClick: function() { openView(lead); } }, 'Ver'),
+                      el('button', { className: 'ls-btn ls-btn-outline ls-btn-sm', onClick: function() { openEdit(lead); } }, 'Editar'),
                       el('button', { className: 'ls-btn ls-btn-danger ls-btn-sm', onClick: function() { openDelete(lead); } }, 'Excluir')
                     )
                   )
@@ -1572,6 +1578,13 @@
         listas: listas,
         onClose: function() { setModal(null); },
         onSaved: function() { setModal(null); showAlert('success', 'Lead criado!'); load(); }
+      }),
+
+      modal === 'edit' && current && el(EditLeadModal, {
+        lead: current,
+        listas: listas,
+        onClose: function() { setModal(null); },
+        onSaved: function() { setModal(null); showAlert('success', 'Lead atualizado!'); load(); }
       }),
 
       modal === 'delete' && el(Modal, {
@@ -1632,6 +1645,121 @@
             onChange: function(v) { setForm(Object.assign({}, form, { lista_id: v })); },
             options: listaOptions.length ? listaOptions : [{ value: '', label: 'Sem lista' }]
           })
+        )
+      )
+    );
+  }
+
+  /* ============================================================
+     Tags Page
+  ============================================================ */
+  function EditLeadModal({ lead, listas, onClose, onSaved }) {
+    var [form, setForm]           = useState({
+      nome:     lead.nome     || '',
+      email:    lead.email    || '',
+      telefone: lead.telefone || '',
+      lista_id: lead.lista_id ? String(lead.lista_id) : '',
+    });
+    var [allTags, setAllTags]     = useState([]);
+    var [selectedTags, setSelectedTags] = useState((lead.tags || []).map(function(t) { return t.id; }));
+    var [saving, setSaving]       = useState(false);
+
+    useEffect(function() {
+      apiFetch('/tags').then(function(d) { setAllTags(d); }).catch(function() {});
+    }, []);
+
+    function toggleTag(tagId) {
+      setSelectedTags(function(prev) {
+        var idx = prev.indexOf(tagId);
+        return idx >= 0 ? prev.filter(function(t) { return t !== tagId; }) : prev.concat([tagId]);
+      });
+    }
+
+    async function handleSave() {
+      setSaving(true);
+      try {
+        // Update core fields.
+        await apiFetch('/leads/' + lead.id, {
+          method: 'PUT',
+          body: Object.assign({}, form, { lista_id: parseInt(form.lista_id) || 0 }),
+        });
+
+        // Sync tags: add new, remove removed.
+        var currentTagIds = (lead.tags || []).map(function(t) { return t.id; });
+        var toAdd    = selectedTags.filter(function(id) { return currentTagIds.indexOf(id) < 0; });
+        var toRemove = currentTagIds.filter(function(id) { return selectedTags.indexOf(id) < 0; });
+
+        await Promise.all(
+          toAdd.map(function(tag_id) {
+            return apiFetch('/leads/' + lead.id + '/tags', { method: 'POST', body: { tag_id: tag_id } });
+          }).concat(
+            toRemove.map(function(tag_id) {
+              return apiFetch('/leads/' + lead.id + '/tags', { method: 'DELETE', body: { tag_id: tag_id } });
+            })
+          )
+        );
+
+        onSaved();
+      } catch(e) {
+        alert(e.message);
+      } finally {
+        setSaving(false);
+      }
+    }
+
+    var listaOptions = listas.map(function(l) { return { value: String(l.id), label: l.nome }; });
+
+    return el(Modal, {
+      title: 'Editar Lead',
+      onClose: onClose,
+      footer: el(Fragment, null,
+        el('button', { className: 'ls-btn ls-btn-outline', onClick: onClose }, 'Cancelar'),
+        el('button', { className: 'ls-btn ls-btn-primary', onClick: handleSave, disabled: saving || !form.email }, saving ? 'Salvando…' : 'Salvar')
+      )
+    },
+      el('div', { className: 'ls-grid-2' },
+        el(FormGroup, { label: 'Nome' },
+          el(Input, { value: form.nome, onChange: function(v) { setForm(Object.assign({}, form, { nome: v })); } })
+        ),
+        el(FormGroup, { label: 'E-mail', required: true },
+          el(Input, { value: form.email, type: 'email', onChange: function(v) { setForm(Object.assign({}, form, { email: v })); } })
+        )
+      ),
+      el('div', { className: 'ls-grid-2' },
+        el(FormGroup, { label: 'Telefone' },
+          el(Input, { value: form.telefone, type: 'tel', onChange: function(v) { setForm(Object.assign({}, form, { telefone: v })); } })
+        ),
+        el(FormGroup, { label: 'Lista' },
+          el(Select, {
+            value: form.lista_id,
+            onChange: function(v) { setForm(Object.assign({}, form, { lista_id: v })); },
+            options: listaOptions.length ? listaOptions : [{ value: '', label: 'Sem lista' }]
+          })
+        )
+      ),
+      el(FormGroup, { label: 'Etiquetas' },
+        el('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 4 } },
+          allTags.length === 0
+            ? el('span', { className: 'ls-text-muted' }, 'Nenhuma etiqueta cadastrada.')
+            : allTags.map(function(tag) {
+                var selected = selectedTags.indexOf(tag.id) >= 0;
+                return el('button', {
+                  key: tag.id,
+                  type: 'button',
+                  onClick: function() { toggleTag(tag.id); },
+                  style: {
+                    padding: '3px 10px',
+                    borderRadius: 20,
+                    border: '2px solid ' + tag.cor,
+                    background: selected ? tag.cor : 'transparent',
+                    color: selected ? '#fff' : tag.cor,
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                    fontSize: 12,
+                    transition: 'all .15s',
+                  }
+                }, (selected ? '✓ ' : '') + tag.nome);
+              })
         )
       )
     );
@@ -1810,6 +1938,283 @@
     { value: 'send_webhook', label: 'Enviar webhook' },
   ];
 
+  var NODE_TYPES = [
+    { value: 'trigger',  label: '⚡ Gatilho',   color: '#3b82f6' },
+    { value: 'action',   label: '▶ Ação',       color: '#f59e0b' },
+    { value: 'wait',     label: '⏳ Espera',    color: '#8b5cf6' },
+    { value: 'if_else',  label: '🔀 Se/Senão',  color: '#10b981' },
+    { value: 'split',    label: '⑂ Divisão',   color: '#6366f1' },
+    { value: 'goal',     label: '🎯 Meta',      color: '#f97316' },
+    { value: 'loop',     label: '🔁 Loop',      color: '#ec4899' },
+    { value: 'end',      label: '■ Fim',        color: '#6b7280' },
+  ];
+
+  var CONDITION_OPS = [
+    { value: 'has_tag',      label: 'Possui etiqueta' },
+    { value: 'not_has_tag',  label: 'Não possui etiqueta' },
+    { value: 'lista_is',     label: 'Lista é' },
+    { value: 'field_equals', label: 'Campo igual a' },
+  ];
+
+  /**
+   * WorkflowNodeBuilder – list-based node editor for building visual workflows.
+   * Nodes are stored as a JSON array; each node has: id, type, config, next (array of node IDs).
+   * next_true / next_false are used for if_else nodes.
+   * next_exit is used for loop nodes (when max iterations reached).
+   */
+  function WorkflowNodeBuilder({ nodes, tags, listas, triggers, onChange }) {
+    var [editingIdx, setEditingIdx] = useState(null);
+
+    function genId() {
+      return 'node_' + Math.random().toString(36).slice(2, 9);
+    }
+
+    function addNode(type) {
+      var newNode = { id: genId(), type: type, config: {}, next: [] };
+      if (type === 'if_else') { newNode.next_true = []; newNode.next_false = []; }
+      if (type === 'loop')    { newNode.next_exit = []; }
+      onChange(nodes.concat([newNode]));
+    }
+
+    function removeNode(idx) {
+      var removed = nodes[idx];
+      var updated = nodes.filter(function(_, i) { return i !== idx; });
+      // Clean up references to the removed node's ID from other nodes' next arrays.
+      updated = updated.map(function(n) {
+        return Object.assign({}, n, {
+          next:       (n.next        || []).filter(function(id) { return id !== removed.id; }),
+          next_true:  (n.next_true   || []).filter(function(id) { return id !== removed.id; }),
+          next_false: (n.next_false  || []).filter(function(id) { return id !== removed.id; }),
+          next_exit:  (n.next_exit   || []).filter(function(id) { return id !== removed.id; }),
+        });
+      });
+      onChange(updated);
+      if (editingIdx === idx) setEditingIdx(null);
+    }
+
+    function updateNode(idx, patch) {
+      onChange(nodes.map(function(n, i) { return i === idx ? Object.assign({}, n, patch) : n; }));
+    }
+
+    function updateConfig(idx, patch) {
+      var node = nodes[idx];
+      updateNode(idx, { config: Object.assign({}, node.config, patch) });
+    }
+
+    function getNodeColor(type) {
+      var nt = NODE_TYPES.find(function(t) { return t.value === type; });
+      return nt ? nt.color : '#6b7280';
+    }
+
+    function getNodeLabel(type) {
+      var nt = NODE_TYPES.find(function(t) { return t.value === type; });
+      return nt ? nt.label : type;
+    }
+
+    function renderEdgeSelect(idx, edgeKey, label) {
+      var node = nodes[idx];
+      var ids  = node[edgeKey] || [];
+      return el(FormGroup, { label: label },
+        el('select', {
+          multiple: true,
+          className: 'ls-select',
+          style: { height: 80 },
+          value: ids,
+          onChange: function(e) {
+            var selected = Array.from(e.target.selectedOptions).map(function(o) { return o.value; });
+            updateNode(idx, { [edgeKey]: selected });
+          }
+        },
+          nodes.filter(function(_, i) { return i !== idx; }).map(function(n) {
+            return el('option', { key: n.id, value: n.id }, '[' + n.type + '] ' + (n.config && n.config.tipo ? n.config.tipo : n.id));
+          })
+        )
+      );
+    }
+
+    function renderNodeConfig(idx) {
+      var node = nodes[idx];
+      var cfg  = node.config || {};
+      var type = node.type;
+
+      return el('div', { style: { padding: '10px 0', borderTop: '1px solid var(--ls-border)', marginTop: 8 } },
+        el('div', { style: { fontWeight: 600, marginBottom: 8, fontSize: 12, color: getNodeColor(type) } }, 'Configuração do nó'),
+
+        type === 'trigger' && el(FormGroup, { label: 'Gatilho' },
+          el(Select, {
+            value: cfg.trigger || triggers[0].value,
+            onChange: function(v) { updateConfig(idx, { trigger: v }); },
+            options: triggers
+          })
+        ),
+
+        type === 'action' && el(Fragment, null,
+          el(FormGroup, { label: 'Tipo de ação' },
+            el(Select, {
+              value: cfg.tipo || 'add_tag',
+              onChange: function(v) { updateConfig(idx, { tipo: v }); },
+              options: ACOES_TIPOS
+            })
+          ),
+          cfg.tipo === 'add_tag' && el(FormGroup, { label: 'Etiqueta' },
+            el(Select, {
+              value: String(cfg.tag_id || ''),
+              onChange: function(v) { updateConfig(idx, { tag_id: parseInt(v) }); },
+              options: [{ value: '', label: '— Selecione —' }].concat(tags.map(function(t) { return { value: String(t.id), label: t.nome }; }))
+            })
+          ),
+          cfg.tipo === 'move_list' && el(FormGroup, { label: 'Lista destino' },
+            el(Select, {
+              value: String(cfg.lista_id || ''),
+              onChange: function(v) { updateConfig(idx, { lista_id: parseInt(v) }); },
+              options: [{ value: '', label: '— Selecione —' }].concat(listas.map(function(l) { return { value: String(l.id), label: l.nome }; }))
+            })
+          ),
+          cfg.tipo === 'send_webhook' && el(FormGroup, { label: 'URL do webhook' },
+            el(Input, {
+              value: cfg.url || '',
+              onChange: function(v) { updateConfig(idx, { url: v }); },
+              placeholder: 'https://exemplo.com/webhook'
+            })
+          )
+        ),
+
+        type === 'wait' && el(Fragment, null,
+          el('div', { className: 'ls-grid-2' },
+            el(FormGroup, { label: 'Aguardar' },
+              el('input', {
+                className: 'ls-input',
+                type: 'number',
+                min: 0,
+                value: cfg.delay_value || 0,
+                onChange: function(e) { updateConfig(idx, { delay_value: Math.max(0, parseInt(e.target.value) || 0) }); }
+              })
+            ),
+            el(FormGroup, { label: 'Unidade' },
+              el(Select, {
+                value: cfg.delay_unit || 'hours',
+                onChange: function(v) { updateConfig(idx, { delay_unit: v }); },
+                options: [{ value: 'hours', label: 'Horas' }, { value: 'days', label: 'Dias' }]
+              })
+            )
+          )
+        ),
+
+        (type === 'if_else' || type === 'goal') && el(Fragment, null,
+          el(FormGroup, { label: 'Condição' },
+            el(Select, {
+              value: cfg.op || 'has_tag',
+              onChange: function(v) { updateConfig(idx, { op: v }); },
+              options: CONDITION_OPS
+            })
+          ),
+          (cfg.op === 'has_tag' || cfg.op === 'not_has_tag') && el(FormGroup, { label: 'Etiqueta' },
+            el(Select, {
+              value: String(cfg.value || ''),
+              onChange: function(v) { updateConfig(idx, { value: parseInt(v) }); },
+              options: [{ value: '', label: '— Selecione —' }].concat(tags.map(function(t) { return { value: String(t.id), label: t.nome }; }))
+            })
+          ),
+          cfg.op === 'lista_is' && el(FormGroup, { label: 'Lista' },
+            el(Select, {
+              value: String(cfg.value || ''),
+              onChange: function(v) { updateConfig(idx, { value: parseInt(v) }); },
+              options: [{ value: '', label: '— Selecione —' }].concat(listas.map(function(l) { return { value: String(l.id), label: l.nome }; }))
+            })
+          ),
+          cfg.op === 'field_equals' && el(Fragment, null,
+            el(FormGroup, { label: 'Campo (ex: lista_id)' },
+              el(Input, { value: cfg.field || '', onChange: function(v) { updateConfig(idx, { field: v }); } })
+            ),
+            el(FormGroup, { label: 'Valor' },
+              el(Input, { value: String(cfg.value || ''), onChange: function(v) { updateConfig(idx, { value: v }); } })
+            )
+          )
+        ),
+
+        type === 'loop' && el(FormGroup, { label: 'Máximo de iterações' },
+          el('input', {
+            className: 'ls-input',
+            type: 'number',
+            min: 1,
+            value: cfg.max_iterations || 1,
+            onChange: function(e) { updateConfig(idx, { max_iterations: Math.max(1, parseInt(e.target.value) || 1) }); }
+          })
+        ),
+
+        // Edge connections
+        el('div', { style: { marginTop: 8 } },
+          (type === 'if_else')
+            ? el(Fragment, null,
+                renderEdgeSelect(idx, 'next_true',  'Se verdadeiro → próximos nós'),
+                renderEdgeSelect(idx, 'next_false', 'Se falso → próximos nós')
+              )
+            : (type === 'loop')
+              ? el(Fragment, null,
+                  renderEdgeSelect(idx, 'next',      'Corpo do loop (próximos nós)'),
+                  renderEdgeSelect(idx, 'next_exit', 'Saída do loop (após max. iterações)')
+                )
+              : (type !== 'end')
+                ? renderEdgeSelect(idx, 'next', 'Próximos nós')
+                : null
+        )
+      );
+    }
+
+    var nodeTypeOptions = NODE_TYPES.map(function(t) { return { value: t.value, label: t.label }; });
+    var [addType, setAddType] = useState('action');
+
+    return el('div', { style: { marginTop: 8 } },
+      // Toolbar
+      el('div', { className: 'ls-flex ls-gap-2', style: { marginBottom: 12, flexWrap: 'wrap' } },
+        el('div', { style: { fontWeight: 600, fontSize: 13, alignSelf: 'center' } }, 'Nós do fluxo'),
+        el(Select, { value: addType, onChange: setAddType, options: nodeTypeOptions }),
+        el('button', {
+          type: 'button',
+          className: 'ls-btn ls-btn-outline ls-btn-sm',
+          onClick: function() { addNode(addType); }
+        }, '+ Adicionar nó')
+      ),
+
+      // Node list
+      nodes.length === 0
+        ? el('div', { className: 'ls-text-muted', style: { fontSize: 13, padding: '12px 0' } },
+            'Nenhum nó adicionado. Comece adicionando um nó "Gatilho".'
+          )
+        : nodes.map(function(node, idx) {
+            var isEditing = editingIdx === idx;
+            var color     = getNodeColor(node.type);
+            return el('div', {
+              key: node.id,
+              style: {
+                border: '2px solid ' + color,
+                borderRadius: 8,
+                padding: '10px 12px',
+                marginBottom: 8,
+                background: 'var(--ls-gray-200)',
+              }
+            },
+              el('div', { className: 'ls-flex ls-gap-2', style: { alignItems: 'center' } },
+                el('div', { style: { width: 10, height: 10, borderRadius: '50%', background: color, flexShrink: 0 } }),
+                el('div', { style: { fontWeight: 700, fontSize: 13, color: color, flex: 1 } }, getNodeLabel(node.type)),
+                el('div', { className: 'ls-text-muted', style: { fontSize: 11 } }, node.id),
+                el('button', {
+                  type: 'button',
+                  className: 'ls-btn ls-btn-outline ls-btn-sm',
+                  onClick: function() { setEditingIdx(isEditing ? null : idx); }
+                }, isEditing ? 'Fechar' : 'Configurar'),
+                el('button', {
+                  type: 'button',
+                  className: 'ls-btn ls-btn-danger ls-btn-sm',
+                  onClick: function() { removeNode(idx); }
+                }, '×')
+              ),
+              isEditing && renderNodeConfig(idx)
+            );
+          })
+    );
+  }
+
   function AutomacoesPage() {
     var [automacoes, setAutomacoes] = useState([]);
     var [loading, setLoading] = useState(true);
@@ -1839,13 +2244,20 @@
     }
 
     function openCreate() {
-      setForm({ nome: '', trigger: 'lead_created', acoes: [], ativo: 1 });
+      setForm({ nome: '', trigger: 'lead_created', acoes: [], nodes: null, ativo: 1, editorMode: 'simple' });
       setCurrent(null);
       setModal('create');
     }
 
     function openEdit(a) {
-      setForm({ nome: a.nome, trigger: a.trigger_key, acoes: a.acoes_json || [], ativo: a.ativo });
+      setForm({
+        nome:       a.nome,
+        trigger:    a.trigger_key,
+        acoes:      a.acoes_json  || [],
+        nodes:      a.nodes_json  || null,
+        ativo:      a.ativo,
+        editorMode: (a.nodes_json && a.nodes_json.length) ? 'advanced' : 'simple',
+      });
       setCurrent(a);
       setModal('edit');
     }
@@ -1879,7 +2291,13 @@
       if (!form.nome.trim()) return;
       setSaving(true);
       try {
-        var payload = { nome: form.nome, trigger: form.trigger, acoes: form.acoes, ativo: form.ativo };
+        var payload = {
+          nome:    form.nome,
+          trigger: form.trigger,
+          acoes:   form.editorMode === 'simple' ? form.acoes : [],
+          nodes:   form.editorMode === 'advanced' ? (form.nodes || []) : null,
+          ativo:   form.ativo,
+        };
         if (modal === 'create') {
           await apiFetch('/automacoes', { method: 'POST', body: payload });
           showAlert('success', 'Automação criada!');
@@ -1949,7 +2367,10 @@
                   el('td', null,
                     el('span', { className: 'ls-badge ls-badge-primary' }, getTriggerLabel(a.trigger_key))
                   ),
-                  el('td', null, (a.acoes_json || []).length + ' ação(ões)'),
+                  el('td', null, (a.nodes_json && a.nodes_json.length)
+                    ? el('span', { className: 'ls-badge ls-badge-primary' }, a.nodes_json.length + ' nó(s)')
+                    : (a.acoes_json || []).length + ' ação(ões)'
+                  ),
                   el('td', null,
                     el('span', { className: 'ls-badge ' + (a.ativo ? 'ls-badge-success' : '') },
                       a.ativo ? 'Ativo' : 'Inativo'
@@ -1996,60 +2417,83 @@
           )
         ),
 
-        // Fluxo visual
-        el('div', { style: { marginTop: 4 } },
-          el('div', { className: 'ls-flex ls-gap-2', style: { marginBottom: 8 } },
-            el('div', { style: { fontWeight: 600, fontSize: 13 } }, 'Ações'),
-            el('button', { className: 'ls-btn ls-btn-outline ls-btn-sm', onClick: addAcao }, '+ Ação')
-          ),
+        // Editor mode tabs
+        el('div', { style: { display: 'flex', gap: 8, marginBottom: 12, marginTop: 4 } },
+          el('button', {
+            type: 'button',
+            className: 'ls-btn ls-btn-sm ' + (form.editorMode === 'simple' ? 'ls-btn-primary' : 'ls-btn-outline'),
+            onClick: function() { setForm(Object.assign({}, form, { editorMode: 'simple' })); }
+          }, '⚡ Ações rápidas'),
+          el('button', {
+            type: 'button',
+            className: 'ls-btn ls-btn-sm ' + (form.editorMode === 'advanced' ? 'ls-btn-primary' : 'ls-btn-outline'),
+            onClick: function() { setForm(Object.assign({}, form, { editorMode: 'advanced', nodes: form.nodes || [] })); }
+          }, '🔀 Fluxo de nós')
+        ),
 
-          // Flow display
-          el('div', { className: 'ls-flow-step', style: { background: '#eff6ff' } },
-            el('div', { className: 'ls-flow-step-icon trigger' }, '⚡'),
-            el('div', null,
-              el('div', { style: { fontWeight: 600, fontSize: 13 } }, 'Gatilho'),
-              el('div', { className: 'ls-text-muted' }, getTriggerLabel(form.trigger))
-            )
-          ),
+        form.editorMode === 'simple' && el(Fragment, null,
+          // Simple flat-actions editor (existing)
+          el('div', { style: { marginTop: 4 } },
+            el('div', { className: 'ls-flex ls-gap-2', style: { marginBottom: 8 } },
+              el('div', { style: { fontWeight: 600, fontSize: 13 } }, 'Ações'),
+              el('button', { className: 'ls-btn ls-btn-outline ls-btn-sm', onClick: addAcao }, '+ Ação')
+            ),
 
-          form.acoes.map(function(acao, idx) {
-            return el(Fragment, { key: idx },
-              el('div', { className: 'ls-flow-connector' }),
-              el('div', { className: 'ls-flow-step' },
-                el('div', { className: 'ls-flow-step-icon action' }, '▶'),
-                el('div', { style: { flex: 1 } },
-                  el('div', { className: 'ls-grid-2', style: { gap: 8 } },
-                    el(Select, {
-                      value: acao.tipo,
-                      onChange: function(v) { updateAcao(idx, { tipo: v }); },
-                      options: ACOES_TIPOS
-                    }),
-                    acao.tipo === 'add_tag' && el(Select, {
-                      value: String(acao.tag_id || ''),
-                      onChange: function(v) { updateAcao(idx, { tag_id: parseInt(v) }); },
-                      options: [{ value: '', label: '— Selecione tag —' }].concat(tags.map(function(t) { return { value: String(t.id), label: t.nome }; }))
-                    }),
-                    acao.tipo === 'move_list' && el(Select, {
-                      value: String(acao.lista_id || ''),
-                      onChange: function(v) { updateAcao(idx, { lista_id: parseInt(v) }); },
-                      options: [{ value: '', label: '— Selecione lista —' }].concat(listas.map(function(l) { return { value: String(l.id), label: l.nome }; }))
-                    }),
-                    acao.tipo === 'send_webhook' && el(Input, {
-                      value: acao.url || '',
-                      onChange: function(v) { updateAcao(idx, { url: v }); },
-                      placeholder: 'https://exemplo.com/webhook'
-                    })
-                  )
-                ),
-                el('button', {
-                  className: 'ls-btn ls-btn-danger ls-btn-sm',
-                  onClick: function() { removeAcao(idx); },
-                  style: { alignSelf: 'flex-start', marginLeft: 8 }
-                }, '×')
+            el('div', { className: 'ls-flow-step', style: { background: '#eff6ff' } },
+              el('div', { className: 'ls-flow-step-icon trigger' }, '⚡'),
+              el('div', null,
+                el('div', { style: { fontWeight: 600, fontSize: 13 } }, 'Gatilho'),
+                el('div', { className: 'ls-text-muted' }, getTriggerLabel(form.trigger))
               )
-            );
-          })
-        )
+            ),
+
+            form.acoes.map(function(acao, idx) {
+              return el(Fragment, { key: idx },
+                el('div', { className: 'ls-flow-connector' }),
+                el('div', { className: 'ls-flow-step' },
+                  el('div', { className: 'ls-flow-step-icon action' }, '▶'),
+                  el('div', { style: { flex: 1 } },
+                    el('div', { className: 'ls-grid-2', style: { gap: 8 } },
+                      el(Select, {
+                        value: acao.tipo,
+                        onChange: function(v) { updateAcao(idx, { tipo: v }); },
+                        options: ACOES_TIPOS
+                      }),
+                      acao.tipo === 'add_tag' && el(Select, {
+                        value: String(acao.tag_id || ''),
+                        onChange: function(v) { updateAcao(idx, { tag_id: parseInt(v) }); },
+                        options: [{ value: '', label: '— Selecione tag —' }].concat(tags.map(function(t) { return { value: String(t.id), label: t.nome }; }))
+                      }),
+                      acao.tipo === 'move_list' && el(Select, {
+                        value: String(acao.lista_id || ''),
+                        onChange: function(v) { updateAcao(idx, { lista_id: parseInt(v) }); },
+                        options: [{ value: '', label: '— Selecione lista —' }].concat(listas.map(function(l) { return { value: String(l.id), label: l.nome }; }))
+                      }),
+                      acao.tipo === 'send_webhook' && el(Input, {
+                        value: acao.url || '',
+                        onChange: function(v) { updateAcao(idx, { url: v }); },
+                        placeholder: 'https://exemplo.com/webhook'
+                      })
+                    )
+                  ),
+                  el('button', {
+                    className: 'ls-btn ls-btn-danger ls-btn-sm',
+                    onClick: function() { removeAcao(idx); },
+                    style: { alignSelf: 'flex-start', marginLeft: 8 }
+                  }, '×')
+                )
+              );
+            })
+          )
+        ),
+
+        form.editorMode === 'advanced' && el(WorkflowNodeBuilder, {
+          nodes:    form.nodes || [],
+          tags:     tags,
+          listas:   listas,
+          triggers: TRIGGERS,
+          onChange: function(nodes) { setForm(Object.assign({}, form, { nodes: nodes })); }
+        })
       ),
 
       modal === 'delete' && el(Modal, {
@@ -2065,7 +2509,7 @@
     );
   }
 
-  var LEADS_SAAS_VERSION = '1.0.0';
+  var LEADS_SAAS_VERSION = '1.2.0';
 
   /* ============================================================
      Main App

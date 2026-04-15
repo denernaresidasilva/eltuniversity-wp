@@ -72,9 +72,25 @@ class Installer {
             trigger_key     VARCHAR(100)    NOT NULL,
             acoes_json      LONGTEXT        NULL,
             conditions_json LONGTEXT        NULL,
+            nodes_json      LONGTEXT        NULL,
             ativo           TINYINT(1)      NOT NULL DEFAULT 1,
             created_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (id)
+        ) $charset;
+
+        CREATE TABLE {$wpdb->prefix}lead_workflow_runs (
+            id           BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            workflow_id  BIGINT UNSIGNED NOT NULL,
+            lead_id      BIGINT UNSIGNED NOT NULL,
+            current_node VARCHAR(64)     NOT NULL DEFAULT '',
+            status       VARCHAR(20)     NOT NULL DEFAULT 'running',
+            context_json LONGTEXT        NULL,
+            resume_at    DATETIME        NULL,
+            created_at   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            KEY workflow_id (workflow_id),
+            KEY lead_id (lead_id),
+            KEY status_resume (status, resume_at)
         ) $charset;
 
         CREATE TABLE {$wpdb->prefix}lead_email_sequences (
