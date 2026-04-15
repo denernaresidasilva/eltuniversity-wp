@@ -49,13 +49,14 @@ class RenderWebinar {
         wp_enqueue_script( 'wp-webinar-player', WP_WEBINAR_URL . 'assets/js/webinar-player.js', [], WP_WEBINAR_VERSION, true );
 
         wp_localize_script( 'wp-webinar-player', 'WWPlayerConfig', [
-            'webinarId'       => $id,
-            'videoId'         => esc_attr( $webinar->youtube_video_id ),
-            'tipo'            => esc_attr( $webinar->tipo ),
-            'bloquearAvanco'  => (bool) $webinar->bloquear_avanco,
-            'simulacaoAtiva'  => (bool) $webinar->simulacao_ativa,
-            'simulacaoContagem' => (int) $webinar->simulacao_contagem,
-            'chatMensagens'   => array_map( function( $m ) {
+            'webinarId'           => $id,
+            'videoId'             => esc_attr( $webinar->youtube_video_id ),
+            'tipo'                => esc_attr( $webinar->tipo ),
+            'bloquearAvanco'      => (bool) $webinar->bloquear_avanco,
+            'simulacaoAtiva'      => (bool) $webinar->simulacao_ativa,
+            'simulacaoContagem'   => (int) $webinar->simulacao_contagem,
+            'ofertaEmSegundos'    => (int) ( ( $webinar->configuracoes_json ? ( json_decode( $webinar->configuracoes_json, true )['oferta_aparece_em_segundos'] ?? 0 ) : 0 ) ),
+            'chatMensagens'       => array_map( function( $m ) {
                 return [
                     'id'       => (int) $m->id,
                     'tempo'    => (int) $m->tempo,

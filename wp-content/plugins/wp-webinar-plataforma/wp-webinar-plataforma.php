@@ -15,12 +15,12 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'WP_WEBINAR_VERSION',     '1.0.0' );
+define( 'WP_WEBINAR_VERSION',     '2.0.0' );
 define( 'WP_WEBINAR_FILE',        __FILE__ );
 define( 'WP_WEBINAR_DIR',         plugin_dir_path( __FILE__ ) );
 define( 'WP_WEBINAR_URL',         plugin_dir_url( __FILE__ ) );
 define( 'WP_WEBINAR_BASENAME',    plugin_basename( __FILE__ ) );
-define( 'WP_WEBINAR_DB_VERSION',  '1.0.0' );
+define( 'WP_WEBINAR_DB_VERSION',  '2.0.0' );
 
 require_once WP_WEBINAR_DIR . 'includes/Installer.php';
 require_once WP_WEBINAR_DIR . 'includes/Loader.php';

@@ -29,6 +29,12 @@ class FormInscricao {
             return '<p>' . esc_html__( 'Webinar não encontrado ou não está disponível.', 'wp-webinar-plataforma' ) . '</p>';
         }
 
+        // Load active sessions for this webinar
+        $sessoes = $wpdb->get_results( $wpdb->prepare(
+            "SELECT id, inicio_em, tipo FROM {$wpdb->prefix}webinar_sessoes WHERE webinar_id = %d AND status = 'ativa' ORDER BY inicio_em ASC",
+            $id
+        ) ) ?: [];
+
         wp_enqueue_style( 'wp-webinar-public', WP_WEBINAR_URL . 'assets/css/webinar.css', [], WP_WEBINAR_VERSION );
 
         ob_start();
@@ -62,6 +68,25 @@ class FormInscricao {
                                class="ww-input" name="telefone" placeholder="(11) 99999-9999" />
                     </div>
 
+                    <?php if ( ! empty( $sessoes ) ) : ?>
+                    <div class="ww-form-group">
+                        <label for="ww-sessao-<?php echo esc_attr( $id ); ?>" class="ww-label">Escolha o horário *</label>
+                        <select id="ww-sessao-<?php echo esc_attr( $id ); ?>" class="ww-input" name="sessao_id" required>
+                            <option value="">-- Selecione um horário --</option>
+                            <?php foreach ( $sessoes as $sessao ) : ?>
+                                <option value="<?php echo esc_attr( $sessao->id ); ?>">
+                                    <?php
+                                    echo esc_html(
+                                        date_i18n( 'd/m/Y \à\s H:i', strtotime( $sessao->inicio_em ) )
+                                        . ( $sessao->tipo === 'ao_vivo' ? ' 🔴 Ao Vivo' : ' 🟢 Evergreen' )
+                                    );
+                                    ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <?php endif; ?>
+
                     <button type="submit" class="ww-btn ww-btn-primary ww-btn-block" id="ww-submit-<?php echo esc_attr( $id ); ?>">
                         Quero me inscrever agora
                     </button>
@@ -72,6 +97,7 @@ class FormInscricao {
         <script>
         (function() {
             var formId = <?php echo (int) $id; ?>;
+            var hasSessoes = <?php echo ( ! empty( $sessoes ) ) ? 'true' : 'false'; ?>;
             var form   = document.getElementById('ww-inscricao-form-' + formId);
             if (!form) return;
 
@@ -89,11 +115,24 @@ class FormInscricao {
                 var nome     = form.querySelector('[name="nome"]').value.trim();
                 var email    = form.querySelector('[name="email"]').value.trim();
                 var telefone = form.querySelector('[name="telefone"]').value.trim();
+                var sessaoEl = form.querySelector('[name="sessao_id"]');
+                var sessaoId = sessaoEl ? parseInt(sessaoEl.value, 10) || 0 : 0;
+
+                if (hasSessoes && !sessaoId) {
+                    error.textContent   = 'Por favor, escolha um horário.';
+                    error.style.display = 'block';
+                    btn.disabled        = false;
+                    btn.textContent     = 'Quero me inscrever agora';
+                    return;
+                }
+
+                var body = { webinar_id: formId, nome: nome, email: email, telefone: telefone };
+                if (sessaoId) body.sessao_id = sessaoId;
 
                 fetch('<?php echo esc_url_raw( rest_url( 'webinar/v1/inscrever' ) ); ?>', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ webinar_id: formId, nome: nome, email: email, telefone: telefone })
+                    body: JSON.stringify(body)
                 })
                 .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
                 .then(function(res) {

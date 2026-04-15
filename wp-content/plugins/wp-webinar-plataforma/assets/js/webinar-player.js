@@ -8,24 +8,26 @@
   var config = window.WWPlayerConfig;
   if (!config) return;
 
-  var webinarId     = config.webinarId;
-  var videoId       = config.videoId;
-  var tipo          = config.tipo;
-  var bloquearAvanco= config.bloquearAvanco;
-  var simulacaoAtiva= config.simulacaoAtiva;
-  var simulacaoCount= config.simulacaoContagem || 0;
-  var chatMensagens = config.chatMensagens || [];
-  var automacoes    = config.automacoes || [];
-  var apiUrl        = config.apiUrl;
-  var nonce         = config.nonce;
+  var webinarId      = config.webinarId;
+  var videoId        = config.videoId;
+  var tipo           = config.tipo;
+  var bloquearAvanco = config.bloquearAvanco;
+  var simulacaoAtiva = config.simulacaoAtiva;
+  var simulacaoCount = config.simulacaoContagem || 0;
+  var chatMensagens  = config.chatMensagens || [];
+  var automacoes     = config.automacoes || [];
+  var apiUrl         = config.apiUrl;
+  var nonce          = config.nonce;
+  var ofertaEmSeg    = config.ofertaEmSegundos || 0;   // offer threshold from webinar config
 
-  var player           = null;
-  var participanteId   = 0;
-  var chatShown        = {};
-  var automacaoShown   = {};
-  var lastTime         = 0;
-  var tracking         = false;
-  var trackInterval    = null;
+  var player            = null;
+  var participanteId    = 0;
+  var chatShown         = {};
+  var automacaoShown    = {};
+  var lastTime          = 0;
+  var tracking          = false;
+  var trackInterval     = null;
+  var ofertaMarcada     = false;  // ensure offer tag is sent only once per session
 
   /* ─────────────────────────────────────────
      YouTube IFrame API loader
@@ -167,6 +169,16 @@
           triggerAutomacao(a);
         }
       });
+
+      // Offer threshold: tag "viu_oferta" when participant passes configured offer time
+      if (participanteId && ofertaEmSeg > 0 && !ofertaMarcada && current >= ofertaEmSeg) {
+        ofertaMarcada = true;
+        fetch(apiUrl + '/participantes/' + participanteId + '/oferta-vista', {
+          method : 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': nonce },
+          body   : JSON.stringify({})
+        }).catch(function () {});
+      }
 
       // Track time to API every 30s
       if (participanteId && tracking && current - lastTime >= 30) {

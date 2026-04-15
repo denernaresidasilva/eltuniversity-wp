@@ -25,6 +25,7 @@ class Admin {
 
         add_submenu_page( 'wp-webinar-plataforma', 'Dashboard',    'Dashboard',    'manage_options', 'wp-webinar-plataforma',            [ self::class, 'render_app' ] );
         add_submenu_page( 'wp-webinar-plataforma', 'Webinars',     'Webinars',     'manage_options', 'wp-webinar-webinars',              [ self::class, 'render_app' ] );
+        add_submenu_page( 'wp-webinar-plataforma', 'Sessões',      'Sessões',      'manage_options', 'wp-webinar-sessoes',               [ self::class, 'render_app' ] );
         add_submenu_page( 'wp-webinar-plataforma', 'Participantes','Participantes','manage_options', 'wp-webinar-participantes',         [ self::class, 'render_app' ] );
         add_submenu_page( 'wp-webinar-plataforma', 'Chat',         'Chat',         'manage_options', 'wp-webinar-chat',                  [ self::class, 'render_app' ] );
         add_submenu_page( 'wp-webinar-plataforma', 'Automações',   'Automações',   'manage_options', 'wp-webinar-automacoes',            [ self::class, 'render_app' ] );
@@ -36,6 +37,7 @@ class Admin {
         $pages = [
             'toplevel_page_wp-webinar-plataforma',
             'webinars_page_wp-webinar-webinars',
+            'webinars_page_wp-webinar-sessoes',
             'webinars_page_wp-webinar-participantes',
             'webinars_page_wp-webinar-chat',
             'webinars_page_wp-webinar-automacoes',

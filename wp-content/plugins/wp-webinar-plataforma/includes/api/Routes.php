@@ -16,6 +16,7 @@ class Routes {
         AutomacoesController::register_routes();
         AnalyticsController::register_routes();
         DashboardController::register_routes();
+        SessoesController::register_routes();
     }
 
     public static function auth_callback(): bool {
