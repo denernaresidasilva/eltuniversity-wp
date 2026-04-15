@@ -50,11 +50,11 @@
   }
   function Badge(_ref) {
     var value = _ref.value, color = _ref.color;
-    return el('span', { className: 'ww-badge', style: { background: color || '#6366f1' } }, value);
+    return el('span', { className: 'ww-badge', style: { background: color || '#FF6A00' } }, value);
   }
   function StatusBadge(_ref) {
     var status = _ref.status;
-    var map = { publicado: ['#10b981', 'Publicado'], rascunho: ['#f59e0b', 'Rascunho'], encerrado: ['#6b7280', 'Encerrado'] };
+    var map = { publicado: ['#22C55E', 'Publicado'], rascunho: ['#F59E0B', 'Rascunho'], encerrado: ['#6b7280', 'Encerrado'] };
     var info = map[status] || ['#6b7280', status];
     return el('span', { className: 'ww-status-badge', style: { background: info[0] } }, info[1]);
   }
@@ -65,7 +65,7 @@
   function MetricCard(_ref) {
     var title = _ref.title, value = _ref.value, icon = _ref.icon, color = _ref.color, sub = _ref.sub;
     return el('div', { className: 'ww-metric-card' },
-      el('div', { className: 'ww-metric-icon', style: { background: color || '#6366f1' } }, icon),
+      el('div', { className: 'ww-metric-icon', style: { background: color ? color + '22' : 'rgba(255,106,0,.14)', color: color || '#FF6A00' } }, icon),
       el('div', { className: 'ww-metric-body' },
         el('div', { className: 'ww-metric-title' }, title),
         el('div', { className: 'ww-metric-value' }, value),
@@ -123,11 +123,11 @@
       el('h1', { className: 'ww-page-title' }, '📊 Dashboard'),
 
       el('div', { className: 'ww-metrics-grid' },
-        el(MetricCard, { title: 'Total de Webinars',     value: data.total_webinars,      icon: '🎥', color: '#6366f1' }),
+        el(MetricCard, { title: 'Total de Webinars',     value: data.total_webinars,      icon: '🎥', color: '#FF6A00' }),
         el(MetricCard, { title: 'Total de Participantes',value: data.total_participantes,  icon: '👥', color: '#0ea5e9' }),
-        el(MetricCard, { title: 'Participantes Hoje',    value: data.participantes_hoje,   icon: '📅', color: '#10b981' }),
-        el(MetricCard, { title: 'Tempo Médio Assistido', value: fmtTempo(data.tempo_medio_segundos), icon: '⏱', color: '#f59e0b' }),
-        el(MetricCard, { title: 'Taxa de Conversão',     value: data.taxa_conversao + '%', icon: '🎯', color: '#ef4444' })
+        el(MetricCard, { title: 'Participantes Hoje',    value: data.participantes_hoje,   icon: '📅', color: '#22C55E' }),
+        el(MetricCard, { title: 'Tempo Médio Assistido', value: fmtTempo(data.tempo_medio_segundos), icon: '⏱', color: '#F59E0B' }),
+        el(MetricCard, { title: 'Taxa de Conversão',     value: data.taxa_conversao + '%', icon: '🎯', color: '#EF4444' })
       ),
 
       el('div', { className: 'ww-dashboard-cols' },
@@ -795,11 +795,11 @@
       data ? el(Fragment, null,
         el('div', { className: 'ww-metrics-grid' },
           el(MetricCard, { title: 'Participantes',     value: data.total_participantes,  icon: '👥', color: '#0ea5e9' }),
-          el(MetricCard, { title: 'Participantes Hoje',value: data.participantes_hoje,    icon: '📅', color: '#10b981' }),
-          el(MetricCard, { title: 'Tempo Médio',       value: fmtTempo(data.tempo_medio_segundos), icon: '⏱', color: '#f59e0b' }),
-          el(MetricCard, { title: 'Convertidos',       value: data.convertidos,           icon: '🎯', color: '#ef4444' }),
-          el(MetricCard, { title: 'Taxa de Conversão', value: data.taxa_conversao + '%',  icon: '📊', color: '#6366f1' }),
-          el(MetricCard, { title: 'Cliques no Botão',  value: data.cliques_botao,         icon: '🖱', color: '#8b5cf6' })
+          el(MetricCard, { title: 'Participantes Hoje',value: data.participantes_hoje,    icon: '📅', color: '#22C55E' }),
+          el(MetricCard, { title: 'Tempo Médio',       value: fmtTempo(data.tempo_medio_segundos), icon: '⏱', color: '#F59E0B' }),
+          el(MetricCard, { title: 'Convertidos',       value: data.convertidos,           icon: '🎯', color: '#EF4444' }),
+          el(MetricCard, { title: 'Taxa de Conversão', value: data.taxa_conversao + '%',  icon: '📊', color: '#FF6A00' }),
+          el(MetricCard, { title: 'Cliques no Botão',  value: data.cliques_botao,         icon: '🖱', color: '#0ea5e9' })
         ),
         el('div', { className: 'ww-dashboard-cols' },
           el('div', { className: 'ww-dashboard-col' },
