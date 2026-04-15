@@ -9,6 +9,7 @@
   var useState    = wp.element.useState;
   var useEffect   = wp.element.useEffect;
   var useCallback = wp.element.useCallback;
+  var useRef      = wp.element.useRef;
   var Fragment    = wp.element.Fragment;
 
   var API_URL  = window.WPWebinarConfig.apiUrl;
@@ -52,9 +53,9 @@
   }
   function Alert(_ref) {
     var type = _ref.type, children = _ref.children, onClose = _ref.onClose;
-    return el('div', { className: 'ww-alert ww-alert-' + type },
+    return el('div', { className: 'ww-alert ww-alert-' + type, role: 'alert', 'aria-live': 'polite' },
       el('span', null, children),
-      onClose ? el('button', { className: 'ww-alert-close', onClick: onClose }, '×') : null
+      onClose ? el('button', { className: 'ww-alert-close', onClick: onClose, 'aria-label': 'Fechar notificação', type: 'button' }, '×') : null
     );
   }
   function Badge(_ref) {
@@ -212,6 +213,7 @@
     var form = _f[0], setForm = _f[1];
     var _s = useState(false), saving = _s[0], setSaving = _s[1];
     var _e = useState(''), err = _e[0], setErr = _e[1];
+    var _sub = useState(false), submitted = _sub[0], setSubmitted = _sub[1];
 
     function handle(field, value) {
       setForm(function(prev) { return Object.assign({}, prev, { [field]: value }); });
@@ -219,7 +221,8 @@
 
     async function submit(e) {
       e.preventDefault();
-      if (!form.nome.trim()) { setErr('Nome do webinar é obrigatório.'); return; }
+      setSubmitted(true);
+      if (!form.nome.trim()) { setErr('O nome do webinar é obrigatório.'); return; }
       setSaving(true); setErr('');
       try {
         var result = editing
@@ -236,77 +239,146 @@
       el('div', { className: 'ww-modal' },
         el('div', { className: 'ww-modal-header' },
           el('h2', null, editing ? '✏️ Editar Webinar' : '➕ Novo Webinar'),
-          el('button', { className: 'ww-modal-close', onClick: onClose }, '×')
+          el('button', { className: 'ww-modal-close', onClick: onClose, 'aria-label': 'Fechar', type: 'button' }, '×')
         ),
         el('form', { onSubmit: submit, className: 'ww-form' },
-          err ? el(Alert, { type: 'error', onClose: function() { setErr(''); } }, err) : null,
-
-          el('div', { className: 'ww-form-group' },
-            el('label', { className: 'ww-label' }, 'Nome do Webinar *'),
-            el('input', { className: 'ww-input', value: form.nome,
-              onChange: function(e) { handle('nome', e.target.value); }, required: true,
-              placeholder: 'Ex: Aula Secreta de Marketing' })
-          ),
-
-          el('div', { className: 'ww-form-group' },
-            el('label', { className: 'ww-label' }, 'Descrição'),
-            el('textarea', { className: 'ww-input ww-textarea', value: form.descricao,
-              onChange: function(e) { handle('descricao', e.target.value); },
-              placeholder: 'Descreva o webinar...' })
-          ),
-
-          el('div', { className: 'ww-form-row' },
-            el('div', { className: 'ww-form-group' },
-              el('label', { className: 'ww-label' }, 'ID do Vídeo YouTube'),
-              el('input', { className: 'ww-input', value: form.youtube_video_id,
-                onChange: function(e) { handle('youtube_video_id', e.target.value); },
-                placeholder: 'Ex: dQw4w9WgXcQ' })
-            ),
-            el('div', { className: 'ww-form-group' },
-              el('label', { className: 'ww-label' }, 'Tipo'),
-              el('select', { className: 'ww-select', value: form.tipo,
-                onChange: function(e) { handle('tipo', e.target.value); } },
-                el('option', { value: 'evergreen' }, '🟢 Evergreen (gravado)'),
-                el('option', { value: 'ao_vivo' }, '🔴 Ao Vivo')
-              )
-            )
-          ),
-
-          el('div', { className: 'ww-form-row' },
-            el('div', { className: 'ww-form-group' },
-              el('label', { className: 'ww-label' }, 'Data de Início'),
-              el('input', { type: 'datetime-local', className: 'ww-input', value: form.data_inicio,
-                onChange: function(e) { handle('data_inicio', e.target.value); } })
-            )
-          ),
-
-          el('div', { className: 'ww-form-row' },
-            el('div', { className: 'ww-form-group ww-form-check' },
-              el('label', { className: 'ww-label-check' },
-                el('input', { type: 'checkbox', checked: !!form.bloquear_avanco,
-                  onChange: function(e) { handle('bloquear_avanco', e.target.checked ? 1 : 0); } }),
-                ' Bloquear avanço do vídeo'
-              )
-            ),
-            el('div', { className: 'ww-form-group ww-form-check' },
-              el('label', { className: 'ww-label-check' },
-                el('input', { type: 'checkbox', checked: !!form.simulacao_ativa,
-                  onChange: function(e) { handle('simulacao_ativa', e.target.checked ? 1 : 0); } }),
-                ' Simulação de audiência ativa'
-              )
-            )
-          ),
-
-          form.simulacao_ativa ? el('div', { className: 'ww-form-group' },
-            el('label', { className: 'ww-label' }, 'Contagem simulada (pessoas assistindo)'),
-            el('input', { type: 'number', className: 'ww-input', value: form.simulacao_contagem, min: 0,
-              onChange: function(e) { handle('simulacao_contagem', parseInt(e.target.value, 10) || 0); } })
+          err ? el('div', {
+            id          : 'ww-modal-err',
+            role        : 'alert',
+            'aria-live' : 'polite',
+            className   : 'ww-alert ww-alert-error',
+          },
+            el('span', null, err),
+            el('button', { className: 'ww-alert-close', onClick: function() { setErr(''); },
+              'aria-label': 'Fechar erro', type: 'button' }, '×')
           ) : null,
+
+          /* ── Seção 1: Dados do Webinar ── */
+          el('div', { className: 'ww-form-section' },
+            el('div', { className: 'ww-form-section-title' }, 'Dados do Webinar'),
+            el('div', { className: 'ww-form-section-body' },
+              el('div', { className: 'ww-form-group' },
+                el('label', { className: 'ww-label', htmlFor: 'ww-f-nome' }, 'Nome *'),
+                el('input', {
+                  id              : 'ww-f-nome',
+                  className       : 'ww-input' + (submitted && !form.nome.trim() ? ' is-error' : ''),
+                  value           : form.nome,
+                  onChange        : function(e) { handle('nome', e.target.value); },
+                  required        : true,
+                  placeholder     : 'Ex: Aula Secreta de Marketing',
+                  'aria-describedby': 'ww-f-nome-help',
+                  'aria-invalid'  : submitted && !form.nome.trim() ? 'true' : 'false',
+                }),
+                el('span', { id: 'ww-f-nome-help', className: 'ww-field-help' },
+                  'Título exibido nas páginas de inscrição e webinar.')
+              ),
+              el('div', { className: 'ww-form-group' },
+                el('label', { className: 'ww-label', htmlFor: 'ww-f-desc' }, 'Descrição'),
+                el('textarea', {
+                  id         : 'ww-f-desc',
+                  className  : 'ww-input ww-textarea',
+                  value      : form.descricao,
+                  onChange   : function(e) { handle('descricao', e.target.value); },
+                  placeholder: 'Descreva brevemente o conteúdo do webinar...',
+                })
+              )
+            )
+          ),
+
+          /* ── Seção 2: Vídeo e Reprodução ── */
+          el('div', { className: 'ww-form-section' },
+            el('div', { className: 'ww-form-section-title' }, 'Vídeo e Reprodução'),
+            el('div', { className: 'ww-form-section-body' },
+              el('div', { className: 'ww-form-row' },
+                el('div', { className: 'ww-form-group' },
+                  el('label', { className: 'ww-label', htmlFor: 'ww-f-vid' }, 'ID do Vídeo YouTube'),
+                  el('input', {
+                    id                : 'ww-f-vid',
+                    className         : 'ww-input',
+                    value             : form.youtube_video_id,
+                    onChange          : function(e) { handle('youtube_video_id', e.target.value); },
+                    placeholder       : 'Ex: dQw4w9WgXcQ',
+                    'aria-describedby': 'ww-f-vid-help',
+                  }),
+                  el('span', { id: 'ww-f-vid-help', className: 'ww-field-help' },
+                    'Somente o ID — parte final da URL do YouTube.')
+                ),
+                el('div', { className: 'ww-form-group' },
+                  el('label', { className: 'ww-label', htmlFor: 'ww-f-tipo' }, 'Tipo'),
+                  el('select', {
+                    id      : 'ww-f-tipo',
+                    className: 'ww-select',
+                    value   : form.tipo,
+                    onChange: function(e) { handle('tipo', e.target.value); },
+                  },
+                    el('option', { value: 'evergreen' }, '🟢 Evergreen (gravado)'),
+                    el('option', { value: 'ao_vivo' }, '🔴 Ao Vivo')
+                  )
+                )
+              ),
+              el('div', { className: 'ww-form-row' },
+                el('div', { className: 'ww-form-group ww-form-check' },
+                  el('label', { className: 'ww-label-check', htmlFor: 'ww-f-bloquear' },
+                    el('input', {
+                      id      : 'ww-f-bloquear',
+                      type    : 'checkbox',
+                      checked : !!form.bloquear_avanco,
+                      onChange: function(e) { handle('bloquear_avanco', e.target.checked ? 1 : 0); },
+                    }),
+                    ' Bloquear avanço do vídeo'
+                  )
+                ),
+                el('div', { className: 'ww-form-group ww-form-check' },
+                  el('label', { className: 'ww-label-check', htmlFor: 'ww-f-simulacao' },
+                    el('input', {
+                      id      : 'ww-f-simulacao',
+                      type    : 'checkbox',
+                      checked : !!form.simulacao_ativa,
+                      onChange: function(e) { handle('simulacao_ativa', e.target.checked ? 1 : 0); },
+                    }),
+                    ' Simulação de audiência ativa'
+                  )
+                )
+              ),
+              form.simulacao_ativa ? el('div', { className: 'ww-form-group' },
+                el('label', { className: 'ww-label', htmlFor: 'ww-f-contagem' }, 'Contagem simulada'),
+                el('input', {
+                  id                : 'ww-f-contagem',
+                  type              : 'number',
+                  className         : 'ww-input',
+                  value             : form.simulacao_contagem,
+                  min               : 0,
+                  onChange          : function(e) { handle('simulacao_contagem', parseInt(e.target.value, 10) || 0); },
+                  'aria-describedby': 'ww-f-contagem-help',
+                }),
+                el('span', { id: 'ww-f-contagem-help', className: 'ww-field-help' },
+                  'Número de espectadores exibidos durante o webinar.')
+              ) : null
+            )
+          ),
+
+          /* ── Seção 3: Agendamento ── */
+          el('div', { className: 'ww-form-section' },
+            el('div', { className: 'ww-form-section-title' }, 'Agendamento'),
+            el('div', { className: 'ww-form-section-body' },
+              el('div', { className: 'ww-form-group' },
+                el('label', { className: 'ww-label', htmlFor: 'ww-f-data' }, 'Data de Início'),
+                el('input', {
+                  id      : 'ww-f-data',
+                  type    : 'datetime-local',
+                  className: 'ww-input',
+                  value   : form.data_inicio,
+                  onChange: function(e) { handle('data_inicio', e.target.value); },
+                })
+              )
+            )
+          ),
 
           el('div', { className: 'ww-modal-footer' },
             el('button', { type: 'button', className: 'ww-btn ww-btn-secondary', onClick: onClose }, 'Cancelar'),
-            el('button', { type: 'submit', className: 'ww-btn ww-btn-primary', disabled: saving },
-              saving ? 'Salvando...' : (editing ? 'Salvar Alterações' : 'Criar Webinar')
+            el('button', { type: 'submit', className: 'ww-btn ww-btn-primary', disabled: saving,
+              'aria-busy': saving ? 'true' : 'false' },
+              saving ? '⏳ Salvando...' : (editing ? '💾 Salvar Alterações' : '✅ Criar Webinar')
             )
           )
         )
@@ -323,16 +395,36 @@
     var _e = useState(''), err = _e[0], setErr = _e[1];
     var _m = useState(false), modal = _m[0], setModal = _m[1];
     var _ed = useState(null), editing = _ed[0], setEditing = _ed[1];
+    var _si = useState(''), searchInput = _si[0], setSearchInput = _si[1];
     var _s = useState(''), search = _s[0], setSearch = _s[1];
     var _t = useState(0), total = _t[0], setTotal = _t[1];
     var _ok = useState(''), ok = _ok[0], setOk = _ok[1];
+    var _sf = useState(''), statusFilter = _sf[0], setStatusFilter = _sf[1];
+    var _pg = useState(1), page = _pg[0], setPage = _pg[1];
+    var _tp = useState(1), totalPages = _tp[0], setTotalPages = _tp[1];
+    var debounceRef = useRef(null);
+
+    var STATUS_FILTERS = [
+      { value: '',          label: 'Todos' },
+      { value: 'rascunho',  label: 'Rascunho' },
+      { value: 'publicado', label: 'Publicado' },
+      { value: 'encerrado', label: 'Encerrado' },
+    ];
 
     var load = useCallback(function() {
       setLoading(true);
-      apiFetch('/webinars?search=' + encodeURIComponent(search) + '&per_page=50')
-        .then(function(d) { setWebinars(d.data || []); setTotal(d.total || 0); setLoading(false); })
+      var qs = '?page=' + page + '&per_page=12';
+      if (search) qs += '&search=' + encodeURIComponent(search);
+      if (statusFilter) qs += '&status=' + encodeURIComponent(statusFilter);
+      apiFetch('/webinars' + qs)
+        .then(function(d) {
+          setWebinars(d.items || d.data || []);
+          setTotal(d.total || 0);
+          setTotalPages(d.total_pages || d.pages || 1);
+          setLoading(false);
+        })
         .catch(function(e) { setErr(e.message); setLoading(false); });
-    }, [search]);
+    }, [search, statusFilter, page]);
 
     useEffect(load, [load]);
 
@@ -340,9 +432,19 @@
     function openEdit(w)   { setEditing(w); setModal(true); }
     function closeModal()  { setModal(false); setEditing(null); }
 
+    function onSearchChange(e) {
+      var val = e.target.value;
+      setSearchInput(val);
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(function() {
+        setSearch(val);
+        setPage(1);
+      }, 300);
+    }
+
     function onSave(w) {
       closeModal();
-      setOk(editing ? 'Webinar atualizado com sucesso!' : 'Webinar criado com sucesso!');
+      setOk(editing ? 'Webinar "' + w.nome + '" atualizado com sucesso!' : 'Webinar "' + w.nome + '" criado com sucesso!');
       load();
       setTimeout(function() { setOk(''); }, 3000);
     }
@@ -350,17 +452,42 @@
     async function publicar(id) {
       try {
         await apiFetch('/webinars/' + id + '/publicar', { method: 'POST' });
-        setOk('Webinar publicado! Páginas criadas automaticamente.');
+        setOk('Webinar publicado com sucesso! Páginas criadas automaticamente.');
         load();
         setTimeout(function() { setOk(''); }, 4000);
       } catch(e) { setErr(e.message); }
     }
 
+    async function despublicar(w) {
+      if (!window.confirm('Despublicar "' + w.nome + '"? O webinar voltará para Rascunho.')) return;
+      try {
+        await apiFetch('/webinars/' + w.id, { method: 'PUT', body: { status: 'rascunho' } });
+        setOk('"' + w.nome + '" despublicado e definido como Rascunho.');
+        load();
+        setTimeout(function() { setOk(''); }, 3000);
+      } catch(e) { setErr(e.message); }
+    }
+
+    async function duplicar(w) {
+      if (!window.confirm('Duplicar o webinar "' + w.nome + '"?')) return;
+      try {
+        await apiFetch('/webinars', { method: 'POST', body: {
+          nome            : w.nome + ' (Cópia)',
+          descricao       : w.descricao || '',
+          youtube_video_id: w.youtube_video_id || '',
+          tipo            : w.tipo,
+        }});
+        setOk('Webinar duplicado com sucesso!');
+        load();
+        setTimeout(function() { setOk(''); }, 3000);
+      } catch(e) { setErr(e.message); }
+    }
+
     async function excluir(w) {
-      if (!confirm('Excluir o webinar "' + w.nome + '"? Esta ação não pode ser desfeita.')) return;
+      if (!window.confirm('Excluir o webinar "' + w.nome + '"? Esta ação não pode ser desfeita.')) return;
       try {
         await apiFetch('/webinars/' + w.id, { method: 'DELETE' });
-        setOk('Webinar excluído.');
+        setOk('Webinar excluído com sucesso.');
         load();
         setTimeout(function() { setOk(''); }, 3000);
       } catch(e) { setErr(e.message); }
@@ -378,37 +505,71 @@
       err ? el(Alert, { type: 'error',   onClose: function() { setErr(''); } }, err) : null,
 
       el('div', { className: 'ww-toolbar' },
-        el('input', { className: 'ww-search', placeholder: 'Buscar webinar...', value: search,
-          onChange: function(e) { setSearch(e.target.value); } }),
+        el('input', {
+          className   : 'ww-search',
+          placeholder : 'Buscar webinar...',
+          value       : searchInput,
+          onChange    : onSearchChange,
+          'aria-label': 'Buscar webinars',
+        }),
+        el('div', { className: 'ww-filter-tabs', role: 'group', 'aria-label': 'Filtrar por status' },
+          STATUS_FILTERS.map(function(sf) {
+            return el('button', {
+              key      : sf.value,
+              type     : 'button',
+              className: 'ww-filter-tab' + (statusFilter === sf.value ? ' is-active' : ''),
+              onClick  : function() { setStatusFilter(sf.value); setPage(1); },
+            }, sf.label);
+          })
+        ),
         el('span', { className: 'ww-total' }, total + ' webinar(s)')
       ),
 
       loading ? el(LoadingCenter) :
       webinars.length === 0
         ? el('div', { className: 'ww-empty' },
-            el('p', null, 'Nenhum webinar encontrado.'),
-            el('button', { className: 'ww-btn ww-btn-primary', onClick: openCreate }, '+ Criar Primeiro Webinar')
+            el('p', null, statusFilter
+              ? 'Nenhum webinar com status "' + statusFilter + '".'
+              : 'Nenhum webinar encontrado.'),
+            !statusFilter ? el('button', { className: 'ww-btn ww-btn-primary', onClick: openCreate }, '+ Criar Primeiro Webinar') : null
           )
-        : el('div', { className: 'ww-webinar-grid' },
-            webinars.map(function(w) {
-              return el('div', { key: w.id, className: 'ww-webinar-card' },
-                el('div', { className: 'ww-webinar-card-header' },
-                  el('h3', null, w.nome),
-                  el(StatusBadge, { status: w.status })
-                ),
-                el('p', { className: 'ww-webinar-meta' },
-                  w.tipo === 'ao_vivo' ? '🔴 Ao Vivo' : '🟢 Evergreen',
-                  ' · ID: ', w.id
-                ),
-                w.descricao ? el('p', { className: 'ww-webinar-desc' }, w.descricao.substring(0, 100) + (w.descricao.length > 100 ? '...' : '')) : null,
-                el('div', { className: 'ww-webinar-card-footer' },
-                  el('button', { className: 'ww-btn ww-btn-sm ww-btn-secondary', onClick: function() { openEdit(w); } }, '✏️ Editar'),
-                  w.status === 'rascunho' ? el('button', { className: 'ww-btn ww-btn-sm ww-btn-success', onClick: function() { publicar(w.id); } }, '🚀 Publicar') : null,
-                  w.pagina_webinar_id ? el('a', { className: 'ww-btn ww-btn-sm ww-btn-outline', href: SITE_URL + '/?page_id=' + w.pagina_webinar_id, target: '_blank' }, '👁 Ver') : null,
-                  el('button', { className: 'ww-btn ww-btn-sm ww-btn-danger', onClick: function() { excluir(w); } }, '🗑')
-                )
-              );
-            })
+        : el(Fragment, null,
+            el('div', { className: 'ww-webinar-grid' },
+              webinars.map(function(w) {
+                return el('div', { key: w.id, className: 'ww-webinar-card' },
+                  el('div', { className: 'ww-webinar-card-header' },
+                    el('h3', null, w.nome),
+                    el(StatusBadge, { status: w.status })
+                  ),
+                  el('p', { className: 'ww-webinar-meta' },
+                    w.tipo === 'ao_vivo' ? '🔴 Ao Vivo' : '🟢 Evergreen',
+                    ' · ID: ', w.id
+                  ),
+                  w.descricao ? el('p', { className: 'ww-webinar-desc' }, w.descricao.substring(0, 100) + (w.descricao.length > 100 ? '...' : '')) : null,
+                  el('div', { className: 'ww-webinar-card-footer' },
+                    el('button', { className: 'ww-btn ww-btn-sm ww-btn-secondary', onClick: function() { openEdit(w); }, 'aria-label': 'Editar ' + w.nome }, '✏️ Editar'),
+                    w.status === 'rascunho' ? el('button', { className: 'ww-btn ww-btn-sm ww-btn-success', onClick: function() { publicar(w.id); }, 'aria-label': 'Publicar ' + w.nome }, '🚀 Publicar') : null,
+                    w.status === 'publicado' ? el('button', { className: 'ww-btn ww-btn-sm ww-btn-secondary', onClick: function() { despublicar(w); }, 'aria-label': 'Despublicar ' + w.nome }, '⏸ Despublicar') : null,
+                    w.pagina_webinar_id ? el('a', { className: 'ww-btn ww-btn-sm ww-btn-outline', href: SITE_URL + '/?page_id=' + parseInt(w.pagina_webinar_id, 10), target: '_blank', rel: 'noopener noreferrer', 'aria-label': 'Visualizar ' + w.nome }, '👁 Ver') : null,
+                    el('button', { className: 'ww-btn ww-btn-sm ww-btn-outline', onClick: function() { duplicar(w); }, 'aria-label': 'Duplicar ' + w.nome }, '⧉ Duplicar'),
+                    el('button', { className: 'ww-btn ww-btn-sm ww-btn-danger', onClick: function() { excluir(w); }, 'aria-label': 'Excluir ' + w.nome }, '🗑')
+                  )
+                );
+              })
+            ),
+            totalPages > 1 ? el('div', { className: 'ww-pagination' },
+              el('button', {
+                className: 'ww-btn ww-btn-sm ww-btn-secondary',
+                disabled : page <= 1,
+                onClick  : function() { setPage(page - 1); },
+              }, '← Anterior'),
+              el('span', null, 'Página ' + page + ' de ' + totalPages),
+              el('button', {
+                className: 'ww-btn ww-btn-sm ww-btn-secondary',
+                disabled : page >= totalPages,
+                onClick  : function() { setPage(page + 1); },
+              }, 'Próxima →')
+            ) : null
           )
     );
   }
@@ -431,7 +592,7 @@
         .then(function(d) {
           setParticipantes(d.data || []);
           setTotal(d.total || 0);
-          setPages(d.pages || 1);
+          setPages(d.total_pages || d.pages || 1);
           setLoading(false);
         })
         .catch(function(e) { setErr(e.message); setLoading(false); });
@@ -520,9 +681,10 @@
 
     async function addMsg(e) {
       e.preventDefault();
-      if (!selectedId || !form.autor.trim() || !form.mensagem.trim()) {
-        setErr('Selecione um webinar e preencha autor e mensagem.'); return;
-      }
+      if (!selectedId) { setErr('Selecione um webinar primeiro.'); return; }
+      if (!form.autor.trim()) { setErr('O campo Autor é obrigatório.'); return; }
+      if (!form.mensagem.trim()) { setErr('O campo Mensagem é obrigatório.'); return; }
+      if (form.mensagem.trim().length > 500) { setErr('A mensagem não pode ter mais de 500 caracteres.'); return; }
       try {
         await apiFetch('/webinars/' + selectedId + '/chat', {
           method: 'POST',
@@ -536,7 +698,7 @@
     }
 
     async function deleteMsg(id) {
-      if (!confirm('Remover esta mensagem?')) return;
+      if (!window.confirm('Remover esta mensagem?')) return;
       await apiFetch('/webinars/' + selectedId + '/chat/' + id, { method: 'DELETE' });
       setMsgs(msgs.filter(function(m) { return m.id !== id; }));
     }
@@ -548,16 +710,12 @@
       err ? el(Alert, { type: 'error',   onClose: function() { setErr(''); } }, err) : null,
 
       el('div', { className: 'ww-form-group' },
-        el('label', { className: 'ww-label' }, 'Selecione o Webinar'),
-        el('select', { className: 'ww-select', value: selectedId, onChange: function(e) { setSelectedId(e.target.value); } },
+        el('label', { className: 'ww-label', htmlFor: 'ww-chat-webinar' }, 'Selecione o Webinar'),
+        el('select', { id: 'ww-chat-webinar', className: 'ww-select', value: selectedId, onChange: function(e) { setSelectedId(e.target.value); } },
           el('option', { value: '' }, '-- Selecione --'),
           webinars.map(function(w) { return el('option', { key: w.id, value: w.id }, w.nome); })
         )
       ),
-
-      selectedId ? el(Fragment, null,
-        el('div', { className: 'ww-card' },
-          el('h3', { className: 'ww-card-title' }, 'Adicionar Mensagem Programada'),
           el('form', { onSubmit: addMsg, className: 'ww-form' },
             el('div', { className: 'ww-form-row' },
               el('div', { className: 'ww-form-group' },

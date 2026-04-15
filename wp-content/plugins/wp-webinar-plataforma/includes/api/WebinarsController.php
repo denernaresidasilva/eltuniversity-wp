@@ -56,6 +56,12 @@ class WebinarsController {
         $status   = sanitize_key( $request->get_param( 'status' ) ?: '' );
         $search   = sanitize_text_field( $request->get_param( 'search' ) ?: '' );
 
+        // Validate status against allowed values
+        $allowed_statuses = [ 'rascunho', 'publicado', 'encerrado' ];
+        if ( $status && ! in_array( $status, $allowed_statuses, true ) ) {
+            $status = '';
+        }
+
         $offset = ( $page - 1 ) * $per_page;
 
         $where = '1=1';
@@ -86,10 +92,14 @@ class WebinarsController {
         }
 
         return new \WP_REST_Response( [
-            'data'  => $rows ?: [],
-            'total' => $total,
-            'pages' => (int) ceil( $total / $per_page ),
-            'page'  => $page,
+            // 'items' is the canonical key; 'data' and 'pages' are kept for backward compatibility.
+            'items'       => $rows ?: [],
+            'data'        => $rows ?: [],
+            'total'       => $total,
+            'page'        => $page,
+            'per_page'    => $per_page,
+            'total_pages' => (int) ceil( $total / $per_page ),
+            'pages'       => (int) ceil( $total / $per_page ),
         ], 200 );
     }
 
@@ -116,7 +126,10 @@ class WebinarsController {
         $data_inicio      = sanitize_text_field( $request->get_param( 'data_inicio' ) ?: '' );
 
         if ( ! $nome ) {
-            return new \WP_REST_Response( [ 'message' => 'Nome do webinar é obrigatório.' ], 400 );
+            return new \WP_REST_Response( [
+                'code'    => 'nome_obrigatorio',
+                'message' => 'O nome do webinar é obrigatório.',
+            ], 400 );
         }
 
         if ( ! in_array( $tipo, [ 'ao_vivo', 'evergreen' ], true ) ) {
@@ -196,7 +209,21 @@ class WebinarsController {
         }
 
         if ( empty( $data ) ) {
-            return new \WP_REST_Response( [ 'message' => 'Nenhum campo para atualizar.' ], 400 );
+            return new \WP_REST_Response( [
+                'code'    => 'sem_dados',
+                'message' => 'Nenhum campo para atualizar.',
+            ], 400 );
+        }
+
+        // Validate status if provided
+        if ( isset( $data['status'] ) ) {
+            $allowed = [ 'rascunho', 'publicado', 'encerrado' ];
+            if ( ! in_array( $data['status'], $allowed, true ) ) {
+                return new \WP_REST_Response( [
+                    'code'    => 'status_invalido',
+                    'message' => 'Status inválido. Valores aceitos: rascunho, publicado, encerrado.',
+                ], 400 );
+            }
         }
 
         $wpdb->update( $wpdb->prefix . 'webinars', $data, [ 'id' => $id ], $formats, [ '%d' ] );
@@ -256,7 +283,11 @@ class WebinarsController {
 
         $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}webinars WHERE id = %d", $id ) );
 
-        return new \WP_REST_Response( $row, 200 );
+        $row_arr               = (array) $row;
+        $row_arr['publicado_em'] = current_time( 'mysql' );
+        $row_arr['message']    = 'Webinar publicado com sucesso.';
+
+        return new \WP_REST_Response( $row_arr, 200 );
     }
 
     private static function generate_unique_slug( string $name ): string {

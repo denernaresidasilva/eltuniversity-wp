@@ -78,8 +78,25 @@ class ChatController {
             $tipo = 'programada';
         }
 
-        if ( ! $autor || ! $mensagem ) {
-            return new \WP_REST_Response( [ 'message' => 'Autor e mensagem são obrigatórios.' ], 400 );
+        if ( ! $autor ) {
+            return new \WP_REST_Response( [
+                'code'    => 'autor_obrigatorio',
+                'message' => 'O campo autor é obrigatório.',
+            ], 400 );
+        }
+
+        if ( ! $mensagem ) {
+            return new \WP_REST_Response( [
+                'code'    => 'mensagem_obrigatoria',
+                'message' => 'A mensagem é obrigatória.',
+            ], 400 );
+        }
+
+        if ( mb_strlen( $mensagem ) > 500 ) {
+            return new \WP_REST_Response( [
+                'code'    => 'mensagem_muito_longa',
+                'message' => 'A mensagem não pode ter mais de 500 caracteres.',
+            ], 400 );
         }
 
         $wpdb->insert(
@@ -125,10 +142,19 @@ class ChatController {
     public static function delete_mensagem( \WP_REST_Request $request ): \WP_REST_Response {
         global $wpdb;
 
-        $id = (int) $request->get_param( 'id' );
+        $id  = (int) $request->get_param( 'id' );
+        $row = $wpdb->get_row( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}webinar_chat_mensagens WHERE id = %d", $id ) );
+
+        if ( ! $row ) {
+            return new \WP_REST_Response( [
+                'code'    => 'mensagem_nao_encontrada',
+                'message' => 'Mensagem não encontrada.',
+            ], 404 );
+        }
+
         $wpdb->delete( $wpdb->prefix . 'webinar_chat_mensagens', [ 'id' => $id ], [ '%d' ] );
 
-        return new \WP_REST_Response( [ 'message' => 'Mensagem excluída.' ], 200 );
+        return new \WP_REST_Response( [ 'code' => 'mensagem_excluida', 'message' => 'Mensagem excluída com sucesso.' ], 200 );
     }
 
     public static function get_por_tempo( \WP_REST_Request $request ): \WP_REST_Response {
@@ -156,7 +182,17 @@ class ChatController {
         $mensagem   = sanitize_textarea_field( $request->get_param( 'mensagem' ) ?: '' );
 
         if ( ! $mensagem ) {
-            return new \WP_REST_Response( [ 'message' => 'Mensagem é obrigatória.' ], 400 );
+            return new \WP_REST_Response( [
+                'code'    => 'mensagem_obrigatoria',
+                'message' => 'A mensagem é obrigatória.',
+            ], 400 );
+        }
+
+        if ( mb_strlen( $mensagem ) > 500 ) {
+            return new \WP_REST_Response( [
+                'code'    => 'mensagem_muito_longa',
+                'message' => 'A mensagem não pode ter mais de 500 caracteres.',
+            ], 400 );
         }
 
         $wpdb->insert(
