@@ -276,25 +276,30 @@ class LeadsController {
             return [];
         }
 
-        // Detect BOM and skip it.
+        // Detect and skip UTF-8 BOM (EF BB BF) if present.
         $bom = fread( $handle, 3 );
-        if ( $bom !== "\xEF\xBB\xBF" ) {
-            fseek( $handle, 0 );
+        if ( strlen( $bom ) < 3 || $bom !== "\xEF\xBB\xBF" ) {
+            // No BOM (or file shorter than 3 bytes) – rewind to the start.
+            rewind( $handle );
         }
+        // If BOM was found the pointer is already past it; do NOT rewind.
 
-        // Auto-detect delimiter by sniffing the first line.
-        $first_line = fgets( $handle );
-        fseek( $handle, ftell( $handle ) - strlen( $first_line ) );
-        $delimiters = [ ',', ';', "\t", '|' ];
-        $best_delim = ',';
-        $best_count = 0;
+        // Auto-detect delimiter by sniffing the first line, then rewind to
+        // the same position so fgetcsv() re-reads the header row.
+        $after_bom_pos = ftell( $handle );
+        $first_line    = fgets( $handle );
+        $delimiters    = [ ',', ';', "\t", '|' ];
+        $best_delim    = ',';
+        $best_count    = 0;
         foreach ( $delimiters as $d ) {
-            $count = substr_count( $first_line, $d );
+            $count = substr_count( $first_line === false ? '' : $first_line, $d );
             if ( $count > $best_count ) {
                 $best_count = $count;
                 $best_delim = $d;
             }
         }
+        // Rewind to the position after any BOM so we include the header row.
+        fseek( $handle, $after_bom_pos );
 
         $rows = [];
         while ( ( $row = fgetcsv( $handle, 0, $best_delim ) ) !== false ) {
