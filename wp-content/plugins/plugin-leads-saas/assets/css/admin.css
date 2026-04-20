@@ -961,3 +961,26 @@
   font-size: 12px;
   transition: all .15s;
 }
+
+/* ============================================================
+   Webhook / Shortcode code cells in Listas table
+   ============================================================ */
+
+.ls-webhook-code {
+  display: inline-block;
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, 'Courier New', monospace;
+  font-size: 11px;
+  background: transparent;
+  color: var(--ls-gray-700);
+  padding: 2px 6px;
+  border-radius: 4px;
+  word-break: break-all;
+  cursor: pointer;
+  border: 1px solid var(--ls-border);
+  transition: color .12s, border-color .12s;
+}
+
+.ls-webhook-code:hover {
+  color: var(--ls-primary);
+  border-color: var(--ls-primary);
+}
