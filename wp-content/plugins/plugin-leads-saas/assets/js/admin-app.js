@@ -867,8 +867,14 @@
     var [page, setPage] = useState(1);
     var [search, setSearch] = useState('');
     var [loading, setLoading] = useState(true);
+    var [editingLead, setEditingLead] = useState(null);
+    var [listas, setListas] = useState([lista]);
 
     useEffect(function() {
+      apiFetch('/listas').then(function(d) { setListas(d.items || d || [lista]); }).catch(function(e) { console.error('[LeadsSaaS] Erro ao carregar listas:', e); });
+    }, []);
+
+    function loadLeads() {
       setLoading(true);
       var params = '?lista_id=' + lista.id + '&page=' + page + '&per_page=20';
       if (search) params += '&search=' + encodeURIComponent(search);
@@ -877,6 +883,10 @@
         setTotal(d.total);
         setLoading(false);
       }).catch(function() { setLoading(false); });
+    }
+
+    useEffect(function() {
+      loadLeads();
     }, [lista.id, page, search]);
 
     return el(Fragment, null,
@@ -910,7 +920,8 @@
                       el('th', null, 'Nome'),
                       el('th', null, 'E-mail'),
                       el('th', null, 'Telefone'),
-                      el('th', null, 'Data')
+                      el('th', null, 'Data'),
+                      el('th', null, 'Ações')
                     )
                   ),
                   el('tbody', null,
@@ -919,7 +930,13 @@
                         el('td', null, lead.nome || el('span', { className: 'ls-text-muted' }, '—')),
                         el('td', null, lead.email),
                         el('td', null, lead.telefone || el('span', { className: 'ls-text-muted' }, '—')),
-                        el('td', null, el('span', { className: 'ls-text-muted' }, formatDate(lead.created_at)))
+                        el('td', null, el('span', { className: 'ls-text-muted' }, formatDate(lead.created_at))),
+                        el('td', null,
+                          el('button', {
+                            className: 'ls-btn ls-btn-outline ls-btn-sm',
+                            onClick: function() { setEditingLead(lead); }
+                          }, '✏️ Editar')
+                        )
                       );
                     })
                   )
@@ -927,7 +944,14 @@
               ),
               el(Pagination, { page: page, total: total, perPage: 20, onChange: setPage })
             )
-      )
+      ),
+
+      editingLead && el(EditLeadModal, {
+        lead: editingLead,
+        listas: listas,
+        onClose: function() { setEditingLead(null); },
+        onSaved: function() { setEditingLead(null); loadLeads(); }
+      })
     );
   }
 

@@ -401,30 +401,42 @@ class WebhookController {
 
     /**
      * Extrai o primeiro valor não vazio para uma lista de chaves candidatas,
-     * pesquisando também em sub-arrays de 1º nível (ex.: buyer.name, student.name).
+     * pesquisando recursivamente em sub-arrays até 5 níveis de profundidade
+     * (ex.: data.buyer.name, data.student.cellphone).
      *
-     * @param array    $body Payload.
-     * @param string[] $keys Chaves candidatas (comparação case-insensitive).
+     * @param array    $body  Payload.
+     * @param string[] $keys  Chaves candidatas (comparação case-insensitive).
+     * @param int      $depth Profundidade atual.
      */
-    private static function extract_field_nested( array $body, array $keys ): string {
+    private static function extract_field_nested( array $body, array $keys, int $depth = 0 ): string {
+        if ( $depth > self::MAX_EMAIL_SEARCH_DEPTH ) {
+            return '';
+        }
+
         $lower_body = array_change_key_case( $body, CASE_LOWER );
         $lower_keys = array_map( 'strtolower', $keys );
 
-        // Busca direta no 1º nível.
+        // Busca direta no nível atual.
         foreach ( $lower_keys as $key ) {
             if ( ! empty( $lower_body[ $key ] ) && is_scalar( $lower_body[ $key ] ) ) {
                 return (string) $lower_body[ $key ];
             }
         }
 
-        // Busca em sub-arrays de 1º nível (ex.: buyer.name, student.name).
+        // Busca recursiva em sub-arrays (ex.: data.buyer.name, data.student.cellphone).
         foreach ( $lower_body as $value ) {
             if ( is_array( $value ) ) {
                 $nested = array_change_key_case( $value, CASE_LOWER );
+                // Verificar chaves no nível imediato do sub-array.
                 foreach ( $lower_keys as $key ) {
                     if ( ! empty( $nested[ $key ] ) && is_scalar( $nested[ $key ] ) ) {
                         return (string) $nested[ $key ];
                     }
+                }
+                // Continuar recursão para sub-níveis.
+                $result = self::extract_field_nested( $value, $keys, $depth + 1 );
+                if ( $result !== '' ) {
+                    return $result;
                 }
             }
         }
