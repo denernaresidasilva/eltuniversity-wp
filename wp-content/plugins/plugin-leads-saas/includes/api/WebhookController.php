@@ -14,6 +14,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WebhookController {
 
     /**
+     * WordPress option key used to store webhook debug log entries.
+     */
+    private const DEBUG_OPTION = 'leads_saas_webhook_debug_log';
+
+    /**
+     * Maximum number of log entries kept in the circular buffer.
+     */
+    private const DEBUG_MAX_ENTRIES = 100;
+
+    /**
      * Chaves sensíveis que não devem ser armazenadas no payload.
      */
     private const SENSITIVE_KEYS = [ 'password', 'senha', 'token', 'secret', 'api_key', 'apikey', 'access_token', 'card', 'cvv', 'credit' ];
@@ -49,6 +59,24 @@ class WebhookController {
     }
 
     /**
+     * Register debug-specific REST routes (requires authentication).
+     */
+    public static function register_debug_routes(): void {
+        register_rest_route( Routes::NAMESPACE, '/webhook-debug/logs', [
+            [
+                'methods'             => 'GET',
+                'callback'            => [ self::class, 'get_debug_logs' ],
+                'permission_callback' => [ Routes::class, 'auth_callback' ],
+            ],
+            [
+                'methods'             => 'DELETE',
+                'callback'            => [ self::class, 'clear_debug_logs' ],
+                'permission_callback' => [ Routes::class, 'auth_callback' ],
+            ],
+        ] );
+    }
+
+    /**
      * Handler de validação (GET/HEAD).
      * Retorna 200 para token válido ou 404 para token inválido.
      */
@@ -60,12 +88,38 @@ class WebhookController {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
                 error_log( '[LeadsSaaS] Webhook validate: token inválido.' );
             }
+            self::append_debug_log( [
+                'method'       => $request->get_method(),
+                'token'        => $token,
+                'lista_id'     => null,
+                'status'       => 'invalid_token',
+                'email_found'  => false,
+                'email'        => '',
+                'lead_id'      => null,
+                'response_code'=> 404,
+                'payload'      => null,
+                'headers'      => self::get_sanitized_headers( $request ),
+            ] );
             return new WP_REST_Response( [ 'message' => 'Token inválido.' ], 404 );
         }
 
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
             error_log( '[LeadsSaaS] Webhook validate: token válido para lista #' . (int) $lista['id'] . '.' );
         }
+
+        self::append_debug_log( [
+            'method'       => $request->get_method(),
+            'token'        => $token,
+            'lista_id'     => (int) $lista['id'],
+            'lista_nome'   => $lista['nome'] ?? '',
+            'status'       => 'validation_ok',
+            'email_found'  => false,
+            'email'        => '',
+            'lead_id'      => null,
+            'response_code'=> 200,
+            'payload'      => null,
+            'headers'      => self::get_sanitized_headers( $request ),
+        ] );
 
         return new WP_REST_Response( [ 'message' => 'Webhook ativo.' ], 200 );
     }
@@ -92,6 +146,18 @@ class WebhookController {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
                 error_log( '[LeadsSaaS] Webhook receive: token inválido.' );
             }
+            self::append_debug_log( [
+                'method'       => 'POST',
+                'token'        => $token,
+                'lista_id'     => null,
+                'status'       => 'invalid_token',
+                'email_found'  => false,
+                'email'        => '',
+                'lead_id'      => null,
+                'response_code'=> 404,
+                'payload'      => self::safe_truncate( $request->get_body() ),
+                'headers'      => self::get_sanitized_headers( $request ),
+            ] );
             return new WP_REST_Response( [ 'message' => 'Token inválido.' ], 404 );
         }
 
@@ -141,6 +207,21 @@ class WebhookController {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
                 error_log( '[LeadsSaaS] Webhook receive: sem e-mail no payload (estratégia: ' . $strategy . ', possível teste de plataforma), retornando 200.' );
             }
+            self::append_debug_log( [
+                'method'       => 'POST',
+                'token'        => $token,
+                'lista_id'     => (int) $lista['id'],
+                'lista_nome'   => $lista['nome'] ?? '',
+                'status'       => 'no_email_found',
+                'strategy'     => $strategy,
+                'email_found'  => false,
+                'email'        => '',
+                'lead_id'      => null,
+                'response_code'=> 200,
+                'payload'      => $body,
+                'raw_body'     => self::safe_truncate( $request->get_body() ),
+                'headers'      => self::get_sanitized_headers( $request ),
+            ] );
             return new WP_REST_Response( [ 'message' => 'Webhook ativo.' ], 200 );
         }
 
@@ -174,11 +255,90 @@ class WebhookController {
             error_log( '[LeadsSaaS] Webhook receive: lead #' . (int) $lead_id . ' criado para lista #' . (int) $lista['id'] . '.' );
         }
 
+        self::append_debug_log( [
+            'method'       => 'POST',
+            'token'        => $token,
+            'lista_id'     => (int) $lista['id'],
+            'lista_nome'   => $lista['nome'] ?? '',
+            'status'       => $lead_id > 0 ? 'lead_created' : 'lead_creation_failed',
+            'strategy'     => $strategy,
+            'email_found'  => true,
+            'email'        => $email,
+            'email_path'   => $email_info['path'],
+            'nome'         => $nome,
+            'telefone'     => $telefone,
+            'lead_id'      => $lead_id > 0 ? $lead_id : null,
+            'response_code'=> 201,
+            'payload'      => $body,
+            'raw_body'     => self::safe_truncate( $request->get_body() ),
+            'headers'      => self::get_sanitized_headers( $request ),
+        ] );
+
         return new WP_REST_Response( [
             'message' => 'Lead cadastrado com sucesso.',
             'lead_id' => $lead_id,
         ], 201 );
     }
+
+    /* ------------------------------------------------------------------ */
+    /*  Debug log helpers                                                    */
+    /* ------------------------------------------------------------------ */
+
+    /**
+     * Append one entry to the circular debug log stored as a WordPress option.
+     */
+    private static function append_debug_log( array $entry ): void {
+        $entry['timestamp'] = gmdate( 'Y-m-d H:i:s' ) . ' UTC';
+        $log = get_option( self::DEBUG_OPTION, [] );
+        if ( ! is_array( $log ) ) {
+            $log = [];
+        }
+        array_unshift( $log, $entry );                         // newest first
+        $log = array_slice( $log, 0, self::DEBUG_MAX_ENTRIES ); // keep last N
+        update_option( self::DEBUG_OPTION, $log, false );
+    }
+
+    /**
+     * REST GET /webhook-debug/logs – returns all stored entries (admin only).
+     */
+    public static function get_debug_logs( WP_REST_Request $request ): WP_REST_Response {
+        $log = get_option( self::DEBUG_OPTION, [] );
+        return new WP_REST_Response( is_array( $log ) ? $log : [], 200 );
+    }
+
+    /**
+     * REST DELETE /webhook-debug/logs – clears the log (admin only).
+     */
+    public static function clear_debug_logs( WP_REST_Request $request ): WP_REST_Response {
+        delete_option( self::DEBUG_OPTION );
+        return new WP_REST_Response( [ 'message' => 'Log limpo com sucesso.' ], 200 );
+    }
+
+    /**
+     * Collect selected request headers, stripping sensitive values.
+     */
+    private static function get_sanitized_headers( WP_REST_Request $request ): array {
+        $headers = $request->get_headers();
+        $keep    = [ 'content_type', 'content-type', 'user_agent', 'user-agent', 'x_forwarded_for', 'x-forwarded-for', 'accept', 'origin' ];
+        $result  = [];
+        foreach ( $headers as $key => $value ) {
+            if ( in_array( strtolower( $key ), $keep, true ) ) {
+                $result[ $key ] = is_array( $value ) ? implode( ', ', $value ) : $value;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Truncate a raw string to a safe display length.
+     */
+    private static function safe_truncate( string $str, int $max = 4000 ): string {
+        return mb_strlen( $str ) > $max ? mb_substr( $str, 0, $max ) . '…' : $str;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Email / field extraction helpers                                    */
+    /* ------------------------------------------------------------------ */
 
     /**
      * Extrai o e-mail do payload usando busca recursiva case-insensitive até

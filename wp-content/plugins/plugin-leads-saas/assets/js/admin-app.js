@@ -257,7 +257,7 @@
     var [listas, setListas] = useState([]);
     var [total, setTotal] = useState(0);
     var [loading, setLoading] = useState(true);
-    var [modal, setModal] = useState(null); // null | 'create' | 'edit' | 'builder' | 'delete'
+    var [modal, setModal] = useState(null); // null | 'create' | 'edit' | 'builder' | 'delete' | 'import'
     var [current, setCurrent] = useState(null);
     var [alert, setAlert] = useState(null);
     var [saving, setSaving] = useState(false);
@@ -285,6 +285,11 @@
       setForm({ nome: lista.nome, descricao: lista.descricao || '' });
       setCurrent(lista);
       setModal('edit');
+    }
+
+    function openImport(lista) {
+      setCurrent(lista);
+      setModal('import');
     }
 
     function openBuilder(lista) {
@@ -404,7 +409,7 @@
                   el('td', null, el('span', { className: 'ls-text-muted' }, lista.descricao || '—')),
                   el('td', null,
                     el('code', {
-                      style: { fontSize: 11, background: '#f3f4f6', padding: '2px 6px', borderRadius: 4, wordBreak: 'break-all', cursor: 'pointer' },
+                      className: 'ls-webhook-code',
                       title: 'Clique para copiar',
                       onClick: function() {
                         navigator.clipboard.writeText(webhookUrl).then(function() { showAlert('success', 'Webhook URL copiada!'); }).catch(function() { showAlert('error', 'Não foi possível copiar. Copie manualmente: ' + webhookUrl); });
@@ -413,7 +418,7 @@
                   ),
                   el('td', null,
                     el('code', {
-                      style: { fontSize: 11, background: '#f3f4f6', padding: '2px 6px', borderRadius: 4, cursor: 'pointer' },
+                      className: 'ls-webhook-code',
                       title: 'Clique para copiar',
                       onClick: function() {
                         navigator.clipboard.writeText(shortcode).then(function() { showAlert('success', 'Shortcode copiado!'); }).catch(function() { showAlert('error', 'Não foi possível copiar. Copie manualmente: ' + shortcode); });
@@ -425,6 +430,7 @@
                       el('button', { className: 'ls-btn ls-btn-outline ls-btn-sm', onClick: function() { openBuilder(lista); } }, '🔧 Form'),
                       el('button', { className: 'ls-btn ls-btn-outline ls-btn-sm', onClick: function() { openSeqPage(lista); } }, 'Sequência'),
                       el('button', { className: 'ls-btn ls-btn-outline ls-btn-sm', onClick: function() { openTagsModal(lista); } }, 'Tags'),
+                      el('button', { className: 'ls-btn ls-btn-outline ls-btn-sm', onClick: function() { openImport(lista); } }, '📥 Importar'),
                       el('button', { className: 'ls-btn ls-btn-outline ls-btn-sm', onClick: function() { openEdit(lista); } }, 'Editar'),
                       el('button', { className: 'ls-btn ls-btn-danger ls-btn-sm', onClick: function() { openDelete(lista); } }, 'Excluir')
                     )
@@ -481,6 +487,16 @@
         lista: current,
         onClose: function() { setModal(null); },
         onSaved: function() { setModal(null); showAlert('success', 'Tags automáticas salvas!'); }
+      }),
+
+      // CSV Import Modal
+      modal === 'import' && current && el(ImportLeadsModal, {
+        lista: current,
+        onClose: function() { setModal(null); },
+        onImported: function(result) {
+          setModal(null);
+          showAlert('success', 'Importação concluída: ' + result.imported + ' lead(s) importado(s), ' + result.skipped + ' ignorado(s).');
+        }
       })
     );
   }
@@ -2514,14 +2530,301 @@
   var LEADS_SAAS_VERSION = '1.2.0';
 
   /* ============================================================
+     Import Leads Modal – CSV / XLSX file upload
+  ============================================================ */
+  function ImportLeadsModal({ lista, onClose, onImported }) {
+    var [file, setFile] = useState(null);
+    var [importing, setImporting] = useState(false);
+    var [result, setResult] = useState(null);
+    var [error, setError] = useState(null);
+
+    async function handleImport() {
+      if (!file) return;
+      setImporting(true);
+      setError(null);
+      setResult(null);
+      try {
+        var formData = new FormData();
+        formData.append('file', file);
+        formData.append('lista_id', lista.id);
+        var res = await fetch(API_URL + '/leads/import', {
+          method: 'POST',
+          headers: { 'X-WP-Nonce': NONCE },
+          body: formData,
+        });
+        var data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Erro na importação');
+        setResult(data);
+        if (data.imported > 0) {
+          onImported(data);
+        }
+      } catch(e) {
+        setError(e.message);
+      } finally {
+        setImporting(false);
+      }
+    }
+
+    return el(Modal, {
+      title: '📥 Importar Leads – ' + lista.nome,
+      onClose: onClose,
+      footer: el(Fragment, null,
+        el('button', { className: 'ls-btn ls-btn-outline', onClick: onClose }, 'Fechar'),
+        !result && el('button', {
+          className: 'ls-btn ls-btn-primary',
+          onClick: handleImport,
+          disabled: importing || !file,
+        }, importing ? 'Importando…' : 'Importar')
+      )
+    },
+      el('div', { style: { marginBottom: 16 } },
+        el('p', { style: { fontSize: 13, color: 'var(--ls-gray-600)', marginBottom: 12 } },
+          'Envie um arquivo CSV ou XLSX com os leads a importar. O arquivo deve ter uma linha de cabeçalho com as colunas: ',
+          el('code', { style: { fontFamily: 'monospace', background: 'var(--ls-gray-200)', padding: '1px 4px', borderRadius: 3 } }, 'email'),
+          ', ',
+          el('code', { style: { fontFamily: 'monospace', background: 'var(--ls-gray-200)', padding: '1px 4px', borderRadius: 3 } }, 'nome'),
+          ' (opcional), ',
+          el('code', { style: { fontFamily: 'monospace', background: 'var(--ls-gray-200)', padding: '1px 4px', borderRadius: 3 } }, 'telefone'),
+          ' (opcional).'
+        ),
+        el('p', { style: { fontSize: 12, color: 'var(--ls-gray-400)', marginBottom: 12 } },
+          'Separadores suportados no CSV: vírgula, ponto-e-vírgula, tabulação. Codificação UTF-8 (com ou sem BOM).'
+        ),
+        el(FormGroup, { label: 'Arquivo CSV / XLSX' },
+          el('input', {
+            type: 'file',
+            accept: '.csv,.xlsx,.xls',
+            className: 'ls-input',
+            style: { padding: '6px 10px', cursor: 'pointer' },
+            onChange: function(e) {
+              setFile(e.target.files[0] || null);
+              setResult(null);
+              setError(null);
+            }
+          })
+        )
+      ),
+
+      error && el(Alert, { type: 'danger' }, error),
+
+      result && el('div', null,
+        el('div', { className: 'ls-alert ls-alert-success', style: { marginBottom: 8 } },
+          '✓ Importação concluída: ',
+          el('strong', null, result.imported),
+          ' lead(s) importado(s), ',
+          el('strong', null, result.skipped),
+          ' ignorado(s).'
+        ),
+        result.error_details && result.error_details.length > 0 && el('div', null,
+          el('div', { style: { fontSize: 13, fontWeight: 600, marginBottom: 6, color: 'var(--ls-gray-700)' } }, 'Detalhes dos erros:'),
+          el('ul', { style: { margin: 0, paddingLeft: 18, fontSize: 12, color: 'var(--ls-gray-400)', maxHeight: 150, overflowY: 'auto' } },
+            result.error_details.map(function(msg, i) {
+              return el('li', { key: i }, msg);
+            })
+          )
+        )
+      )
+    );
+  }
+
+  /* ============================================================
+     Webhook Debug Page
+  ============================================================ */
+  function DebugPage() {
+    var [logs, setLogs] = useState([]);
+    var [loading, setLoading] = useState(true);
+    var [clearing, setClearing] = useState(false);
+    var [expanded, setExpanded] = useState({});
+    var [alert, setAlert] = useState(null);
+
+    function load() {
+      setLoading(true);
+      apiFetch('/webhook-debug/logs').then(function(d) {
+        setLogs(Array.isArray(d) ? d : []);
+        setLoading(false);
+      }).catch(function() { setLoading(false); });
+    }
+
+    useEffect(load, []);
+
+    function toggleExpanded(idx) {
+      setExpanded(function(prev) {
+        return Object.assign({}, prev, { [idx]: !prev[idx] });
+      });
+    }
+
+    async function handleClear() {
+      if (!confirm('Limpar todos os registros de debug?')) return;
+      setClearing(true);
+      try {
+        await apiFetch('/webhook-debug/logs', { method: 'DELETE' });
+        setLogs([]);
+        setAlert({ type: 'success', msg: 'Log limpo com sucesso.' });
+        setTimeout(function() { setAlert(null); }, 3000);
+      } catch(e) {
+        setAlert({ type: 'danger', msg: e.message });
+      } finally {
+        setClearing(false);
+      }
+    }
+
+    function statusBadgeClass(status) {
+      if (status === 'lead_created')      return 'ls-badge ls-badge-success';
+      if (status === 'no_email_found')    return 'ls-badge';
+      if (status === 'invalid_token')     return 'ls-badge';
+      if (status === 'validation_ok')     return 'ls-badge ls-badge-primary';
+      if (status === 'lead_creation_failed') return 'ls-badge';
+      return 'ls-badge';
+    }
+
+    function statusLabel(status) {
+      var labels = {
+        lead_created:           '✓ Lead criado',
+        no_email_found:         '⚠ Sem e-mail',
+        invalid_token:          '✕ Token inválido',
+        validation_ok:          'ℹ Validação (GET)',
+        lead_creation_failed:   '✕ Falha ao salvar',
+      };
+      return labels[status] || status;
+    }
+
+    return el(Fragment, null,
+      alert && el(Alert, { type: alert.type, onClose: function() { setAlert(null); } }, alert.msg),
+
+      el('div', { className: 'ls-card' },
+        el('div', { className: 'ls-card-header' },
+          el('h3', { className: 'ls-card-title' }, '🔍 Debug Webhook'),
+          el('div', { className: 'ls-flex ls-gap-2' },
+            el('button', { className: 'ls-btn ls-btn-outline ls-btn-sm', onClick: load }, '↺ Atualizar'),
+            el('button', {
+              className: 'ls-btn ls-btn-danger ls-btn-sm',
+              onClick: handleClear,
+              disabled: clearing || logs.length === 0,
+            }, clearing ? 'Limpando…' : '🗑 Limpar Log')
+          )
+        ),
+
+        el('div', { className: 'ls-card-body' },
+          el('p', { style: { fontSize: 13, color: 'var(--ls-gray-400)', marginBottom: 12 } },
+            'Registra as últimas 100 chamadas ao endpoint de webhook. Cada vez que uma plataforma (Eduzz, Hotmart, etc.) envia um evento, ele aparece aqui com todos os detalhes para diagnóstico.'
+          ),
+
+          loading ? el(LoadingCenter) :
+          logs.length === 0
+            ? el(EmptyState, {
+                icon: '🔍',
+                title: 'Nenhum registro',
+                desc: 'Quando o webhook receber chamadas elas aparecerão aqui.',
+              })
+            : el('div', { className: 'ls-table-wrap' },
+                el('table', { className: 'ls-table' },
+                  el('thead', null,
+                    el('tr', null,
+                      el('th', null, 'Data/Hora'),
+                      el('th', null, 'Método'),
+                      el('th', null, 'Status'),
+                      el('th', null, 'Lista'),
+                      el('th', null, 'E-mail'),
+                      el('th', null, 'Lead ID'),
+                      el('th', null, 'Detalhes')
+                    )
+                  ),
+                  el('tbody', null,
+                    logs.map(function(entry, idx) {
+                      var isOpen = !!expanded[idx];
+                      return el(Fragment, { key: idx },
+                        el('tr', null,
+                          el('td', null, el('span', { className: 'ls-text-muted', style: { fontSize: 12 } }, entry.timestamp || '—')),
+                          el('td', null,
+                            el('span', {
+                              className: 'ls-badge ' + (entry.method === 'POST' ? 'ls-badge-primary' : ''),
+                              style: { fontSize: 11 }
+                            }, entry.method || '—')
+                          ),
+                          el('td', null, el('span', { className: statusBadgeClass(entry.status) }, statusLabel(entry.status))),
+                          el('td', null, entry.lista_nome
+                            ? el('span', null, entry.lista_nome, el('span', { className: 'ls-text-muted', style: { fontSize: 11 } }, ' #' + entry.lista_id))
+                            : el('span', { className: 'ls-text-muted' }, '—')
+                          ),
+                          el('td', null, entry.email
+                            ? el('span', { style: { fontSize: 12 } }, entry.email)
+                            : el('span', { className: 'ls-text-muted' }, '—')
+                          ),
+                          el('td', null, entry.lead_id
+                            ? el('span', { className: 'ls-badge ls-badge-success' }, '#' + entry.lead_id)
+                            : el('span', { className: 'ls-text-muted' }, '—')
+                          ),
+                          el('td', null,
+                            el('button', {
+                              className: 'ls-btn ls-btn-outline ls-btn-sm',
+                              onClick: function() { toggleExpanded(idx); }
+                            }, isOpen ? '▲ Ocultar' : '▼ Ver Payload')
+                          )
+                        ),
+                        isOpen && el('tr', null,
+                          el('td', { colSpan: 7 },
+                            el('div', { style: { padding: '12px 16px', background: 'var(--ls-gray-200)', borderRadius: 6, marginBottom: 4 } },
+                              entry.strategy && el('div', { style: { marginBottom: 8, fontSize: 12 } },
+                                el('strong', null, 'Estratégia de parsing: '),
+                                el('code', { style: { fontFamily: 'monospace', fontSize: 11, color: 'var(--ls-primary)' } }, entry.strategy)
+                              ),
+                              entry.email_path && el('div', { style: { marginBottom: 8, fontSize: 12 } },
+                                el('strong', null, 'Campo do e-mail: '),
+                                el('code', { style: { fontFamily: 'monospace', fontSize: 11, color: 'var(--ls-primary)' } }, entry.email_path)
+                              ),
+                              entry.headers && Object.keys(entry.headers).length > 0 && el('div', { style: { marginBottom: 8 } },
+                                el('div', { style: { fontSize: 12, fontWeight: 600, marginBottom: 4 } }, 'Headers:'),
+                                el('pre', {
+                                  style: {
+                                    fontSize: 11, background: 'var(--ls-gray-50)', color: 'var(--ls-gray-700)',
+                                    padding: '8px 10px', borderRadius: 4, margin: 0, overflowX: 'auto',
+                                    whiteSpace: 'pre-wrap', wordBreak: 'break-all', maxHeight: 100
+                                  }
+                                }, JSON.stringify(entry.headers, null, 2))
+                              ),
+                              entry.payload && el('div', null,
+                                el('div', { style: { fontSize: 12, fontWeight: 600, marginBottom: 4 } }, 'Payload (parsed):'),
+                                el('pre', {
+                                  style: {
+                                    fontSize: 11, background: 'var(--ls-gray-50)', color: 'var(--ls-gray-700)',
+                                    padding: '8px 10px', borderRadius: 4, margin: 0, overflowX: 'auto',
+                                    whiteSpace: 'pre-wrap', wordBreak: 'break-all', maxHeight: 400
+                                  }
+                                }, JSON.stringify(entry.payload, null, 2))
+                              ),
+                              !entry.payload && entry.raw_body && el('div', null,
+                                el('div', { style: { fontSize: 12, fontWeight: 600, marginBottom: 4 } }, 'Raw body:'),
+                                el('pre', {
+                                  style: {
+                                    fontSize: 11, background: 'var(--ls-gray-50)', color: 'var(--ls-gray-700)',
+                                    padding: '8px 10px', borderRadius: 4, margin: 0, overflowX: 'auto',
+                                    whiteSpace: 'pre-wrap', wordBreak: 'break-all', maxHeight: 200
+                                  }
+                                }, entry.raw_body)
+                              )
+                            )
+                          )
+                        )
+                      );
+                    })
+                  )
+                )
+              )
+        )
+      )
+    );
+  }
+
+  /* ============================================================
      Main App
   ============================================================ */
   function getInitialPage() {
     var wpPage = window.LeadsSaaSConfig.page;
-    if (wpPage === 'leads-saas-listas')    return 'listas';
-    if (wpPage === 'leads-saas-leads')     return 'leads';
-    if (wpPage === 'leads-saas-tags')      return 'tags';
+    if (wpPage === 'leads-saas-listas')     return 'listas';
+    if (wpPage === 'leads-saas-leads')      return 'leads';
+    if (wpPage === 'leads-saas-tags')       return 'tags';
     if (wpPage === 'leads-saas-automacoes') return 'automacoes';
+    if (wpPage === 'leads-saas-debug')      return 'debug';
     return 'dashboard';
   }
 
@@ -2535,6 +2838,7 @@
         case 'leads':      return el(LeadsPage);
         case 'tags':       return el(TagsPage);
         case 'automacoes': return el(AutomacoesPage);
+        case 'debug':      return el(DebugPage);
         default:           return el(DashboardPage);
       }
     }

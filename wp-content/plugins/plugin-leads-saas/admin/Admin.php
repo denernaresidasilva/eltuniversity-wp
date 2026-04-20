@@ -23,11 +23,12 @@ class Admin {
             25
         );
 
-        add_submenu_page( 'leads-saas', 'Dashboard',    'Dashboard',    'manage_options', 'leads-saas',           [ self::class, 'render_app' ] );
-        add_submenu_page( 'leads-saas', 'Listas',       'Listas',       'manage_options', 'leads-saas-listas',    [ self::class, 'render_app' ] );
-        add_submenu_page( 'leads-saas', 'Leads',        'Leads',        'manage_options', 'leads-saas-leads',     [ self::class, 'render_app' ] );
-        add_submenu_page( 'leads-saas', 'Etiquetas',    'Etiquetas',    'manage_options', 'leads-saas-tags',      [ self::class, 'render_app' ] );
-        add_submenu_page( 'leads-saas', 'Automações',   'Automações',   'manage_options', 'leads-saas-automacoes',[ self::class, 'render_app' ] );
+        add_submenu_page( 'leads-saas', 'Dashboard',       'Dashboard',       'manage_options', 'leads-saas',            [ self::class, 'render_app' ] );
+        add_submenu_page( 'leads-saas', 'Listas',          'Listas',          'manage_options', 'leads-saas-listas',     [ self::class, 'render_app' ] );
+        add_submenu_page( 'leads-saas', 'Leads',           'Leads',           'manage_options', 'leads-saas-leads',      [ self::class, 'render_app' ] );
+        add_submenu_page( 'leads-saas', 'Etiquetas',       'Etiquetas',       'manage_options', 'leads-saas-tags',       [ self::class, 'render_app' ] );
+        add_submenu_page( 'leads-saas', 'Automações',      'Automações',      'manage_options', 'leads-saas-automacoes', [ self::class, 'render_app' ] );
+        add_submenu_page( 'leads-saas', 'Debug Webhook',   'Debug Webhook',   'manage_options', 'leads-saas-debug',      [ self::class, 'render_app' ] );
     }
 
     public static function enqueue_assets( string $hook ): void {
@@ -37,6 +38,7 @@ class Admin {
             'leads-saas_page_leads-saas-leads',
             'leads-saas_page_leads-saas-tags',
             'leads-saas_page_leads-saas-automacoes',
+            'leads-saas_page_leads-saas-debug',
         ];
 
         if ( ! in_array( $hook, $pages, true ) ) {
